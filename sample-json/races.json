@@ -1,0 +1,246 @@
+{
+    "races": [{
+        "name": "oot/artful-peahat-9782",
+        "status": {
+            "value": "in_progress",
+            "verbose_value": "In progress",
+            "help_text": "Race is in progress"
+        },
+        "url": "/oot/artful-peahat-9782",
+        "data_url": "/oot/artful-peahat-9782/data",
+        "goal": {
+            "name": "OCS3 - Race 4",
+            "custom": true
+        },
+        "info": "Filename: OCS4 - Vanilla English version please - Twitch API tools (get your credential ready in case)",
+        "entrants_count": 41,
+        "entrants_count_inactive": 3,
+        "opened_at": "2020-12-06T17:05:34.948Z",
+        "started_at": "2020-12-06T18:09:22.918Z",
+        "time_limit": "P1DT00H00M00S",
+        "category": {
+            "name": "The Legend of Zelda: Ocarina of Time",
+            "short_name": "OoT",
+            "slug": "oot",
+            "url": "/oot",
+            "data_url": "/oot/data",
+            "image": "https://racetime.gg/media/The_Legend_of_Zelda__Ocarina_of_Time-285x380_3qDKVQU.jpg"
+        }
+    }, {
+        "name": "ootr/gnarly-rikku-8141",
+        "status": {
+            "value": "in_progress",
+            "verbose_value": "In progress",
+            "help_text": "Race is in progress"
+        },
+        "url": "/ootr/gnarly-rikku-8141",
+        "data_url": "/ootr/gnarly-rikku-8141/data",
+        "goal": {
+            "name": "Standard Ruleset",
+            "custom": false
+        },
+        "info": "Casual S4 Race - Seed: https://ootrandomizer.com/seed/get?id=640792 (SoldOut|Stoneofaagony|Bottlewithfish|Longshot|Bow)",
+        "entrants_count": 2,
+        "entrants_count_inactive": 0,
+        "opened_at": "2020-12-06T20:59:27.855Z",
+        "started_at": "2020-12-06T21:11:48.237Z",
+        "time_limit": "P1DT00H00M00S",
+        "category": {
+            "name": "Ocarina of Time Randomizer",
+            "short_name": "OoTR",
+            "slug": "ootr",
+            "url": "/ootr",
+            "data_url": "/ootr/data",
+            "image": "https://racetime.gg/media/zootr.png"
+        }
+    }, {
+        "name": "yugiohfm/silly-tetra-2849",
+        "status": {
+            "value": "in_progress",
+            "verbose_value": "In progress",
+            "help_text": "Race is in progress"
+        },
+        "url": "/yugiohfm/silly-tetra-2849",
+        "data_url": "/yugiohfm/silly-tetra-2849/data",
+        "goal": {
+            "name": "Any% (15-card mod)",
+            "custom": false
+        },
+        "info": "Vnator vs Starknado",
+        "entrants_count": 2,
+        "entrants_count_inactive": 0,
+        "opened_at": "2020-12-06T23:07:40.661Z",
+        "started_at": "2020-12-06T23:23:45.904Z",
+        "time_limit": "P0DT05H00M00S",
+        "category": {
+            "name": "Yu-Gi-Oh! Forbidden Memories",
+            "short_name": "YGOFM",
+            "slug": "yugiohfm",
+            "url": "/yugiohfm",
+            "data_url": "/yugiohfm/data",
+            "image": "https://racetime.gg/media/67807--yu-gi-oh-forbidden-memories.png"
+        }
+    }, {
+        "name": "pkmnhgss/proud-cid-4699",
+        "status": {
+            "value": "in_progress",
+            "verbose_value": "In progress",
+            "help_text": "Race is in progress"
+        },
+        "url": "/pkmnhgss/proud-cid-4699",
+        "data_url": "/pkmnhgss/proud-cid-4699/data",
+        "goal": {
+            "name": "Manipless",
+            "custom": false
+        },
+        "info": "",
+        "entrants_count": 2,
+        "entrants_count_inactive": 0,
+        "opened_at": "2020-12-06T23:12:06.732Z",
+        "started_at": "2020-12-06T23:13:33.852Z",
+        "time_limit": "P1DT00H00M00S",
+        "category": {
+            "name": "Pok\u00e9mon HeartGold/SoulSilver",
+            "short_name": "HG/SS",
+            "slug": "pkmnhgss",
+            "url": "/pkmnhgss",
+            "data_url": "/pkmnhgss/data",
+            "image": "https://racetime.gg/media/ss.jpg"
+        }
+    }, {
+        "name": "kh2/wonderful-falco-8892",
+        "status": {
+            "value": "in_progress",
+            "verbose_value": "In progress",
+            "help_text": "Race is in progress"
+        },
+        "url": "/kh2/wonderful-falco-8892",
+        "data_url": "/kh2/wonderful-falco-8892/data",
+        "goal": {
+            "name": "Rando",
+            "custom": false
+        },
+        "info": "Cole vs Salad Semi-Final for One Weekend Tourney",
+        "entrants_count": 2,
+        "entrants_count_inactive": 0,
+        "opened_at": "2020-12-06T23:28:21.381Z",
+        "started_at": "2020-12-07T00:00:16.355Z",
+        "time_limit": "P1DT00H00M00S",
+        "category": {
+            "name": "Kingdom Hearts 2",
+            "short_name": "KH2",
+            "slug": "kh2",
+            "url": "/kh2",
+            "data_url": "/kh2/data",
+            "image": "https://racetime.gg/media/g9ja5742ds851.jpg"
+        }
+    }, {
+        "name": "bk/fortunate-megaman-3252",
+        "status": {
+            "value": "in_progress",
+            "verbose_value": "In progress",
+            "help_text": "Race is in progress"
+        },
+        "url": "/bk/fortunate-megaman-3252",
+        "data_url": "/bk/fortunate-megaman-3252/data",
+        "goal": {
+            "name": "100%",
+            "custom": false
+        },
+        "info": "",
+        "entrants_count": 2,
+        "entrants_count_inactive": 1,
+        "opened_at": "2020-12-06T23:30:42.031Z",
+        "started_at": "2020-12-06T23:32:54.214Z",
+        "time_limit": "P1DT00H00M00S",
+        "category": {
+            "name": "Banjo-Kazooie",
+            "short_name": "BK",
+            "slug": "bk",
+            "url": "/bk",
+            "data_url": "/bk/data",
+            "image": "https://racetime.gg/media/Race_Cover.jpg"
+        }
+    }, {
+        "name": "mmr/trusty-bobomb-3298",
+        "status": {
+            "value": "in_progress",
+            "verbose_value": "In progress",
+            "help_text": "Race is in progress"
+        },
+        "url": "/mmr/trusty-bobomb-3298",
+        "data_url": "/mmr/trusty-bobomb-3298/data",
+        "goal": {
+            "name": "Beat the game",
+            "custom": false
+        },
+        "info": "",
+        "entrants_count": 2,
+        "entrants_count_inactive": 0,
+        "opened_at": "2020-12-06T23:52:30.302Z",
+        "started_at": "2020-12-07T00:11:37.697Z",
+        "time_limit": "P1DT00H00M00S",
+        "category": {
+            "name": "Majora's Mask Randomizer",
+            "short_name": "MMR",
+            "slug": "mmr",
+            "url": "/mmr",
+            "data_url": "/mmr/data",
+            "image": "https://racetime.gg/media/MMR_Coverart.jpg"
+        }
+    }, {
+        "name": "yugiohfm/virtual-overworld-8491",
+        "status": {
+            "value": "in_progress",
+            "verbose_value": "In progress",
+            "help_text": "Race is in progress"
+        },
+        "url": "/yugiohfm/virtual-overworld-8491",
+        "data_url": "/yugiohfm/virtual-overworld-8491/data",
+        "goal": {
+            "name": "Any% (15-card mod)",
+            "custom": false
+        },
+        "info": "",
+        "entrants_count": 2,
+        "entrants_count_inactive": 0,
+        "opened_at": "2020-12-07T00:12:31.656Z",
+        "started_at": "2020-12-07T00:18:16.159Z",
+        "time_limit": "P0DT05H00M00S",
+        "category": {
+            "name": "Yu-Gi-Oh! Forbidden Memories",
+            "short_name": "YGOFM",
+            "slug": "yugiohfm",
+            "url": "/yugiohfm",
+            "data_url": "/yugiohfm/data",
+            "image": "https://racetime.gg/media/67807--yu-gi-oh-forbidden-memories.png"
+        }
+    }, {
+        "name": "ootr/casual-kirby-2505",
+        "status": {
+            "value": "in_progress",
+            "verbose_value": "In progress",
+            "help_text": "Race is in progress"
+        },
+        "url": "/ootr/casual-kirby-2505",
+        "data_url": "/ootr/casual-kirby-2505/data",
+        "goal": {
+            "name": "Standard Ruleset",
+            "custom": false
+        },
+        "info": "S4 https://ootrandomizer.com/seed/get?id=641152",
+        "entrants_count": 5,
+        "entrants_count_inactive": 0,
+        "opened_at": "2020-12-07T01:08:42.088Z",
+        "started_at": "2020-12-07T01:21:45.301Z",
+        "time_limit": "P1DT00H00M00S",
+        "category": {
+            "name": "Ocarina of Time Randomizer",
+            "short_name": "OoTR",
+            "slug": "ootr",
+            "url": "/ootr",
+            "data_url": "/ootr/data",
+            "image": "https://racetime.gg/media/zootr.png"
+        }
+    }]
+}
