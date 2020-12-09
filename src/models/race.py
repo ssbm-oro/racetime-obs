@@ -101,7 +101,7 @@ class Entrant:
         stream_override = from_bool(obj.get("stream_override"))
         actions = from_list(from_str, obj.get("actions"))
         score = from_union([from_int, from_none], obj.get("score"))
-        return Entrant(user, status, finish_time, finished_at, place, place_ordinal, score_change, comment, has_comment, stream_live, stream_override, actions, score)
+        return Entrant(user=user, status=status, finish_time=finish_time, finished_at=finished_at, place=place, place_ordinal=place_ordinal, score_change=score_change, comment=comment, has_comment=has_comment, stream_live=stream_live, stream_override=stream_override, actions=actions, score=score)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -152,7 +152,7 @@ class Race:
     entrants_count_inactive: int
     opened_at: datetime
     time_limit: timedelta
-    entrants: Optional[List[Entrant]]
+    entrants: Optional[List[Entrant]] = None
     version: Optional[int] = None
     started_at: Optional[datetime] = None
     ended_at: Optional[datetime] = None
@@ -206,7 +206,7 @@ class Race:
         allow_non_entrant_chat = from_union([from_bool, from_none], obj.get("allow_non_entrant_chat"))
         chat_message_delay = from_union([from_str, from_none], obj.get("chat_message_delay"))
         version = from_union([from_int, from_none], obj.get("version"))
-        return Race(name, status, url, data_url, category, goal, info, entrants_count, entrants_count_inactive, entrants, version, opened_at, start_delay, started_at, ended_at, cancelled_at, unlisted, time_limit, streaming_required, auto_start, opened_by, monitors, recordable, recorded, recorded_by, allow_comments, hide_comments, allow_midrace_chat, allow_non_entrant_chat, chat_message_delay)
+        return Race(name=name, status=status, url=url, data_url=data_url, category=category, goal=goal, info=info, entrants_count=entrants_count, entrants_count_inactive=entrants_count_inactive, opened_at=opened_at, time_limit=time_limit, entrants=entrants, version=version, started_at=started_at, ended_at=ended_at, cancelled_at=cancelled_at, unlisted=unlisted, streaming_required=streaming_required, auto_start=auto_start, opened_by=opened_by, monitors=monitors, recordable=recordable, recorded=recorded, recorded_by=recorded_by, allow_comments=allow_comments, hide_comments=hide_comments, allow_midrace_chat=allow_midrace_chat, allow_non_entrant_chat=allow_non_entrant_chat, chat_message_delay=chat_message_delay)
 
     def to_dict(self) -> dict:
         result: dict = {}

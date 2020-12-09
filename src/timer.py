@@ -67,13 +67,15 @@ def source_list_ar():
 
 # ------------------------------------------------------------
 
-url         = ""
-started_at = None
-interval    = 100
-source_name = ""
-full_name   = "Matkap#6663"
-category    = ""
-race        = ""
+url             = ""
+started_at      = None
+finish_time     = None
+interval        = 100
+source_name     = ""
+full_name       = ""
+category        = ""
+race            = ""
+status_value    = ""
 
 # ------------------------------------------------------------
 
@@ -81,12 +83,30 @@ def update_text():
     """takes scripted_text , sets its value in obs  """
     if started_at is None:
         time = "-0:00:15.0"
+    elif finish_time is not None:
+        time = str(finish_time)[:9]
+    elif status_value == "dnf" or status_value == "dq":
+        time = "--:--:--.-"
     else:
         timer = datetime.now(timezone.utc) - started_at
         time = str(timer)[:9]
     with source_ar(source_name) as source, data_ar() as settings:
         obs.obs_data_set_string(settings, "text", time)
         obs.obs_source_update(source, settings)
+
+def update_race():
+    global race
+    global finish_time
+    r = None
+    r = racetime_client.get_race(race)
+    if r is not None:
+        entrant = next((x for x in r.entrants if x.user.full_name == full_name), None)
+        if entrant is not None:
+            print(f"entrant: {entrant}\n")
+            if entrant.finish_time:
+                finish_time = entrant.finish_time
+                status_value = entrant.status.value
+
 
 def refresh_pressed(props, prop):
     # TODO update list of races and sources
@@ -123,6 +143,10 @@ def script_update(settings):
     if (race != obs.obs_data_get_string(settings, "race")):
         race = obs.obs_data_get_string(settings, "race")
         r = racetime_client.get_race(race)
+        obs.timer_remove(update_race)
+        obs.timer_add(update_race, 1000)
+
+    full_name = obs.obs_data_get_string(settings, "username")
 
     if r is not None and source_name != "":
         started_at = r.started_at
@@ -157,6 +181,6 @@ def script_properties():
 
     p = obs.obs_properties_add_list(props, "race", "Race", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
 
-    b = obs.obs_properties_add_button(props, "button", "Refresh", refresh_pressed)
-    obs.obs_property_set_modified_callback(b, callback)
+    #b = obs.obs_properties_add_button(props, "button", "Refresh", refresh_pressed)
+    #obs.obs_property_set_modified_callback(b, callback)
     return props
