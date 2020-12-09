@@ -1,9 +1,8 @@
 import requests
-from models.races import races_from_dict
 from models.category import category_from_dict
 from models.category_past_races import category_past_races_from_dict
 from models.leaderboards import leaderboards_from_dict
-from models.race import race_from_dict
+from models.race import race_from_dict, races_from_dict
 from models.user_past_races import user_past_races_from_dict
 from models.user_search import user_search_from_dict
 from models.user import user_from_dict
@@ -11,7 +10,7 @@ from models.user import user_from_dict
 base_url = "http://racetime.gg/"
 
 def racetime_get(uri:str, payload={}):
-    with requests.get(uri) as res:
+    with requests.get(uri, payload) as res:
         if res.status_code == 200:
             return res.json()
 
@@ -66,6 +65,9 @@ def get_leaderboard(category:str):
 def get_race(category:str, race:str):
     return race_from_dict(racetime_get(f'{base_url}{category}/{race}/data'))
 
+def get_race(name:str):
+    return race_from_dict(racetime_get(f'{base_url}{name}/data'))
+
 # Get Past User Races
 #
 # https://github.com/racetimeGG/racetime-app/wiki/Public-API-endpoints#past-user-races
@@ -82,7 +84,7 @@ def get_user_past_races(user:str, show_entrants:bool, page:int):
 # https://github.com/racetimeGG/racetime-app/wiki/Public-API-endpoints#user-search
 # URL: https://racetime.gg/user/search
 # Returns an array of matching user data blobs.
-def search_users(name:str, scrim:str=''):
+def search_users(name:str, scrim:str=None):
     payload = { "name":name, "scrim":scrim }
     return user_search_from_dict(racetime_get(f'{base_url}/user/search', payload))
 

@@ -7,31 +7,8 @@
 #     result = user_from_dict(json.loads(json_string))
 
 from dataclasses import dataclass
-from typing import Any, TypeVar, Type, cast
-
-
-T = TypeVar("T")
-
-
-def from_int(x: Any) -> int:
-    assert isinstance(x, int) and not isinstance(x, bool)
-    return x
-
-
-def from_str(x: Any) -> str:
-    assert isinstance(x, str)
-    return x
-
-
-def from_bool(x: Any) -> bool:
-    assert isinstance(x, bool)
-    return x
-
-
-def to_class(c: Type[T], x: Any) -> dict:
-    assert isinstance(x, c)
-    return cast(Any, x).to_dict()
-
+from typing import Any, TypeVar, Type, cast, Optional
+from models import *
 
 @dataclass
 class Stats:
@@ -69,16 +46,16 @@ class User:
     id: str
     full_name: str
     name: str
-    discriminator: int
+    discriminator: str
     url: str
-    avatar: str
-    pronouns: str
-    flair: str
-    twitch_name: str
-    twitch_display_name: str
-    twitch_channel: str
-    can_moderate: bool
-    stats: Stats
+    stats: Optional[Stats] = None
+    pronouns: Optional[str] = None
+    flair: Optional[str] = None
+    twitch_name: Optional[str] = None
+    twitch_display_name: Optional[str] = None
+    twitch_channel: Optional[str] = None
+    can_moderate: Optional[bool] = None    
+    avatar: Optional[str] = None
 
     @staticmethod
     def from_dict(obj: Any) -> 'User':
@@ -86,16 +63,16 @@ class User:
         id = from_str(obj.get("id"))
         full_name = from_str(obj.get("full_name"))
         name = from_str(obj.get("name"))
-        discriminator = int(from_str(obj.get("discriminator")))
+        discriminator = from_str(obj.get("discriminator"))
         url = from_str(obj.get("url"))
-        avatar = from_str(obj.get("avatar"))
-        pronouns = from_str(obj.get("pronouns"))
-        flair = from_str(obj.get("flair"))
-        twitch_name = from_str(obj.get("twitch_name"))
-        twitch_display_name = from_str(obj.get("twitch_display_name"))
-        twitch_channel = from_str(obj.get("twitch_channel"))
-        can_moderate = from_bool(obj.get("can_moderate"))
-        stats = Stats.from_dict(obj.get("stats"))
+        avatar = from_union([from_str, from_none], obj.get("avatar"))
+        pronouns = from_union([from_str, from_none], obj.get("pronouns"))
+        flair = from_union([from_str, from_none], obj.get("flair"))
+        twitch_name = from_union([from_str, from_none], obj.get("twitch_name"))
+        twitch_display_name = from_union([from_str, from_none], obj.get("twitch_display_name"))
+        twitch_channel = from_union([from_str, from_none], obj.get("twitch_channel"))
+        can_moderate = from_union([from_bool, from_none], obj.get("can_moderate"))
+        stats = from_union([Stats.from_dict, from_none], obj.get("stats"))
         return User(id, full_name, name, discriminator, url, avatar, pronouns, flair, twitch_name, twitch_display_name, twitch_channel, can_moderate, stats)
 
     def to_dict(self) -> dict:
@@ -103,7 +80,7 @@ class User:
         result["id"] = from_str(self.id)
         result["full_name"] = from_str(self.full_name)
         result["name"] = from_str(self.name)
-        result["discriminator"] = from_str(str(self.discriminator))
+        result["discriminator"] = from_str(self.discriminator)
         result["url"] = from_str(self.url)
         result["avatar"] = from_str(self.avatar)
         result["pronouns"] = from_str(self.pronouns)
