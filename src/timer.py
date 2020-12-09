@@ -7,6 +7,8 @@ from string import Template
 import racetime_client
 from models.race import Race, RaceCategory
 import asyncio
+from threading import Thread
+import time
 
 
 # auto release context managers
@@ -67,15 +69,18 @@ def source_list_ar():
 
 # ------------------------------------------------------------
 
-url             = ""
-started_at      = None
-finish_time     = None
-interval        = 100
-source_name     = ""
-full_name       = ""
-category        = ""
-race            = ""
-status_value    = ""
+url                 = ""
+started_at          = None
+finish_time         = None
+interval            = 100
+source_name         = ""
+full_name           = ""
+category            = ""
+race                = ""
+status_value        = ""
+race_update_t       : Thread = None
+check_race_updates  = False
+close_thread        = False
 
 # ------------------------------------------------------------
 
@@ -97,15 +102,22 @@ def update_text():
 def update_race():
     global race
     global finish_time
-    r = None
-    r = racetime_client.get_race(race)
-    if r is not None:
-        entrant = next((x for x in r.entrants if x.user.full_name == full_name), None)
-        if entrant is not None:
-            print(f"entrant: {entrant}\n")
-            if entrant.finish_time:
-                finish_time = entrant.finish_time
-                status_value = entrant.status.value
+    global check_race_updates
+    global status_value
+
+    while True:
+        if close_thread:
+            break
+        time.sleep(5.0)
+        if check_race_updates:
+            r = None
+            r = racetime_client.get_race(race)
+            if r is not None:
+                entrant = next((x for x in r.entrants if x.user.full_name == full_name), None)
+                if entrant is not None:
+                    if entrant.finish_time:
+                        finish_time = entrant.finish_time
+                    status_value = entrant.status.value
 
 
 def refresh_pressed(props, prop):
@@ -126,6 +138,14 @@ def script_description():
     "to be done once.\n\nThen select the race room each race you join and " + \
     "stop worrying about whether you started your timer or not."
 
+def script_load(settings):
+    race_update_t = Thread(target=update_race)
+    race_update_t.daemon = True
+    race_update_t.start()
+
+def script_unload():
+    close_thread = True
+
 def script_update(settings):
     global url
     global interval
@@ -134,17 +154,20 @@ def script_update(settings):
     global category
     global race
     global full_name
+    global race_update_t
+    global check_race_updates
 
     obs.timer_remove(update_text)
     
     source_name = obs.obs_data_get_string(settings, "source")
-    
+
     r = None
     if (race != obs.obs_data_get_string(settings, "race")):
         race = obs.obs_data_get_string(settings, "race")
         r = racetime_client.get_race(race)
-        obs.timer_remove(update_race)
-        obs.timer_add(update_race, 1000)
+        check_race_updates = True
+    else:
+        check_race_updates = False
 
     full_name = obs.obs_data_get_string(settings, "username")
 
