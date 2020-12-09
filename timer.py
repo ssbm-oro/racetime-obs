@@ -57,6 +57,14 @@ def filter_ar(source, name):
     finally:
         obs.obs_source_release(source)
 
+@contextmanager
+def source_list_ar():
+    source_list = obs.obs_enum_sources()
+    try:
+        yield source_list
+    finally:
+        obs.source_list_release(source_list)
+
 # ------------------------------------------------------------
 
 url         = ""
@@ -72,21 +80,28 @@ race        = ""
 def update_text():
     """takes scripted_text , sets its value in obs  """
     if started_at is None:
-        return
-    with source_ar(source_name) as source, data_ar() as settings:
+        time = "-0:00:15.0"
+    else:
         timer = datetime.now(timezone.utc) - started_at
-        obs.obs_data_set_string(settings, "text", str(timer)[:9])
+        time = str(timer)[:9]
+    with source_ar(source_name) as source, data_ar() as settings:
+        obs.obs_data_set_string(settings, "text", time)
         obs.obs_source_update(source, settings)
 
 def refresh_pressed(props, prop):
-    update_text()
+    # TODO update list of races
+    #update_text()
+    None
 
 
 
 # ------------------------------------------------------------
 
 def script_description():
-    return "Updates a text source to the text retrieved from a URL at every specified interval.\n\nBy Jim"
+    return "Select a text source to use as your timer and enter your full" + \
+    "username on racetime.gg  (including discriminator). This only needs" + \
+    "to be done once.\n\nThen select the race room each race you join and" + \
+    "stop worrying about whether you started your timer or not."
 
 def script_update(settings):
     global url
@@ -101,13 +116,13 @@ def script_update(settings):
     
     source_name = obs.obs_data_get_string(settings, "source")
     
+    r = None
     if (race != obs.obs_data_get_string(settings, "race")):
         race = obs.obs_data_get_string(settings, "race")
+        print(f"race is {race}\n")
         r = racetime_client.get_race(race)
 
-    if not r:
-        print (f"error in url {url}")
-    elif source_name != "":
+    if r is not None and source_name != "":
         started_at = r.started_at
         obs.timer_add(update_text, interval)
 
@@ -117,27 +132,25 @@ def script_update(settings):
 def script_properties():
     props = obs.obs_properties_create()
 
-    p = obs.obs_properties_add_list(props, "race", "Race", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
+    p = obs.obs_properties_add_list(props, "source", "Text Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
+    with source_list_ar() as sources:
+        if sources is not None:
+            for source in sources:
+                source_id = obs.obs_source_get_unversioned_id(source)
+                if source_id == "text_gdiplus" or source_id == "text_ft2_source":
+                    name = obs.obs_source_get_name(source)
+                    print(f"{name}\n")
+                    obs.obs_property_list_add_string(p, name, name)
+
+    obs.obs_properties_add_text(props, "username", "Username", obs.OBS_TEXT_DEFAULT)
+
+    p = obs.obs_properties_add_list(props, "race", "Race", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
     races = racetime_client.get_races()
     if races is not None:
         for race in races:
-            print(f"race {race.name} is currently {race.status}")
             obs.obs_property_list_add_string(p, race.name, race.name)
-            #if race.status.value.lower() in { "open", "invitational", "in_progress" }:
-            #    obs.obs_property_list_add_string(p, race.name, race.name)
 
     p = obs.obs_properties_add_list(props, "race", "Race", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
-
-    p = obs.obs_properties_add_list(props, "source", "Text Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
-    sources = obs.obs_enum_sources()
-    if sources is not None:
-        for source in sources:
-            source_id = obs.obs_source_get_unversioned_id(source)
-            if source_id == "text_gdiplus" or source_id == "text_ft2_source":
-                name = obs.obs_source_get_name(source)
-                obs.obs_property_list_add_string(p, name, name)
-
-        obs.source_list_release(sources)
 
     obs.obs_properties_add_button(props, "button", "Refresh", refresh_pressed)
     return props

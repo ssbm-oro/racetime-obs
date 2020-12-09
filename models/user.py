@@ -46,8 +46,8 @@ class User:
     id: str
     full_name: str
     name: str
-    discriminator: str
     url: str
+    discriminator: Optional[str] = None
     stats: Optional[Stats] = None
     pronouns: Optional[str] = None
     flair: Optional[str] = None
@@ -63,7 +63,7 @@ class User:
         id = from_str(obj.get("id"))
         full_name = from_str(obj.get("full_name"))
         name = from_str(obj.get("name"))
-        discriminator = from_str(obj.get("discriminator"))
+        discriminator = from_union([from_str, from_none], obj.get("discriminator"))
         url = from_str(obj.get("url"))
         avatar = from_union([from_str, from_none], obj.get("avatar"))
         pronouns = from_union([from_str, from_none], obj.get("pronouns"))
