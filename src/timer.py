@@ -91,7 +91,8 @@ def update_text():
         time = "-" + str(start_delay) + ".0"
     elif finish_time is not None:
         time = str(finish_time)[:9]
-    elif entrant_status_value == "dnf" or race_status_value == "dq":
+    elif entrant_status_value == "dnf" or entrant_status_value == "dq" \
+    or race_status_value == "cancelled":
         time = "--:--:--.-"
     elif started_at is not None:
         timer = datetime.now(timezone.utc) - started_at
@@ -138,6 +139,8 @@ def update_race(r: Race):
 def refresh_pressed(props, prop, *args, **kwargs):
     p = obs.obs_properties_get(props, "source")
     fill_source_list(p)
+    p = obs.obs_properties_get(props, "race")
+    fill_race_list(p)
     return True
 
 def new_race_selected(props, prop, settings):
@@ -201,6 +204,14 @@ def fill_source_list(p):
                     name = obs.obs_source_get_name(source)
                     obs.obs_property_list_add_string(p, name, name)
 
+def fill_race_list(p):
+    obs.obs_property_list_clear(p)
+    obs.obs_property_list_add_string(p, "", "")
+    races = racetime_client.get_races()
+    if races is not None:
+        for race in races:
+            obs.obs_property_list_add_string(p, race.name, race.name)
+
 def script_properties():
     props = obs.obs_properties_create()
 
@@ -210,11 +221,7 @@ def script_properties():
     obs.obs_properties_add_text(props, "username", "Username", obs.OBS_TEXT_DEFAULT)
 
     p = obs.obs_properties_add_list(props, "race", "Race", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
-    obs.obs_property_list_add_string(p, "", "")
-    races = racetime_client.get_races()
-    if races is not None:
-        for race in races:
-            obs.obs_property_list_add_string(p, race.name, race.name)
+    fill_race_list(p)
     obs.obs_property_set_modified_callback(p, new_race_selected)
 
     p = obs.obs_properties_add_text(props, "race_info", "Race Desc", obs.OBS_TEXT_MULTILINE)
