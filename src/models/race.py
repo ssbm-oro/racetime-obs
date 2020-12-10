@@ -28,14 +28,15 @@ class RaceCategory:
     image: str
 
     @staticmethod
-    def from_dict(obj: Any) -> 'Category':
-        assert isinstance(obj, dict)
+    def from_dict(obj: Any) -> 'RaceCategory':
+        if not isinstance(obj, dict):
+            return None
         name = from_str(obj.get("name"))
         short_name = from_str(obj.get("short_name"))
         slug = from_str(obj.get("slug"))
         url = from_str(obj.get("url"))
         data_url = from_str(obj.get("data_url"))
-        image = from_str(obj.get("image"))
+        image = from_union([from_str, from_none], obj.get("image"))
         return RaceCategory(name, short_name, slug, url, data_url, image)
 
     def to_dict(self) -> dict:
@@ -56,7 +57,8 @@ class Status:
 
     @staticmethod
     def from_dict(obj: Any) -> 'Status':
-        assert isinstance(obj, dict)
+        if not isinstance(obj, dict):
+            return None
         value = from_str(obj.get("value"))
         verbose_value = from_str(obj.get("verbose_value"))
         help_text = from_str(obj.get("help_text"))
@@ -87,7 +89,8 @@ class Entrant:
 
     @staticmethod
     def from_dict(obj: Any) -> 'Entrant':
-        assert isinstance(obj, dict)
+        if not isinstance(obj, dict):
+            return None
         user = User.from_dict(obj.get("user"))
         status = Status.from_dict(obj.get("status"))
         finish_time = from_union([from_timedelta, from_none], obj.get("finish_time"))
@@ -128,7 +131,8 @@ class Goal:
 
     @staticmethod
     def from_dict(obj: Any) -> 'Goal':
-        assert isinstance(obj, dict)
+        if not isinstance(obj, dict):
+            return None
         name = from_str(obj.get("name"))
         custom = from_bool(obj.get("custom"))
         return Goal(name, custom)
@@ -158,7 +162,7 @@ class Race:
     ended_at: Optional[datetime] = None
     cancelled_at: Optional[datetime] = None
     recorded_by: Optional[User] = None
-    start_delay: Optional[str] = None
+    start_delay: Optional[timedelta] = None
     streaming_required: Optional[bool] = None
     auto_start: Optional[bool] = None
     opened_by: Optional[User] = None
@@ -174,7 +178,8 @@ class Race:
 
     @staticmethod
     def from_dict(obj: Any) -> 'Race':
-        assert isinstance(obj, dict)
+        if not isinstance(obj, dict):
+            return None
         name = from_str(obj.get("name"))
         #slug = from_str(obj.get("slug"))
         status = Status.from_dict(obj.get("status"))
@@ -187,7 +192,7 @@ class Race:
         entrants_count_inactive = from_int(obj.get("entrants_count_inactive"))
         entrants = from_union([lambda x: from_list(Entrant.from_dict, x), from_none], obj.get("entrants"))
         opened_at = from_datetime(obj.get("opened_at"))
-        start_delay = from_union([from_str, from_none], obj.get("start_delay"))
+        start_delay = from_union([from_timedelta, from_none], obj.get("start_delay"))
         started_at = from_union([from_datetime, from_none], (obj.get("started_at")))
         ended_at = from_union([from_datetime, from_none], (obj.get("ended_at")))
         cancelled_at = from_union([from_datetime, from_none], (obj.get("cancelled_at")))
@@ -206,7 +211,7 @@ class Race:
         allow_non_entrant_chat = from_union([from_bool, from_none], obj.get("allow_non_entrant_chat"))
         chat_message_delay = from_union([from_str, from_none], obj.get("chat_message_delay"))
         version = from_union([from_int, from_none], obj.get("version"))
-        return Race(name=name, status=status, url=url, data_url=data_url, category=category, goal=goal, info=info, entrants_count=entrants_count, entrants_count_inactive=entrants_count_inactive, opened_at=opened_at, time_limit=time_limit, entrants=entrants, version=version, started_at=started_at, ended_at=ended_at, cancelled_at=cancelled_at, unlisted=unlisted, streaming_required=streaming_required, auto_start=auto_start, opened_by=opened_by, monitors=monitors, recordable=recordable, recorded=recorded, recorded_by=recorded_by, allow_comments=allow_comments, hide_comments=hide_comments, allow_midrace_chat=allow_midrace_chat, allow_non_entrant_chat=allow_non_entrant_chat, chat_message_delay=chat_message_delay)
+        return Race(name=name, status=status, url=url, data_url=data_url, category=category, goal=goal, info=info, entrants_count=entrants_count, entrants_count_inactive=entrants_count_inactive, opened_at=opened_at, time_limit=time_limit, entrants=entrants, version=version, started_at=started_at, ended_at=ended_at, cancelled_at=cancelled_at, unlisted=unlisted, streaming_required=streaming_required, auto_start=auto_start, opened_by=opened_by, monitors=monitors, recordable=recordable, recorded=recorded, recorded_by=recorded_by, allow_comments=allow_comments, hide_comments=hide_comments, allow_midrace_chat=allow_midrace_chat, allow_non_entrant_chat=allow_non_entrant_chat, chat_message_delay=chat_message_delay, start_delay=start_delay)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -253,4 +258,6 @@ def race_to_dict(x: Race) -> Any:
 
 def races_from_dict(s: Any) -> List[Race]:
     assert isinstance(s, dict)
+    if not s.get("races"):
+        return []
     return from_union([lambda x: from_list(Race.from_dict, x), from_none], s.get("races"))

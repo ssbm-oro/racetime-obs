@@ -20,7 +20,8 @@ class Goal:
 
     @staticmethod
     def from_dict(obj: Any) -> 'Goal':
-        assert isinstance(obj, dict)
+        if not isinstance(obj, dict):
+            return None
         name = from_str(obj.get("name"))
         custom = from_bool(obj.get("custom"))
         return Goal(name, custom)
@@ -39,7 +40,8 @@ class Status:
 
     @staticmethod
     def from_dict(obj: Any) -> 'Status':
-        assert isinstance(obj, dict)
+        if not isinstance(obj, dict):
+            return None
         value = from_str(obj.get("value"))
         verbose_value = from_str(obj.get("verbose_value"))
         help_text = from_str(obj.get("help_text"))
@@ -67,7 +69,8 @@ class CurrentRace:
 
     @staticmethod
     def from_dict(obj: Any) -> 'CurrentRace':
-        assert isinstance(obj, dict)
+        if not isinstance(obj, dict):
+            return None
         name = from_union([from_str, from_none], obj.get("name"))
         status = from_union([Status.from_dict, from_none], obj.get("status"))
         url = from_union([from_str, from_none], obj.get("url"))

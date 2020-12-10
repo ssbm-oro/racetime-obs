@@ -26,7 +26,8 @@ class UserPastRaces:
 
     @staticmethod
     def from_dict(obj: Any) -> 'UserPastRaces':
-        assert isinstance(obj, dict)
+        if not isinstance(obj, dict):
+            return None
         count = from_int(obj.get("count"))
         num_pages = from_int(obj.get("num_pages"))
         races = from_list(Race.from_dict, obj.get("races"))

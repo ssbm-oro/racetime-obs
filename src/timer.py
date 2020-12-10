@@ -69,43 +69,43 @@ def source_list_ar():
 
 # ------------------------------------------------------------
 
-url                 = ""
-started_at          = None
-finish_time         = None
-interval            = 100
-source_name         = ""
-full_name           = ""
-category            = ""
-race                = ""
-status_value        = ""
-race_update_t       : Thread = None
-check_race_updates  = False
-close_thread        = False
+url                     = ""
+started_at              = None
+finish_time             = None
+source_name             = ""
+full_name               = ""
+category                = ""
+race                    = ""
+race_status_value       = ""
+entrant_status_value    = ""
+check_race_updates      = False
+close_thread            = False
+start_delay             = None
 
 # ------------------------------------------------------------
 
 def update_text():
     """takes scripted_text , sets its value in obs  """
-    if started_at is None:
-        time = "-0:00:15.0"
+
+    if race_status_value == "open" or race_status_value == "invitational":
+        time = "-" + str(start_delay) + ".0"
     elif finish_time is not None:
         time = str(finish_time)[:9]
-    elif status_value == "dnf" or status_value == "dq":
+    elif entrant_status_value == "dnf" or race_status_value == "dq":
         time = "--:--:--.-"
-    else:
+    elif started_at is not None:
         timer = datetime.now(timezone.utc) - started_at
-        time = str(timer)[:9]
+        if race_status_value == "pending":
+            time = "-0:00:{}".format(str(timer.total_seconds())[1:4])
+        else:
+            time = str(timer)[:9]
+    else:
+        return
     with source_ar(source_name) as source, data_ar() as settings:
         obs.obs_data_set_string(settings, "text", time)
         obs.obs_source_update(source, settings)
 
-def update_race():
-    global race
-    global finish_time
-    global check_race_updates
-    global status_value
-    global started_at
-
+def race_updater():
     while True:
         if close_thread:
             break
@@ -114,12 +114,26 @@ def update_race():
             r = None
             r = racetime_client.get_race(race)
             if r is not None:
-                started_at = r.started_at
-                entrant = next((x for x in r.entrants if x.user.full_name == full_name), None)
-                if entrant is not None:
-                    if entrant.finish_time:
-                        finish_time = entrant.finish_time
-                    status_value = entrant.status.value
+                update_race(r)
+
+def update_race(r: Race):
+    global race
+    global finish_time
+    global check_race_updates
+    global race_status_value
+    global entrant_status_value
+    global started_at
+    global start_delay
+
+    started_at = r.started_at
+    start_delay = r.start_delay
+    race_status_value = r.status.value
+    entrant = next((x for x in r.entrants if x.user.full_name == full_name), None)
+    if entrant is not None:
+        if entrant.finish_time:
+            finish_time = entrant.finish_time
+        entrant_status_value = entrant.status.value
+
 
 def refresh_pressed(props, prop, *args, **kwargs):
     p = obs.obs_properties_get(props, "source")
@@ -127,11 +141,10 @@ def refresh_pressed(props, prop, *args, **kwargs):
     return True
 
 def new_race_selected(props, prop, settings):
-    print(f"new_race_selected:\n")
     race = obs.obs_data_get_string(settings, "race")
     r = racetime_client.get_race(race)
     if r is not None:
-        print(f"selected: {race}\n")
+        update_race(r)
         obs.obs_data_set_default_string(settings, "race_info", r.info)
     else:
         obs.obs_data_set_default_string(settings, "race_info", "Race not found")
@@ -146,7 +159,7 @@ def script_description():
     "stop worrying about whether you started your timer or not."
 
 def script_load(settings):
-    race_update_t = Thread(target=update_race)
+    race_update_t = Thread(target=race_updater)
     race_update_t.daemon = True
     race_update_t.start()
 
@@ -154,16 +167,10 @@ def script_unload():
     close_thread = True
 
 def script_update(settings):
-    global url
-    global interval
     global source_name
-    global started_at
-    global category
     global race
     global full_name
-    global race_update_t
     global check_race_updates
-    global race_info
 
     obs.timer_remove(update_text)
     
@@ -172,7 +179,7 @@ def script_update(settings):
     race = obs.obs_data_get_string(settings, "race")
 
     if source_name != "":
-        obs.timer_add(update_text, interval)
+        obs.timer_add(update_text, 100)
         check_race_updates = True
     else:
         check_race_updates = False

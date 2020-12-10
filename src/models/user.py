@@ -21,7 +21,8 @@ class Stats:
 
     @staticmethod
     def from_dict(obj: Any) -> 'Stats':
-        assert isinstance(obj, dict)
+        if not isinstance(obj, dict):
+            return None
         joined = from_int(obj.get("joined"))
         first = from_int(obj.get("first"))
         second = from_int(obj.get("second"))
@@ -59,7 +60,8 @@ class User:
 
     @staticmethod
     def from_dict(obj: Any) -> 'User':
-        assert isinstance(obj, dict)
+        if not isinstance(obj, dict):
+            return None
         id = from_str(obj.get("id"))
         full_name = from_str(obj.get("full_name"))
         name = from_str(obj.get("name"))

@@ -23,7 +23,8 @@ class Ranking:
 
     @staticmethod
     def from_dict(obj: Any) -> 'Ranking':
-        assert isinstance(obj, dict)
+        if not isinstance(obj, dict):
+            return None
         user = User.from_dict(obj.get("user"))
         place = from_int(obj.get("place"))
         place_ordinal = from_str(obj.get("place_ordinal"))
@@ -51,7 +52,8 @@ class Leaderboard:
 
     @staticmethod
     def from_dict(obj: Any) -> 'Leaderboard':
-        assert isinstance(obj, dict)
+        if not isinstance(obj, dict):
+            return None
         goal = from_str(obj.get("goal"))
         num_ranked = from_int(obj.get("num_ranked"))
         rankings = from_list(Ranking.from_dict, obj.get("rankings"))

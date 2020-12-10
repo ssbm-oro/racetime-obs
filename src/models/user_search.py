@@ -18,7 +18,8 @@ class UserSearch:
 
     @staticmethod
     def from_dict(obj: Any) -> 'UserSearch':
-        assert isinstance(obj, dict)
+        if not isinstance(obj, dict):
+            return None
         results = from_list(User.from_dict, obj.get("results"))
         return UserSearch(results)
 
