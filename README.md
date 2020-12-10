@@ -12,7 +12,7 @@ There's not much here yet, check back later.
 
 2) Download and unzip source archive to any folder
 
-3) Install the correct python requirements with `python -m pip install -r requirements`
+3) Install the correct python requirements with `python -m pip install -r requirements.txt`
 
 4) Start OBS and create a Text Source to use as a timer. You can customize the font and style as much as you please
 
