@@ -104,6 +104,7 @@ def update_race():
     global finish_time
     global check_race_updates
     global status_value
+    global started_at
 
     while True:
         if close_thread:
@@ -113,6 +114,8 @@ def update_race():
             r = None
             r = racetime_client.get_race(race)
             if r is not None:
+                if started_at is None:
+                    started_at = r.started_at
                 entrant = next((x for x in r.entrants if x.user.full_name == full_name), None)
                 if entrant is not None:
                     if entrant.finish_time:
@@ -125,8 +128,6 @@ def refresh_pressed(props, prop):
     None
 
 def callback(props, prop, *args, **kwargs):
-    p = obs.obs_properties_get(props, "button")
-    obs.obs_property_set_description(p, f"button pressed")
     p = obs.obs_properties_get(props, "source")
     fill_source_list(p)
 
@@ -162,24 +163,21 @@ def script_update(settings):
     source_name = obs.obs_data_get_string(settings, "source")
 
     r = None
-    if (race != obs.obs_data_get_string(settings, "race")):
-        race = obs.obs_data_get_string(settings, "race")
-        r = racetime_client.get_race(race)
+    race = obs.obs_data_get_string(settings, "race")
+    if source_name != "":
+        obs.timer_add(update_text, interval)
         check_race_updates = True
     else:
         check_race_updates = False
 
     full_name = obs.obs_data_get_string(settings, "username")
 
-    if r is not None and source_name != "":
-        started_at = r.started_at
-        obs.timer_add(update_text, interval)
-
 #def script_defaults(settings):
 #	obs.obs_data_set_default_int(settings, "interval", 30)
 
 def fill_source_list(p):
     obs.obs_property_list_clear(p)
+    obs.obs_property_list_add_string(p, "", "")
     with source_list_ar() as sources:
         if sources is not None:
             for source in sources:
@@ -204,6 +202,6 @@ def script_properties():
 
     p = obs.obs_properties_add_list(props, "race", "Race", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
 
-    #b = obs.obs_properties_add_button(props, "button", "Refresh", refresh_pressed)
-    #obs.obs_property_set_modified_callback(b, callback)
+    b = obs.obs_properties_add_button(props, "button", "Refresh", refresh_pressed)
+    obs.obs_property_set_modified_callback(b, callback)
     return props
