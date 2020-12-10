@@ -66,6 +66,8 @@ def get_race(category:str, race:str):
     return race_from_dict(racetime_get(f'{base_url}{category}/{race}/data'))
 
 def get_race(name:str):
+    if name is None or name == "":
+        return None
     return race_from_dict(racetime_get(f'{base_url}{name}/data'))
 
 # Get Past User Races

@@ -121,14 +121,21 @@ def update_race():
                         finish_time = entrant.finish_time
                     status_value = entrant.status.value
 
-
-def refresh_pressed(props, prop):
-    # TODO update list of races and sources
-    None
-
-def callback(props, prop, *args, **kwargs):
+def refresh_pressed(props, prop, *args, **kwargs):
     p = obs.obs_properties_get(props, "source")
     fill_source_list(p)
+    return True
+
+def new_race_selected(props, prop, settings):
+    print(f"new_race_selected:\n")
+    race = obs.obs_data_get_string(settings, "race")
+    r = racetime_client.get_race(race)
+    if r is not None:
+        print(f"selected: {race}\n")
+        obs.obs_data_set_default_string(settings, "race_info", r.info)
+    else:
+        obs.obs_data_set_default_string(settings, "race_info", "Race not found")
+    return True
 
 # ------------------------------------------------------------
 
@@ -156,13 +163,14 @@ def script_update(settings):
     global full_name
     global race_update_t
     global check_race_updates
+    global race_info
 
     obs.timer_remove(update_text)
     
     source_name = obs.obs_data_get_string(settings, "source")
 
-    r = None
     race = obs.obs_data_get_string(settings, "race")
+
     if source_name != "":
         obs.timer_add(update_text, interval)
         check_race_updates = True
@@ -171,8 +179,9 @@ def script_update(settings):
 
     full_name = obs.obs_data_get_string(settings, "username")
 
-#def script_defaults(settings):
-#	obs.obs_data_set_default_int(settings, "interval", 30)
+def script_defaults(settings):
+	obs.obs_data_set_default_string(settings, "race_info", "Race info")
+	obs.obs_data_set_default_string(settings, "race", "")
 
 def fill_source_list(p):
     obs.obs_property_list_clear(p)
@@ -194,13 +203,16 @@ def script_properties():
     obs.obs_properties_add_text(props, "username", "Username", obs.OBS_TEXT_DEFAULT)
 
     p = obs.obs_properties_add_list(props, "race", "Race", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+    obs.obs_property_list_add_string(p, "", "")
     races = racetime_client.get_races()
     if races is not None:
         for race in races:
             obs.obs_property_list_add_string(p, race.name, race.name)
+    obs.obs_property_set_modified_callback(p, new_race_selected)
 
-    p = obs.obs_properties_add_list(props, "race", "Race", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
+    p = obs.obs_properties_add_text(props, "race_info", "Race Desc", obs.OBS_TEXT_MULTILINE)
+    obs.obs_property_set_enabled(p, False)
 
-    b = obs.obs_properties_add_button(props, "button", "Refresh", refresh_pressed)
-    obs.obs_property_set_modified_callback(b, callback)
+    refresh = obs.obs_properties_add_button(props, "button", "Refresh", lambda *props: None)
+    obs.obs_property_set_modified_callback(refresh, refresh_pressed)
     return props
