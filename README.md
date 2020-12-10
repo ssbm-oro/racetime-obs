@@ -1,5 +1,7 @@
 # racetime-obs
 
+> :warning: **This script is in prerelease.** I do not make any guarantees that it will not crash OBS while you are racing. Please do not use it in a race where losing your stream/recording would be a problem (e.g. league or tournament races)
+
 This is the main code repository for racetime-obs, a plugin to add realtime information from [racetime.gg](https://racetime.gg) to your stream in OBS.
 
 There's not much here yet, check back later.
