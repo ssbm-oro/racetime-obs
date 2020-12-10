@@ -36,10 +36,10 @@ def data_ar(source_settings=None):
         settings = obs.obs_data_create()
     if source_settings:
         settings = obs.obs_source_get_settings(source_settings)
-        try:
-            yield settings
-        finally:
-            obs.obs_data_release(settings)
+    try:
+        yield settings
+    finally:
+        obs.obs_data_release(settings)
 
 
 @contextmanager
