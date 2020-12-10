@@ -114,8 +114,7 @@ def update_race():
             r = None
             r = racetime_client.get_race(race)
             if r is not None:
-                if started_at is None:
-                    started_at = r.started_at
+                started_at = r.started_at
                 entrant = next((x for x in r.entrants if x.user.full_name == full_name), None)
                 if entrant is not None:
                     if entrant.finish_time:
