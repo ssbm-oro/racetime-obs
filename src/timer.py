@@ -97,7 +97,7 @@ def update_text():
     elif started_at is not None:
         timer = datetime.now(timezone.utc) - started_at
         if race_status_value == "pending":
-            time = "-0:00:{:2.1f}".format(timer.total_seconds()[1:5])
+            time = "-0:00:{:2.1f}".format(timer.total_seconds())[1:5]
         else:
             time = str(timer)[:9]
     else:
