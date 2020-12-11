@@ -30,7 +30,7 @@ There's not much here yet, check back later.
 
 This project is unaffiliated with racetime.gg and OBS Studio, but wouldn't be possible without the wonderful racetime.gg API and usable OBS scripting support.
 
-Thank you to @bfxdev and @upgradeQ, whose OBS scripting tutorials and code I referenced heavily when learning how to integrate with OBS.
+Thank you to [bfxdev](https://github.com/bfxdev) and [upgradeQ](https://github.com/upgradeQ), whose OBS scripting tutorials and code I referenced heavily when learning how to integrate with OBS.
 
 * [racetime.gg](https://github.com/racetimeGG/racetime-app)
 * [OBS Studio](https://github.com/obsproject/obs-studio)
