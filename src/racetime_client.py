@@ -10,9 +10,12 @@ from models.user import user_from_dict
 base_url = "http://racetime.gg/"
 
 def racetime_get(uri:str, payload={}):
-    with requests.get(uri, payload) as res:
-        if res.status_code == 200:
-            return res.json()
+    try:
+        with requests.get(uri, payload) as res:
+            if res.status_code == 200:
+                return res.json()
+    except:
+        return None
 
 
 # Get Races
