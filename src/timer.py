@@ -291,7 +291,7 @@ def fill_race_list(race_list, category_list):
     if races is not None:
         categories = []
         for race in races:
-            if category == "" or race.category == category:
+            if category == "" or race.category.name == category:
                 obs.obs_property_list_add_string(race_list, race.name, race.name)
             if not race.category.name in categories:
                 categories.append(race.category)
