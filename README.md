@@ -1,4 +1,4 @@
-# racetime-obs
+# racetime-obs (working title)
 
 > :warning: **This script is in prerelease.** I do not make any guarantees that it will not crash OBS while you are racing. Please do not use it in a race that you couldn't afford to lose your stream and local recording (e.g. league or tournament races).
 
@@ -20,6 +20,20 @@ There's not much here yet, check back later.
 
 6) Switch back to the Scripts tab and press the `+` button, and add `timer.py`
 
-7) Select the text source you created in step 4 from the script properties drop down and type in your racetime.gg username (in the form `username#0000`)
+7) Enable the `Initial Setup` checkbox and select the text source you created in step 4 from the script properties drop down and type in your racetime.gg username (in the form `username#0000`)
 
-8) Join a racetime.gg race, and select your race room from the drop down
+8) (optional) Check the "Use custom color for podium finishes" box to have your timer change color depending on what phase the race is in and what place you finished in.
+
+9) Join a racetime.gg race, and select your race room from the drop down. You can select a category to only show races in that category as well.
+
+## Acknowledgments
+
+This project is unaffiliated with racetime.gg and OBS Studio, but wouldn't be possible without the wonderful racetime.gg API and usable OBS scripting support.
+
+Thank you to @bfxdev and @upgradeQ, whose OBS scripting tutorials and code I referenced heavily when learning how to integrate with OBS.
+
+* [racetime.gg](https://github.com/racetimeGG/racetime-app)
+* [OBS Studio](https://github.com/obsproject/obs-studio)
+* [bfxdev's OBS scripts](https://github.com/bfxdev/OBS)
+* [OBS Python Scripting Cheatsheet by upgradeQ](https://github.com/upgradeQ/OBS-Studio-Python-Scripting-Cheatsheet-obspython-Examples-of-API)
+* [Tips and Tricks For Lua Scripts](https://obsproject.com/forum/threads/tips-and-tricks-for-lua-scripts.132256/#post-491262)
