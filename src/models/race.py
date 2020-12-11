@@ -175,6 +175,7 @@ class Race:
     allow_non_entrant_chat: Optional[bool] = None
     chat_message_delay: Optional[str] = None
     unlisted: Optional[bool] = None
+    entrants_count_finished: Optional[int] = None
 
     @staticmethod
     def from_dict(obj: Any) -> 'Race':
@@ -211,7 +212,8 @@ class Race:
         allow_non_entrant_chat = from_union([from_bool, from_none], obj.get("allow_non_entrant_chat"))
         chat_message_delay = from_union([from_str, from_none], obj.get("chat_message_delay"))
         version = from_union([from_int, from_none], obj.get("version"))
-        return Race(name=name, status=status, url=url, data_url=data_url, category=category, goal=goal, info=info, entrants_count=entrants_count, entrants_count_inactive=entrants_count_inactive, opened_at=opened_at, time_limit=time_limit, entrants=entrants, version=version, started_at=started_at, ended_at=ended_at, cancelled_at=cancelled_at, unlisted=unlisted, streaming_required=streaming_required, auto_start=auto_start, opened_by=opened_by, monitors=monitors, recordable=recordable, recorded=recorded, recorded_by=recorded_by, allow_comments=allow_comments, hide_comments=hide_comments, allow_midrace_chat=allow_midrace_chat, allow_non_entrant_chat=allow_non_entrant_chat, chat_message_delay=chat_message_delay, start_delay=start_delay)
+        entrants_count_finished = from_union([from_int, from_none], obj.get("entrants_count_finished"))
+        return Race(name=name, status=status, url=url, data_url=data_url, category=category, goal=goal, info=info, entrants_count=entrants_count, entrants_count_inactive=entrants_count_inactive, opened_at=opened_at, time_limit=time_limit, entrants=entrants, version=version, started_at=started_at, ended_at=ended_at, cancelled_at=cancelled_at, unlisted=unlisted, streaming_required=streaming_required, auto_start=auto_start, opened_by=opened_by, monitors=monitors, recordable=recordable, recorded=recorded, recorded_by=recorded_by, allow_comments=allow_comments, hide_comments=hide_comments, allow_midrace_chat=allow_midrace_chat, allow_non_entrant_chat=allow_non_entrant_chat, chat_message_delay=chat_message_delay, start_delay=start_delay, entrants_count_finished=entrants_count_finished)
 
     def to_dict(self) -> dict:
         result: dict = {}
