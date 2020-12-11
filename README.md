@@ -1,6 +1,6 @@
 # racetime-obs
 
-> :warning: **This script is in prerelease.** I do not make any guarantees that it will not crash OBS while you are racing. Please do not use it in a race that you couldn't afford to lose your stream and local recording (e.g. league or tournament races)
+> :warning: **This script is in prerelease.** I do not make any guarantees that it will not crash OBS while you are racing. Please do not use it in a race that you couldn't afford to lose your stream and local recording (e.g. league or tournament races).
 
 This is the main code repository for racetime-obs, a plugin to add realtime information from [racetime.gg](https://racetime.gg) to your stream in OBS.
 
@@ -14,7 +14,7 @@ There's not much here yet, check back later.
 
 3) Install the correct python requirements with `python -m pip install -r requirements.txt`
 
-4) Start OBS and create a Text Source to use as a timer. You can customize the font and style as much as you please
+4) Start OBS and create a Text Source to use as a timer. You can customize the font and style as much as you please. Note that if you enable Podium Colors, whatever color you choose for your text source will get overwritten.
 
 5) From the OBS menu, select `Tools` -> `Scripts`. Click the Python Settings tab, and click the Browse button. Navigate to and select the folder where you installed Python.
 
