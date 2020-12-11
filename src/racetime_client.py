@@ -10,8 +10,11 @@ from models.user import user_from_dict
 base_url = "http://racetime.gg/"
 
 def racetime_get(uri:str, payload={}):
+    headers = {
+        'User-Agent': "oro-obs-bot_alpha"
+    }
     try:
-        with requests.get(uri, payload) as res:
+        with requests.get(uri, payload, headers=headers) as res:
             if res.status_code == 200:
                 return res.json()
     except:

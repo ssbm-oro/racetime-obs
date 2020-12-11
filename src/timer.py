@@ -1,14 +1,19 @@
+import json
 import string
+
+import websockets
 import obspython as obs
 import urllib.parse
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
-from string import Template
 import racetime_client
-from models.race import Race, RaceCategory
+from models.race import Race, RaceCategory, race_from_dict
 import asyncio
+from asyncio import AbstractEventLoop
 from threading import Thread
 import time
+from websockets import WebSocketClientProtocol
+import ssl
 
 
 # auto release context managers
@@ -76,6 +81,7 @@ source_name             = ""
 full_name               = ""
 category                = ""
 race                    = ""
+race_ws_uri             = ""
 race_status_value       = ""
 entrant_status_value    = ""
 check_race_updates      = False
@@ -89,6 +95,9 @@ first_color             = 0xFF0000
 second_color            = 0x00FF00
 third_color             = 0x0000FF
 finished_color          = 0xFFFFFF
+race_changed            = False
+race_event_loop         = None
+websocket_url           = ""
 
 # ------------------------------------------------------------
 
@@ -110,7 +119,7 @@ def update_text():
         else:
             color = finished_color
     elif entrant_status_value == "dnf" or entrant_status_value == "dq" \
-    or race_status_value == "cancelled":
+      or race_status_value == "cancelled":
         time = "--:--:--.-"
         color = 0xFF0000
     elif started_at is not None:
@@ -128,21 +137,67 @@ def update_text():
         if use_podium_colors:
             set_color(source, settings, color)
         obs.obs_source_update(source, settings)
-        
 
-def race_updater():
+def race_update_thread():
+    global race_changed
+    global race_event_loop
+
+    race_event_loop = asyncio.new_event_loop()
+    race_event_loop.run_until_complete(race_updater())
+    race_event_loop.run_forever()
+
+# def race_changed():
+#     event_loop = asyncio.get_event_loop()
+#     event_loop.stop()
+#     race_event_loop.run_until_complete(race_updater())
+#     race_event_loop.run_forever()
+
+async def race_updater():
+    global race
+    global race_changed
+    global websocket_url
+    global close_thread
+
+    headers = {
+        'User-Agent': "oro-obs-bot_alpha"
+    }
+    host = "racetime.gg"
+
     while True:
-        if close_thread:
-            break
-        time.sleep(5.0)
-        if check_race_updates:
-            r = None
-            r = racetime_client.get_race(race)
-            if r is not None:
-                update_race(r)
+        #print(f"websocket_url is {websocket_url}\n")
+        if websocket_url != "":
+            #print(f"new race selected: {race}\n")
+            async with websockets.connect("wss://racetime.gg" + websocket_url, host=host, extra_headers=headers) as ws:
+                #print(f"websocket connected: {websocket_url}\n")
+                while True:
+                    try:
+                        #print(f"race_changed: {race_changed}, close_thread: {close_thread}")
+                        if race_changed:
+                            race_changed = False
+                            break
+                        if close_thread:
+                            close_thread = False
+                            break
+                        message = await asyncio.wait_for(ws.recv(), 5.0)
+                        #print(f"received message: {message}\n")
+                        data = json.loads(message)
+                        if data.get("type") == "race.data":
+                            #print("race data received\n")
+                            r = race_from_dict(data.get("race"))
+                            if r is not None:
+                                update_race(r)
+                        elif data.get("type") == "pong":
+                            pass
+                            #print("pong!\n")
+                    except asyncio.TimeoutError:
+                        #print("ping!\n")
+                        await ws.send(json.dumps({"action": "ping"}))
+                    except websockets.ConnectionClosed:
+                        websocket_url = ""
+                        break
+        await asyncio.sleep(5.0)
 
 def update_race(r: Race):
-    global race
     global finish_time
     global check_race_updates
     global race_status_value
@@ -168,13 +223,21 @@ def refresh_pressed(props, prop, *args, **kwargs):
     return True
 
 def new_race_selected(props, prop, settings):
-    race = obs.obs_data_get_string(settings, "race")
-    r = racetime_client.get_race(race)
+    global race_changed
+    global close_thread
+    global race
+    global websocket_url
+
+    new_race = obs.obs_data_get_string(settings, "race")
+    r = racetime_client.get_race(new_race)
     if r is not None:
         update_race(r)
         obs.obs_data_set_default_string(settings, "race_info", r.info)
+        race_changed = True
+        websocket_url = r.websocket_url
     else:
         obs.obs_data_set_default_string(settings, "race_info", "Race not found")
+        close_thread = True
     return True
 
 def new_category_selected(props, prop, settings):
@@ -204,7 +267,7 @@ def set_color(source, settings, color):
 
 def loading_finished(event):
     if event == obs.OBS_FRONTEND_EVENT_FINISHED_LOADING:
-        race_update_t = Thread(target=race_updater)
+        race_update_t = Thread(target=race_update_thread)
         race_update_t.daemon = True
         race_update_t.start()
 

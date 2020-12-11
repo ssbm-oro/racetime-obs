@@ -176,6 +176,10 @@ class Race:
     chat_message_delay: Optional[str] = None
     unlisted: Optional[bool] = None
     entrants_count_finished: Optional[int] = None
+    websocket_url: Optional[str] = None
+    websocket_bot_url: Optional[str] = None
+    websocket_oath_url: Optional[str] = None
+
 
     @staticmethod
     def from_dict(obj: Any) -> 'Race':
@@ -186,6 +190,9 @@ class Race:
         status = Status.from_dict(obj.get("status"))
         url = from_str(obj.get("url"))
         data_url = from_str(obj.get("data_url"))
+        websocket_url = from_union([from_str, from_none], obj.get("websocket_url"))
+        websocket_bot_url = from_union([from_str, from_none], obj.get("websocket_bot_url"))
+        websocket_oath_url = from_union([from_str, from_none], obj.get("websocket_oath_url"))
         category = RaceCategory.from_dict(obj.get("category"))
         goal = Goal.from_dict(obj.get("goal"))
         info = from_str(obj.get("info"))
@@ -213,7 +220,7 @@ class Race:
         chat_message_delay = from_union([from_str, from_none], obj.get("chat_message_delay"))
         version = from_union([from_int, from_none], obj.get("version"))
         entrants_count_finished = from_union([from_int, from_none], obj.get("entrants_count_finished"))
-        return Race(name=name, status=status, url=url, data_url=data_url, category=category, goal=goal, info=info, entrants_count=entrants_count, entrants_count_inactive=entrants_count_inactive, opened_at=opened_at, time_limit=time_limit, entrants=entrants, version=version, started_at=started_at, ended_at=ended_at, cancelled_at=cancelled_at, unlisted=unlisted, streaming_required=streaming_required, auto_start=auto_start, opened_by=opened_by, monitors=monitors, recordable=recordable, recorded=recorded, recorded_by=recorded_by, allow_comments=allow_comments, hide_comments=hide_comments, allow_midrace_chat=allow_midrace_chat, allow_non_entrant_chat=allow_non_entrant_chat, chat_message_delay=chat_message_delay, start_delay=start_delay, entrants_count_finished=entrants_count_finished)
+        return Race(name=name, status=status, url=url, data_url=data_url, websocket_url=websocket_url, websocket_bot_url=websocket_bot_url, websocket_oath_url=websocket_oath_url, category=category, goal=goal, info=info, entrants_count=entrants_count, entrants_count_inactive=entrants_count_inactive, opened_at=opened_at, time_limit=time_limit, entrants=entrants, version=version, started_at=started_at, ended_at=ended_at, cancelled_at=cancelled_at, unlisted=unlisted, streaming_required=streaming_required, auto_start=auto_start, opened_by=opened_by, monitors=monitors, recordable=recordable, recorded=recorded, recorded_by=recorded_by, allow_comments=allow_comments, hide_comments=hide_comments, allow_midrace_chat=allow_midrace_chat, allow_non_entrant_chat=allow_non_entrant_chat, chat_message_delay=chat_message_delay, start_delay=start_delay, entrants_count_finished=entrants_count_finished)
 
     def to_dict(self) -> dict:
         result: dict = {}
