@@ -357,7 +357,7 @@ def fill_race_list(race_list, category_list):
             if category == "" or race.category.name == category:
                 obs.obs_property_list_add_string(race_list, race.name, race.name)
             if not race.category.name in categories:
-                categories.append(race.category)
+                categories.append(race.category.name)
                 obs.obs_property_list_add_string(category_list, race.category.name, race.category.name)
 
 def script_properties():
