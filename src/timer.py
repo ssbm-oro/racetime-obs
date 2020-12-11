@@ -163,10 +163,8 @@ def update_race(r: Race):
 
 
 def refresh_pressed(props, prop, *args, **kwargs):
-    p = obs.obs_properties_get(props, "source")
-    fill_source_list(p)
-    p = obs.obs_properties_get(props, "race")
-    fill_race_list(p)
+    fill_source_list(obs.obs_properties_get(props, "source"))
+    fill_race_list(obs.obs_properties_get(props, "race"), obs.obs_properties_get(props, "category_filter"))
     return True
 
 def new_race_selected(props, prop, settings):
@@ -177,6 +175,12 @@ def new_race_selected(props, prop, settings):
         obs.obs_data_set_default_string(settings, "race_info", r.info)
     else:
         obs.obs_data_set_default_string(settings, "race_info", "Race not found")
+    return True
+
+def new_category_selected(props, prop, settings):
+    global category
+    category = obs.obs_data_get_string(settings, "category_filter")
+    fill_race_list(obs.obs_properties_get(props, "race"), prop)
     return True
 
 def podium_toggled(props, prop, settings):
@@ -198,32 +202,37 @@ def set_color(source, settings, color):
         obs.obs_data_set_int(settings, "color1", color)
         obs.obs_data_set_int(settings, "color2", color)
 
+def loading_finished(event):
+    if event == obs.OBS_FRONTEND_EVENT_FINISHED_LOADING:
+        race_update_t = Thread(target=race_updater)
+        race_update_t.daemon = True
+        race_update_t.start()
+
 # ------------------------------------------------------------
 
 def script_description():
-    return "Select a text source to use as your timer and enter your full " + \
+    return "<center><p>Select a text source to use as your timer and enter your full " + \
     "username on racetime.gg  (including discriminator). This only needs " + \
     "to be done once.\n\nThen select the race room each race you join and " + \
-    "stop worrying about whether you started your timer or not."
+    "stop worrying about whether you started your timer or not.<hr/></p>"
 
 def script_load(settings):
     global use_podium_colors
-
-    race_update_t = Thread(target=race_updater)
-    race_update_t.daemon = True
-    race_update_t.start()
-
     use_podium_colors = obs.obs_data_get_bool(settings, "use_podium")
+
+    obs.obs_frontend_add_event_callback(loading_finished)
 
 def script_save(settings):
     obs.obs_data_set_bool(settings, "use_podium", use_podium_colors)
 
 def script_unload():
+    global close_thread
     close_thread = True
 
 def script_update(settings):
     global source_name
     global race
+    global category
     global full_name
     global check_race_updates
     global use_podium_colors
@@ -239,6 +248,7 @@ def script_update(settings):
     source_name = obs.obs_data_get_string(settings, "source")
 
     race = obs.obs_data_get_string(settings, "race")
+    category = obs.obs_data_get_string(settings, "category_filter")
 
     use_podium_colors = obs.obs_data_get_bool(settings, "use_podium")
     pre_color = obs.obs_data_get_int(settings, "pre_color")
@@ -271,25 +281,36 @@ def fill_source_list(p):
                     name = obs.obs_source_get_name(source)
                     obs.obs_property_list_add_string(p, name, name)
 
-def fill_race_list(p):
-    obs.obs_property_list_clear(p)
-    obs.obs_property_list_add_string(p, "", "")
+def fill_race_list(race_list, category_list):
+    obs.obs_property_list_clear(race_list)
+    obs.obs_property_list_clear(category_list)
+    obs.obs_property_list_add_string(category_list, "", "")
+
+    obs.obs_property_list_add_string(race_list, "", "")
     races = racetime_client.get_races()
     if races is not None:
+        categories = []
         for race in races:
-            obs.obs_property_list_add_string(p, race.name, race.name)
+            if category == "" or race.category == category:
+                obs.obs_property_list_add_string(race_list, race.name, race.name)
+            if not race.category.name in categories:
+                categories.append(race.category)
+                obs.obs_property_list_add_string(category_list, race.category.name, race.category.name)
 
 def script_properties():
     props = obs.obs_properties_create()
 
-    p = obs.obs_properties_add_list(props, "source", "Text Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
+    setup_group = obs.obs_properties_create()
+    obs.obs_properties_add_group(props, "initial_setup", "Initial setup - Check to make changes", obs.OBS_GROUP_CHECKABLE, setup_group)
+    p = obs.obs_properties_add_list(setup_group, "source", "Text Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
     fill_source_list(p)
+    obs.obs_properties_add_text(setup_group, "username", "Username", obs.OBS_TEXT_DEFAULT)
 
-    obs.obs_properties_add_text(props, "username", "Username", obs.OBS_TEXT_DEFAULT)
-
-    p = obs.obs_properties_add_list(props, "race", "Race", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
-    fill_race_list(p)
-    obs.obs_property_set_modified_callback(p, new_race_selected)
+    category_list = obs.obs_properties_add_list(props, "category_filter", "Filter by Category", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+    race_list = obs.obs_properties_add_list(props, "race", "Race", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+    fill_race_list(race_list, category_list)
+    obs.obs_property_set_modified_callback(race_list, new_race_selected)
+    obs.obs_property_set_modified_callback(category_list, new_category_selected)
 
     p = obs.obs_properties_add_text(props, "race_info", "Race Desc", obs.OBS_TEXT_MULTILINE)
     obs.obs_property_set_enabled(p, False)
