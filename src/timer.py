@@ -97,7 +97,7 @@ def update_text():
     elif started_at is not None:
         timer = datetime.now(timezone.utc) - started_at
         if race_status_value == "pending":
-            time = "-0:00:{:2.1f}".format(timer.total_seconds())[1:5]
+            time = "-0:00:{:2.1f}".format(timer.total_seconds() * -1.0)
         else:
             time = str(timer)[:9]
     else:
@@ -229,4 +229,5 @@ def script_properties():
 
     refresh = obs.obs_properties_add_button(props, "button", "Refresh", lambda *props: None)
     obs.obs_property_set_modified_callback(refresh, refresh_pressed)
+
     return props
