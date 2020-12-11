@@ -83,6 +83,7 @@ close_thread            = False
 start_delay             = None
 entrant_place           = None
 use_podium_colors       = False
+pre_color               = 0xFFFFFF
 racing_color            = 0xFFFFFF
 first_color             = 0xFF0000
 second_color            = 0x00FF00
@@ -97,20 +98,21 @@ def update_text():
     color = None
     if race_status_value == "open" or race_status_value == "invitational":
         time = "-" + str(start_delay) + ".0"
+        color = pre_color
     elif finish_time is not None:
         time = str(finish_time)[:9]
-        if use_podium_colors:
-            if entrant_place == 1:
-                color = first_color
-            elif entrant_place == 2:
-                color = second_color
-            elif entrant_place == 3:
-                color = third_color
-            else:
-                color = finished_color
+        if entrant_place == 1:
+            color = first_color
+        elif entrant_place == 2:
+            color = second_color
+        elif entrant_place == 3:
+            color = third_color
+        else:
+            color = finished_color
     elif entrant_status_value == "dnf" or entrant_status_value == "dq" \
     or race_status_value == "cancelled":
         time = "--:--:--.-"
+        color = 0xFF0000
     elif started_at is not None:
         if use_podium_colors:
             color = racing_color
@@ -225,6 +227,7 @@ def script_update(settings):
     global full_name
     global check_race_updates
     global use_podium_colors
+    global pre_color
     global first_color
     global second_color
     global third_color
@@ -238,6 +241,7 @@ def script_update(settings):
     race = obs.obs_data_get_string(settings, "race")
 
     use_podium_colors = obs.obs_data_get_bool(settings, "use_podium")
+    pre_color = obs.obs_data_get_int(settings, "pre_color")
     first_color = obs.obs_data_get_int(settings, "first_color")
     second_color = obs.obs_data_get_int(settings, "second_color")
     third_color = obs.obs_data_get_int(settings, "third_color")
@@ -300,6 +304,7 @@ def script_properties():
     obs.obs_properties_add_group(props, "podium_group", "Podium Colors", obs.OBS_GROUP_NORMAL, podium_group)
     obs.obs_property_set_visible(obs.obs_properties_get(props, "podium_group"), use_podium_colors)
 
+    obs.obs_properties_add_color(podium_group, "pre_color", "Pre-race:")
     obs.obs_properties_add_color(podium_group, "racing_color", "Still racing:")
     obs.obs_properties_add_color(podium_group, "first_color", "1st place:")
     obs.obs_properties_add_color(podium_group, "second_color", "2nd place:")
