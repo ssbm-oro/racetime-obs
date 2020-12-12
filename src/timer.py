@@ -75,19 +75,13 @@ def source_list_ar():
 # ------------------------------------------------------------
 
 url                     = ""
-started_at              = None
-finish_time             = None
 source_name             = ""
 full_name               = ""
 category                = ""
-race                    = ""
-race_ws_uri             = ""
-race_status_value       = ""
-entrant_status_value    = ""
+race                    = None
+selected_race           = ""
 check_race_updates      = False
 close_thread            = False
-start_delay             = None
-entrant_place           = None
 use_podium_colors       = False
 pre_color               = 0xFFFFFF
 racing_color            = 0xFFFFFF
@@ -97,35 +91,43 @@ third_color             = 0x0000FF
 finished_color          = 0xFFFFFF
 race_changed            = False
 race_event_loop         = None
-websocket_url           = ""
 
 # ------------------------------------------------------------
 
 def update_text():
     """takes scripted_text , sets its value in obs  """
+    global race
+    global full_name
+    global entrant
+
+    if not race:
+        return
+
+    entrant = next((x for x in race.entrants if x.user.full_name == full_name), None)
 
     color = None
-    if race_status_value == "open" or race_status_value == "invitational":
-        time = "-" + str(start_delay) + ".0"
+    if race.status.value == "open" or race.status.value == "invitational":
+        time = "-" + str(race.start_delay) + ".0"
         color = pre_color
-    elif finish_time is not None:
-        time = str(finish_time)[:9]
-        if entrant_place == 1:
-            color = first_color
-        elif entrant_place == 2:
-            color = second_color
-        elif entrant_place == 3:
-            color = third_color
-        else:
-            color = finished_color
-    elif entrant_status_value == "dnf" or entrant_status_value == "dq" \
-      or race_status_value == "cancelled":
-        time = "--:--:--.-"
-        color = 0xFF0000
-    elif started_at is not None:
+    elif entrant is not None:
+        if entrant.finish_time is not None:
+            time = str(entrant.finish_time)[:9]
+            if entrant.place == 1:
+                color = first_color
+            elif entrant.place == 2:
+                color = second_color
+            elif entrant.place == 3:
+                color = third_color
+            else:
+                color = finished_color
+        elif entrant.status.value == "dnf" or entrant.status.value == "dq" \
+        or race.status.value == "cancelled":
+            time = "--:--:--.-"
+            color = 0xFF0000
+    elif race.started_at is not None:
         if use_podium_colors:
             color = racing_color
-        timer = datetime.now(timezone.utc) - started_at
+        timer = datetime.now(timezone.utc) - race.started_at
         if timer.total_seconds() < 0.0:
             time = "-0:00:{:04.1f}".format(timer.total_seconds() * -1.0)
         else:
@@ -155,7 +157,6 @@ def race_update_thread():
 async def race_updater():
     global race
     global race_changed
-    global websocket_url
     global close_thread
 
     headers = {
@@ -165,9 +166,9 @@ async def race_updater():
 
     while True:
         #print(f"websocket_url is {websocket_url}\n")
-        if websocket_url != "":
+        if race is not None and race.websocket_url != "":
             #print(f"new race selected: {race}\n")
-            async with websockets.connect("wss://racetime.gg" + websocket_url, host=host, extra_headers=headers) as ws:
+            async with websockets.connect("wss://racetime.gg" + race.websocket_url, host=host, extra_headers=headers) as ws:
                 #print(f"websocket connected: {websocket_url}\n")
                 while True:
                     try:
@@ -185,7 +186,7 @@ async def race_updater():
                             #print("race data received\n")
                             r = race_from_dict(data.get("race"))
                             if r is not None:
-                                update_race(r)
+                                race = r
                         elif data.get("type") == "pong":
                             pass
                             #print("pong!\n")
@@ -193,28 +194,9 @@ async def race_updater():
                         #print("ping!\n")
                         await ws.send(json.dumps({"action": "ping"}))
                     except websockets.ConnectionClosed:
-                        websocket_url = ""
+                        race = None
                         break
         await asyncio.sleep(5.0)
-
-def update_race(r: Race):
-    global finish_time
-    global check_race_updates
-    global race_status_value
-    global entrant_status_value
-    global started_at
-    global start_delay
-    global entrant_place
-
-    started_at = r.started_at
-    start_delay = r.start_delay
-    race_status_value = r.status.value
-    entrant = next((x for x in r.entrants if x.user.full_name == full_name), None)
-    if entrant is not None:
-        if entrant.finish_time:
-            finish_time = entrant.finish_time
-            entrant_place = entrant.place
-        entrant_status_value = entrant.status.value
 
 
 def refresh_pressed(props, prop, *args, **kwargs):
@@ -226,15 +208,14 @@ def new_race_selected(props, prop, settings):
     global race_changed
     global close_thread
     global race
-    global websocket_url
+    global selected_race
 
-    new_race = obs.obs_data_get_string(settings, "race")
-    r = racetime_client.get_race(new_race)
+    selected_race = obs.obs_data_get_string(settings, "race")
+    r = racetime_client.get_race(selected_race)
     if r is not None:
-        update_race(r)
+        race = r
         obs.obs_data_set_default_string(settings, "race_info", r.info)
         race_changed = True
-        websocket_url = r.websocket_url
     else:
         obs.obs_data_set_default_string(settings, "race_info", "Race not found")
         close_thread = True
@@ -263,7 +244,7 @@ def set_color(source, settings, color):
         number = "".join(hex(color)[2:])
         color = int("0xff" f"{number}", base=16)
         obs.obs_data_set_int(settings, "color1", color)
-        obs.obs_data_set_int(settings, "color2", color)
+        #obs.obs_data_set_int(settings, "color2", color)
 
 def loading_finished(event):
     if event == obs.OBS_FRONTEND_EVENT_FINISHED_LOADING:
@@ -295,6 +276,7 @@ def script_unload():
 def script_update(settings):
     global source_name
     global race
+    global selected_race
     global category
     global full_name
     global check_race_updates
@@ -310,7 +292,7 @@ def script_update(settings):
     
     source_name = obs.obs_data_get_string(settings, "source")
 
-    race = obs.obs_data_get_string(settings, "race")
+    selected_race = obs.obs_data_get_string(settings, "race")
     category = obs.obs_data_get_string(settings, "category_filter")
 
     use_podium_colors = obs.obs_data_get_bool(settings, "use_podium")
