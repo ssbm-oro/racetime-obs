@@ -4,7 +4,7 @@ import obspython as obs
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 import racetime_client
-from models.race import Race, RaceCategory, race_from_dict
+from models.race import Race, race_from_dict
 import asyncio
 from threading import Thread
 import websockets
@@ -85,6 +85,12 @@ third_color             = 0x0000FF
 finished_color          = 0xFFFFFF
 race_changed            = False
 race_event_loop         = None
+use_coop                = False
+coop_partner            = None
+coop_opponent2          = None
+coop_opponent1          = None
+coop_source_name             = None
+coop_label_source_name       = None
 
 # ------------------------------------------------------------
 
@@ -92,10 +98,12 @@ def update_text():
     """takes scripted_text , sets its value in obs  """
     global race
     global full_name
-    global entrant
 
     if not race:
         return
+
+    if use_coop:
+        update_coop_text()
 
     entrant = next((x for x in race.entrants if x.user.full_name == full_name), None)
 
@@ -119,6 +127,11 @@ def update_text():
         or race.status.value == "cancelled":
             time = "--:--:--.-"
             color = 0xFF0000
+        elif race.started_at is not None:
+            if use_podium_colors:
+                color = racing_color
+            timer = datetime.now(timezone.utc) - race.started_at
+            time = str(timer)[:9]
     elif race.status.value == "finished":
         # race is finished and our user is not an entrant
         time = str(race.ended_at - race.started_at)[:9]
@@ -137,6 +150,98 @@ def update_text():
         if use_podium_colors:
             set_color(source, settings, color)
         obs.obs_source_update(source, settings)
+
+def update_coop_text():
+    global race
+    global full_name
+    global coop_partner
+    global coop_opponent1
+    global coop_opponent2
+
+    if race is None:
+        return
+
+    entrant = next((x for x in race.entrants if x.user.full_name == full_name), None)
+    partner = next((x for x in race.entrants if x.user.full_name == coop_partner), None)
+    opponent1 = next((x for x in race.entrants if x.user.full_name == coop_opponent1), None)
+    opponent2 = next((x for x in race.entrants if x.user.full_name == coop_opponent2), None)
+
+    if entrant is None or partner is None or opponent1 is None or opponent2 is None:
+        return
+
+    label_text = "Race still in progress"
+    coop_text = " "
+    if race.entrants_count_finished == 2:
+        if entrant.finish_time and partner.finish_time:
+            label_text = "We won!!! Average time:"
+            our_avg = (entrant.finish_time + partner.finish_time) / 2
+            coop_text = str(our_avg)[:9]
+        if opponent1.finish_time and opponent2.finish_time:
+            label_text = "Opponents won, average time:"
+            opponent_avg = (opponent1.finish_time + opponent2.finish_time) / 2
+            coop_text = str(opponent_avg)[:9]
+    if race.entrants_count_finished == 3:
+        current_timer = datetime.now(timezone.utc) - race.started_at
+        if not entrant.finish_time:
+            opponent_total = opponent1.finish_time + opponent2.finish_time
+            time_to_beat = opponent_total - partner.finish_time
+            if time_to_beat > current_timer:
+                coop_text = str(time_to_beat)[:9]
+                label_text = "I need to finish before"
+            else:
+                label_text = "Opponents won, average time:"
+                opponent_avg = opponent_total / 2
+                coop_text = str(opponent_avg)[:9]
+        elif not partner.finish_time:
+            opponent_total = opponent1.finish_time + opponent2.finish_time
+            time_to_beat = opponent_total - entrant.finish_time
+            if time_to_beat > current_timer:
+                coop_text = str(time_to_beat)[:9]
+                label_text = f"{partner.user.name} needs to finish before"
+            else:
+                label_text = "Opponents won, average time:"
+                opponent_avg = opponent_total / 2
+                coop_text = str(opponent_avg)[:9]
+        elif not opponent1.finish_time:
+            our_total = entrant.finish_time + partner.finish_time
+            time_to_beat = our_total - opponent2.finish_time
+            if time_to_beat > current_timer:
+                coop_text = str(time_to_beat)[:9]
+                label_text = f"{opponent1.user.name} needs to finish before"
+            else:
+                label_text = "We won!!! Average time:"
+                our_avg = our_total / 2
+                coop_text = str(our_avg)[:9]
+
+        elif not opponent2.finish_time:
+            our_total = entrant.finish_time + partner.finish_time
+            time_to_beat = our_total - opponent1.finish_time
+            if time_to_beat > current_timer:
+                coop_text = str(time_to_beat)[:9]
+                label_text = f"{opponent2.user.name} needs to finish before"
+            else:
+                label_text = "We won!!! Average time:"
+                our_avg = our_total / 2
+                coop_text = str(our_avg)[:9]
+    if race.entrants_count_finished == 4:
+        our_total = entrant.finish_time + partner.finish_time
+        opponent_total = opponent1.finish_time + opponent2.finish_time
+        if our_total > opponent_total:
+            label_text = "We won!!! Average time:"
+            our_avg = our_total / 2
+            coop_text = str(our_avg)[:9]
+        else:
+            label_text = "Opponents won, average time:"
+            opponent_avg = opponent_total / 2
+            coop_text = str(opponent_avg)[:9]
+
+    with source_ar(coop_source_name) as coop_source, data_ar() as settings:
+        obs.obs_data_set_string(settings, "text", coop_text)
+        obs.obs_source_update(coop_source, settings)
+    
+    with source_ar(coop_label_source_name) as coop_label_source, data_ar() as settings:
+        obs.obs_data_set_string(settings, "text", label_text)
+        obs.obs_source_update(coop_label_source, settings)
 
 def race_update_thread():
     global race_event_loop
@@ -164,7 +269,6 @@ async def race_updater():
                 async with websockets.connect("wss://racetime.gg" + race.websocket_url, host=host, extra_headers=headers) as ws:
                     last_pong = datetime.now(timezone.utc)
                     race_changed = False
-                    print(f"connected to {race.websocket_url}\n")
                     while True:
                         try:
                             if race_changed:
@@ -173,16 +277,13 @@ async def race_updater():
                             message = await asyncio.wait_for(ws.recv(), 5.0)
                             data = json.loads(message)
                             if data.get("type") == "race.data":
-                                #print("race data received\n")
                                 r = race_from_dict(data.get("race"))
                                 if r is not None and r.version > race.version:
                                     race = r
                             elif data.get("type") == "pong":
                                 last_pong = dateutil.parser.parse(data.get("date"))
-                                #print("pong!\n")
                                 pass
                         except asyncio.TimeoutError:
-                            #print("ping!\n")
                             if datetime.now(timezone.utc) - last_pong > timedelta(seconds=20):
                                 await ws.send(json.dumps({"action": "ping"}))
                         except websockets.ConnectionClosed:
@@ -206,6 +307,7 @@ def new_race_selected(props, prop, settings):
     if r is not None:
         race = r
         obs.obs_data_set_default_string(settings, "race_info", r.info)
+        fill_coop_entrant_lists(props)
     else:
         obs.obs_data_set_default_string(settings, "race_info", "Race not found")
     
@@ -223,6 +325,11 @@ def podium_toggled(props, prop, settings):
     obs.obs_property_set_visible(obs.obs_properties_get(props, "podium_group"), vis)
     return True
 
+def coop_toggled(props, prop, settings):
+    vis = obs.obs_data_get_bool(settings, "use_coop")
+    obs.obs_property_set_visible(obs.obs_properties_get(props, "coop_group"), vis)
+    return True
+
 # copied and modified from scripted-text.py by UpgradeQ
 def set_color(source, settings, color):
     if color is None:
@@ -236,6 +343,11 @@ def set_color(source, settings, color):
         color = int("0xff" f"{number}", base=16)
         obs.obs_data_set_int(settings, "color1", color)
         #obs.obs_data_set_int(settings, "color2", color)
+
+def loading_finished(props):
+    fill_race_list(obs.obs_properties_get(props, "race"), obs.obs_properties_get(props, "category_filter"))
+    fill_coop_entrant_lists()
+    pass
 
 # ------------------------------------------------------------
 
@@ -252,6 +364,8 @@ def script_load(settings):
     race_update_t = Thread(target=race_update_thread)
     race_update_t.daemon = True
     race_update_t.start()
+
+    obs.obs_frontend_add_event_callback(loading_finished)
 
 def script_save(settings):
     obs.obs_data_set_bool(settings, "use_podium", use_podium_colors)
@@ -274,6 +388,13 @@ def script_update(settings):
     global third_color
     global racing_color
     global finished_color
+    
+    global use_coop
+    global coop_partner
+    global coop_opponent2
+    global coop_opponent1
+    global coop_source_name
+    global coop_label_source_name
 
     obs.timer_remove(update_text)
     
@@ -289,6 +410,13 @@ def script_update(settings):
     third_color = obs.obs_data_get_int(settings, "third_color")
     racing_color = obs.obs_data_get_int(settings, "racing_color")
     finished_color = obs.obs_data_get_int(settings, "finished_color")
+
+    use_coop = obs.obs_data_get_bool(settings, "use_coop")
+    coop_partner = obs.obs_data_get_string(settings, "coop_partner")
+    coop_opponent1 = obs.obs_data_get_string(settings, "coop_opponent1")
+    coop_opponent2 = obs.obs_data_get_string(settings, "coop_opponent2")
+    coop_source_name = obs.obs_data_get_string(settings, "coop_source")
+    coop_label_source_name = obs.obs_data_get_string(settings, "coop_label")
 
     if source_name != "" and selected_race != "":
         obs.timer_add(update_text, 100)
@@ -316,18 +444,32 @@ def fill_source_list(p):
 def fill_race_list(race_list, category_list):
     obs.obs_property_list_clear(race_list)
     obs.obs_property_list_clear(category_list)
-    obs.obs_property_list_add_string(category_list, "", "")
+    obs.obs_property_list_add_string(category_list, "All", "All")
 
     obs.obs_property_list_add_string(race_list, "", "")
     races = racetime_client.get_races()
     if races is not None:
         categories = []
         for race in races:
-            if category == "" or race.category.name == category:
+            if category == "" or category == "All" or race.category.name == category:
                 obs.obs_property_list_add_string(race_list, race.name, race.name)
             if not race.category.name in categories:
                 categories.append(race.category.name)
                 obs.obs_property_list_add_string(category_list, race.category.name, race.category.name)
+
+def fill_coop_entrant_lists(props):
+    fill_entrant_list(obs.obs_properties_get(props, "coop_partner"))
+    fill_entrant_list(obs.obs_properties_get(props, "coop_opponent1"))
+    fill_entrant_list(obs.obs_properties_get(props, "coop_opponent2"))
+
+
+def fill_entrant_list(entrant_list):
+    obs.obs_property_list_clear(entrant_list)
+    obs.obs_property_list_add_string(entrant_list, "", "")
+    if race is not None:
+        for entrant in race.entrants:
+            obs.obs_property_list_add_string(entrant_list, entrant.user.full_name, entrant.user.full_name)
+
 
 def script_properties():
     props = obs.obs_properties_create()
@@ -340,7 +482,6 @@ def script_properties():
 
     category_list = obs.obs_properties_add_list(props, "category_filter", "Filter by Category", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
     race_list = obs.obs_properties_add_list(props, "race", "Race", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
-    fill_race_list(race_list, category_list)
     obs.obs_property_set_modified_callback(race_list, new_race_selected)
     obs.obs_property_set_modified_callback(category_list, new_category_selected)
 
@@ -363,5 +504,22 @@ def script_properties():
     obs.obs_properties_add_color(podium_group, "second_color", "2nd place:")
     obs.obs_properties_add_color(podium_group, "third_color", "3rd place:")
     obs.obs_properties_add_color(podium_group, "finished_color", "After podium:")
+
+    p = obs.obs_properties_add_bool(props, "use_coop", "Display coop information?")
+    obs.obs_property_set_modified_callback(p, coop_toggled)
+
+    coop_group = obs.obs_properties_create()
+    obs.obs_properties_add_group(props, "coop_group", "Co-op Mode", obs.OBS_GROUP_NORMAL, coop_group)
+    obs.obs_property_set_visible(obs.obs_properties_get(props, "coop_group"), use_coop)
+    p = obs.obs_properties_add_list(coop_group, "coop_partner", "Co-op Partner", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+    p = obs.obs_properties_add_list(coop_group, "coop_opponent1", "Co-op Opponent 1", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+    p = obs.obs_properties_add_list(coop_group, "coop_opponent2", "Co-op Opponent 2", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+    fill_coop_entrant_lists(props)
+    p = obs.obs_properties_add_list(coop_group, "coop_source", "Coop Text Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
+    obs.obs_property_set_long_description(p, "This text source will display the time that the last racer needs to finish for their team to win")
+    fill_source_list(p)
+    p = obs.obs_properties_add_list(coop_group, "coop_label", "Coop Label Text Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
+    obs.obs_property_set_long_description(p, "This text source will be use to display a label such as \'<PartnerName> needs to finish before\' based on who the last racer is")
+    fill_source_list(p)
 
     return props
