@@ -1,10 +1,16 @@
 # racetime-obs (working title)
 
-> :warning: **This script is in prerelease.** I do not make any guarantees that it will not crash OBS while you are racing. Please do not use it in a race that you couldn't afford to lose your stream and local recording (e.g. league or tournament races).
+> :warning: **This script is in prerelease.** I do not make any guarantees that it will not crash OBS while you are racing. Please do not use yet it in a race that you couldn't afford to lose your stream and local recording (e.g. league or tournament races).
 
 This is the main code repository for racetime-obs, a plugin to add realtime information from [racetime.gg](https://racetime.gg) to your stream in OBS.
 
-There's not much here yet, check back later.
+What's the point of this? Why not just capture Livesplit or the racetime.gg website? Well, right now there isn't much point and this is really just a proof of concept. The only feature this currently has over those other methods is that you can set your timer's color to change based on what place you come in. But I think there are some other neat and entertaining ideas that this could be used to implement. These are just ideas right now, not plans or features yet. Please let me know if you have any suggestions!
+
+### Ideas for future development
+* Playing media: Play a sound or video file automatically, like an announcer saying "Ready... GO!" when the race starts or a victory fanfare when you come in first place.
+* Friends: Announce or list specified friends' finish times if they're in the same race as you
+* Co-op mode: Automatically calculate and display the average finish time of each team. Or if one racer is still running, calculate and display what time they need to finish to win
+* Automatically select a layout or scene depending on what game or mode you are racing.
 
 ## Screenshot
 
