@@ -344,11 +344,6 @@ def set_color(source, settings, color):
         obs.obs_data_set_int(settings, "color1", color)
         #obs.obs_data_set_int(settings, "color2", color)
 
-def loading_finished(props):
-    fill_race_list(obs.obs_properties_get(props, "race"), obs.obs_properties_get(props, "category_filter"))
-    fill_coop_entrant_lists()
-    pass
-
 # ------------------------------------------------------------
 
 def script_description():
@@ -364,8 +359,6 @@ def script_load(settings):
     race_update_t = Thread(target=race_update_thread)
     race_update_t.daemon = True
     race_update_t.start()
-
-    obs.obs_frontend_add_event_callback(loading_finished)
 
 def script_save(settings):
     obs.obs_data_set_bool(settings, "use_podium", use_podium_colors)
