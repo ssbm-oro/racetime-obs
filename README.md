@@ -6,6 +6,11 @@ This is the main code repository for racetime-obs, a plugin to add realtime info
 
 There's not much here yet, check back later.
 
+## Screenshot
+
+![Screenshot of Settings](/img/Screenshot1.png)
+
+
 ## Setup
 
 1) Install the correct version of Python for your system. On Windows, this is Python 3.6. Note on Windows whether you are using the 64-bit or 32-bit version of OBS, as you'll need to use the same version of Python. On macOS, this is Python 3.7. Note on macOS, you also need to use OBS version 25.0.8. Version 26 broke python scripts for macOS.
