@@ -242,7 +242,7 @@ def update_coop_text():
         time_to_beat = None
         if not entrant.finish_time:
             time_to_beat = opponent_total - partner.finish_time
-            if time_to_beat > current_timer:
+            if time_to_beat < current_timer:
                 coop_text = str(time_to_beat)[:9]
                 coop_label_text = "I need to finish before"
             else:
@@ -251,7 +251,7 @@ def update_coop_text():
                 coop_text = str(opponent_avg)[:9]
         elif not partner.finish_time:
             time_to_beat = opponent_total - entrant.finish_time
-            if time_to_beat > current_timer:
+            if time_to_beat < current_timer:
                 coop_text = str(time_to_beat)[:9]
                 coop_label_text = f"{partner.user.name} needs to finish before"
             else:
@@ -260,7 +260,7 @@ def update_coop_text():
                 coop_label_text = str(opponent_avg)[:9]
         elif not opponent1.finish_time:
             time_to_beat = our_total - opponent2.finish_time
-            if time_to_beat > current_timer:
+            if time_to_beat < current_timer:
                 coop_text = str(time_to_beat)[:9]
                 coop_label_text = f"{opponent1.user.name} needs to finish before"
             else:
@@ -269,7 +269,7 @@ def update_coop_text():
                 coop_text = str(our_avg)[:9]
         elif not opponent2.finish_time:
             time_to_beat = our_total - opponent1.finish_time
-            if time_to_beat > current_timer:
+            if time_to_beat < current_timer:
                 coop_text = str(time_to_beat)[:9]
                 coop_label_text = f"{opponent2.user.name} needs to finish before"
             else:
@@ -279,7 +279,7 @@ def update_coop_text():
     if race.entrants_count_finished == 4:
         our_total = entrant.finish_time + partner.finish_time
         opponent_total = opponent1.finish_time + opponent2.finish_time
-        if our_total > opponent_total:
+        if our_total < opponent_total:
             coop_label_text = "We won!!! Average time:"
             our_avg = our_total / 2
             coop_text = str(our_avg)[:9]
