@@ -108,8 +108,8 @@ coop_opponent2          = None
 coop_opponent1          = None
 coop_source_name        = None
 coop_label_source_name  = None
-coop_text               = ""
-coop_label_text              = ""
+coop_text               = " "
+coop_label_text         = "Race still in progress"
 
 # ------------------------------------------------------------
 
@@ -180,8 +180,8 @@ def set_coop_text():
     if race is None:
         return
 
-    coop_label_text = "Race still in progress"
-    coop_text = " "
+    #coop_label_text = "Race still in progress"
+    #coop_text = " "
 
     with source_ar(coop_source_name) as coop_source, data_ar() as settings:
         obs.obs_data_set_string(settings, "text", coop_text)
