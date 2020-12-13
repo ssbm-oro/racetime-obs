@@ -1,4 +1,5 @@
 import json
+import time
 import websockets
 import obspython as obs
 from contextlib import contextmanager
@@ -9,6 +10,7 @@ import asyncio
 from threading import Thread
 import websockets
 import dateutil
+import logging
 
 
 # auto release context managers
@@ -69,8 +71,23 @@ def source_list_ar():
 
 # ------------------------------------------------------------
 
-url                     = ""
+class LogFormatter(logging.Formatter):
+    formats = {
+        logging.ERROR    : "%(asctime)s - %(levelname)s - %(message)s",
+        logging.DEBUG       : "%(asctime)s - %(levelname)s - %(message)s in %(funcName)s line %(lineno)d",
+        logging.INFO        : "%(asctime)s - %(levelname)s - %(message)s"
+    }
+    
+    def format(self, record : logging.LogRecord):
+        f = logging.Formatter(self.formats.get(record.levelno))
+        f.converter = time.gmtime
+        return f.format(record)
+
+# ------------------------------------------------------------
+
+logger                  = logging.Logger("racetime-obs")
 source_name             = ""
+timer_text              = ""
 full_name               = ""
 category                = ""
 race : Race             = None
@@ -89,12 +106,14 @@ use_coop                = False
 coop_partner            = None
 coop_opponent2          = None
 coop_opponent1          = None
-coop_source_name             = None
-coop_label_source_name       = None
+coop_source_name        = None
+coop_label_source_name  = None
+coop_text               = ""
+coop_label_text              = ""
 
 # ------------------------------------------------------------
 
-def update_text():
+def set_text():
     """takes scripted_text , sets its value in obs  """
     global race
     global full_name
@@ -103,7 +122,7 @@ def update_text():
         return
 
     if use_coop:
-        update_coop_text()
+        set_coop_text()
 
     entrant = next((x for x in race.entrants if x.user.full_name == full_name), None)
 
@@ -154,96 +173,22 @@ def update_text():
             set_color(source, settings, color)
         obs.obs_source_update(source, settings)
 
-def update_coop_text():
-    global race
-    global full_name
-    global coop_partner
-    global coop_opponent1
-    global coop_opponent2
+def set_coop_text():
+    global coop_label_text
+    global coop_text
 
     if race is None:
         return
 
-    entrant = next((x for x in race.entrants if x.user.full_name == full_name), None)
-    partner = next((x for x in race.entrants if x.user.full_name == coop_partner), None)
-    opponent1 = next((x for x in race.entrants if x.user.full_name == coop_opponent1), None)
-    opponent2 = next((x for x in race.entrants if x.user.full_name == coop_opponent2), None)
-
-    if entrant is None or partner is None or opponent1 is None or opponent2 is None:
-        return
-
-    label_text = "Race still in progress"
+    coop_label_text = "Race still in progress"
     coop_text = " "
-    if race.entrants_count_finished == 2:
-        if entrant.finish_time and partner.finish_time:
-            label_text = "We won!!! Average time:"
-            our_avg = (entrant.finish_time + partner.finish_time) / 2
-            coop_text = str(our_avg)[:9]
-        if opponent1.finish_time and opponent2.finish_time:
-            label_text = "Opponents won, average time:"
-            opponent_avg = (opponent1.finish_time + opponent2.finish_time) / 2
-            coop_text = str(opponent_avg)[:9]
-    if race.entrants_count_finished == 3:
-        current_timer = datetime.now(timezone.utc) - race.started_at
-        if not entrant.finish_time:
-            opponent_total = opponent1.finish_time + opponent2.finish_time
-            time_to_beat = opponent_total - partner.finish_time
-            if time_to_beat > current_timer:
-                coop_text = str(time_to_beat)[:9]
-                label_text = "I need to finish before"
-            else:
-                label_text = "Opponents won, average time:"
-                opponent_avg = opponent_total / 2
-                coop_text = str(opponent_avg)[:9]
-        elif not partner.finish_time:
-            opponent_total = opponent1.finish_time + opponent2.finish_time
-            time_to_beat = opponent_total - entrant.finish_time
-            if time_to_beat > current_timer:
-                coop_text = str(time_to_beat)[:9]
-                label_text = f"{partner.user.name} needs to finish before"
-            else:
-                label_text = "Opponents won, average time:"
-                opponent_avg = opponent_total / 2
-                coop_text = str(opponent_avg)[:9]
-        elif not opponent1.finish_time:
-            our_total = entrant.finish_time + partner.finish_time
-            time_to_beat = our_total - opponent2.finish_time
-            if time_to_beat > current_timer:
-                coop_text = str(time_to_beat)[:9]
-                label_text = f"{opponent1.user.name} needs to finish before"
-            else:
-                label_text = "We won!!! Average time:"
-                our_avg = our_total / 2
-                coop_text = str(our_avg)[:9]
-
-        elif not opponent2.finish_time:
-            our_total = entrant.finish_time + partner.finish_time
-            time_to_beat = our_total - opponent1.finish_time
-            if time_to_beat > current_timer:
-                coop_text = str(time_to_beat)[:9]
-                label_text = f"{opponent2.user.name} needs to finish before"
-            else:
-                label_text = "We won!!! Average time:"
-                our_avg = our_total / 2
-                coop_text = str(our_avg)[:9]
-    if race.entrants_count_finished == 4:
-        our_total = entrant.finish_time + partner.finish_time
-        opponent_total = opponent1.finish_time + opponent2.finish_time
-        if our_total > opponent_total:
-            label_text = "We won!!! Average time:"
-            our_avg = our_total / 2
-            coop_text = str(our_avg)[:9]
-        else:
-            label_text = "Opponents won, average time:"
-            opponent_avg = opponent_total / 2
-            coop_text = str(opponent_avg)[:9]
 
     with source_ar(coop_source_name) as coop_source, data_ar() as settings:
         obs.obs_data_set_string(settings, "text", coop_text)
         obs.obs_source_update(coop_source, settings)
     
     with source_ar(coop_label_source_name) as coop_label_source, data_ar() as settings:
-        obs.obs_data_set_string(settings, "text", label_text)
+        obs.obs_data_set_string(settings, "text", coop_label_text)
         obs.obs_source_update(coop_label_source, settings)
 
 def race_update_thread():
@@ -252,6 +197,90 @@ def race_update_thread():
     race_event_loop = asyncio.new_event_loop()
     race_event_loop.run_until_complete(race_updater())
     race_event_loop.run_forever()
+
+def update_coop_text():
+    global coop_label_text
+    global coop_text
+
+    entrant = next((x for x in race.entrants if x.user.full_name == full_name), None)
+    partner = next((x for x in race.entrants if x.user.full_name == coop_partner), None)
+    opponent1 = next((x for x in race.entrants if x.user.full_name == coop_opponent1), None)
+    opponent2 = next((x for x in race.entrants if x.user.full_name == coop_opponent2), None)
+
+    if not use_coop or entrant is None or partner is None or opponent1 is None or opponent2 is None:
+        return
+
+    our_total = None
+    opponent_total = None
+    if entrant.finish_time and partner.finish_time:
+        our_total = entrant.finish_time + partner.finish_time
+        logging.info(f"calculated our average is {our_total / 2}")
+    else:
+        logging.info(f"we haven't finished yet")
+    if opponent1.finish_time and opponent2.finish_time:
+        opponent_total = opponent1.finish_time + opponent2.finish_time
+        logging.info(f"calculated our average is {our_total / 2}")
+    else:
+        logging.info(f"our opponents haven't finished")
+    if race.entrants_count_finished == 2:
+        if our_total:
+            coop_label_text = "We won!"
+            coop_text = str(our_total / 2)[:9]
+        elif opponent_total:
+            coop_label_text = "They won. :("
+            coop_text = str(opponent_total / 2)[:9]
+        else:
+            logging.error("no finished team found. only head to head coop races are currently supported")
+    if race.entrants_count_finished == 3:
+        current_timer = datetime.now(timezone.utc) - race.started_at
+        time_to_beat = None
+        if not entrant.finish_time:
+            time_to_beat = opponent_total - partner.finish_time
+            if time_to_beat > current_timer:
+                coop_text = str(time_to_beat)[:9]
+                coop_label_text = "I need to finish before"
+            else:
+                coop_label_text = "They won. :("
+                opponent_avg = opponent_total / 2
+                coop_text = str(opponent_avg)[:9]
+        elif not partner.finish_time:
+            time_to_beat = opponent_total - entrant.finish_time
+            if time_to_beat > current_timer:
+                coop_text = str(time_to_beat)[:9]
+                coop_label_text = f"{partner.user.name} needs to finish before"
+            else:
+                coop_label_text = "Opponents won, average time:"
+                opponent_avg = opponent_total / 2
+                coop_label_text = str(opponent_avg)[:9]
+        elif not opponent1.finish_time:
+            time_to_beat = our_total - opponent2.finish_time
+            if time_to_beat > current_timer:
+                coop_text = str(time_to_beat)[:9]
+                coop_label_text = f"{opponent1.user.name} needs to finish before"
+            else:
+                coop_label_text = "We won!!! Average time:"
+                our_avg = our_total / 2
+                coop_text = str(our_avg)[:9]
+        elif not opponent2.finish_time:
+            time_to_beat = our_total - opponent1.finish_time
+            if time_to_beat > current_timer:
+                coop_text = str(time_to_beat)[:9]
+                coop_label_text = f"{opponent2.user.name} needs to finish before"
+            else:
+                coop_label_text = "We won!!! Average time:"
+                our_avg = our_total / 2
+                coop_text = str(our_avg)[:9]
+    if race.entrants_count_finished == 4:
+        our_total = entrant.finish_time + partner.finish_time
+        opponent_total = opponent1.finish_time + opponent2.finish_time
+        if our_total > opponent_total:
+            coop_label_text = "We won!!! Average time:"
+            our_avg = our_total / 2
+            coop_text = str(our_avg)[:9]
+        else:
+            coop_label_text = "Opponents won, average time:"
+            opponent_avg = opponent_total / 2
+            coop_text = str(opponent_avg)[:9]
 
 async def race_updater():
     global race
@@ -270,19 +299,23 @@ async def race_updater():
                 race = racetime_client.get_race(selected_race)
             if race is not None and race.websocket_url != "":
                 async with websockets.connect("wss://racetime.gg" + race.websocket_url, host=host, extra_headers=headers) as ws:
+                    logger.info(f"connected to websocket: {race.websocket_url}")
                     last_pong = datetime.now(timezone.utc)
                     race_changed = False
                     while True:
                         try:
                             if race_changed:
+                                logger.info("new race selected")
                                 race_changed = False
                                 break
                             message = await asyncio.wait_for(ws.recv(), 5.0)
+                            logger.info(f"received message from websocket: {message}")
                             data = json.loads(message)
                             if data.get("type") == "race.data":
                                 r = race_from_dict(data.get("race"))
                                 if r is not None and r.version > race.version:
                                     race = r
+                                    update_coop_text()
                             elif data.get("type") == "pong":
                                 last_pong = dateutil.parser.parse(data.get("date"))
                                 pass
@@ -290,6 +323,7 @@ async def race_updater():
                             if datetime.now(timezone.utc) - last_pong > timedelta(seconds=20):
                                 await ws.send(json.dumps({"action": "ping"}))
                         except websockets.ConnectionClosed:
+                            logger.error(f"websocket connection closed")
                             race = None
                             break
         await asyncio.sleep(5.0)
@@ -309,6 +343,8 @@ def new_race_selected(props, prop, settings):
     r = racetime_client.get_race(selected_race)
     if r is not None:
         race = r
+        update_coop_text()
+        logger.info(f"new race selected: {race}")
         obs.obs_data_set_default_string(settings, "race_info", r.info)
         fill_coop_entrant_lists(props)
     else:
@@ -320,6 +356,7 @@ def new_race_selected(props, prop, settings):
 def new_category_selected(props, prop, settings):
     global category
     category = obs.obs_data_get_string(settings, "category_filter")
+    logger.info(f"new category selected: {category}")
     fill_race_list(obs.obs_properties_get(props, "race"), prop)
     return True
 
@@ -371,6 +408,7 @@ def script_unload():
     close_thread = True
 
 def script_update(settings):
+    global logger
     global source_name
     global race
     global selected_race
@@ -392,8 +430,28 @@ def script_update(settings):
     global coop_source_name
     global coop_label_source_name
 
-    obs.timer_remove(update_text)
+    obs.timer_remove(set_text)
     
+    logger.disabled = not obs.obs_data_get_bool(settings, "enable_log")
+    level = obs.obs_data_get_string(settings, "log_level")
+    logger.handlers = []
+    handler = logging.StreamHandler()
+    if obs.obs_data_get_bool(settings, "log_to_file"):
+        log_file = obs.obs_data_get_string(settings, "log_file")
+        try:
+            handler = logging.FileHandler(log_file)
+        except:
+            logger.error(f"Unable to open {log_file}")
+    elif level == "Debug":
+        handler.setLevel(logging.DEBUG)
+    elif level == "Info":
+        handler.setLevel(logging.INFO)
+    else:
+        handler.setLevel(logging.ERROR)
+
+    handler.setFormatter(LogFormatter())
+    logger.addHandler(handler)
+
     source_name = obs.obs_data_get_string(settings, "source")
 
     selected_race = obs.obs_data_get_string(settings, "race")
@@ -415,7 +473,7 @@ def script_update(settings):
     coop_label_source_name = obs.obs_data_get_string(settings, "coop_label")
 
     if source_name != "" and selected_race != "":
-        obs.timer_add(update_text, 100)
+        obs.timer_add(set_text, 100)
         check_race_updates = True
     else:
         check_race_updates = False
@@ -475,6 +533,15 @@ def script_properties():
     p = obs.obs_properties_add_list(setup_group, "source", "Text Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
     fill_source_list(p)
     obs.obs_properties_add_text(setup_group, "username", "Username", obs.OBS_TEXT_DEFAULT)
+    logging = obs.obs_properties_add_bool(setup_group, "enable_log", "Enable logging")
+    log_levels = obs.obs_properties_add_list(setup_group, "log_level", "Log lever", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+    obs.obs_property_list_add_string(log_levels, "Error", "Error")
+    obs.obs_property_list_add_string(log_levels, "Debug", "Debug")
+    obs.obs_property_list_add_string(log_levels, "Info", "Info")
+    obs.obs_property_set_long_description(logging, "Generally, only log errors unless you are developing or are trying to find a specific problem.")
+    obs.obs_properties_add_bool(setup_group, "log_to_file", "Log to file?")
+    #obs.obs_property_set_modified_callback(p, log_to_file_toggled)
+    obs.obs_properties_add_path(setup_group, "log_file", "Log File", obs.OBS_PATH_FILE_SAVE, "Text files(*.txt)", None)
 
     category_list = obs.obs_properties_add_list(props, "category_filter", "Filter by Category", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
     race_list = obs.obs_properties_add_list(props, "race", "Race", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
