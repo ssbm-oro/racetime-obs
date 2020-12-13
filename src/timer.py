@@ -202,10 +202,18 @@ def update_coop_text():
     global coop_label_text
     global coop_text
 
+
+
     entrant = next((x for x in race.entrants if x.user.full_name == full_name), None)
     partner = next((x for x in race.entrants if x.user.full_name == coop_partner), None)
     opponent1 = next((x for x in race.entrants if x.user.full_name == coop_opponent1), None)
     opponent2 = next((x for x in race.entrants if x.user.full_name == coop_opponent2), None)
+
+    logger.debug(f"use_coop: {use_coop}")
+    logger.debug(f"entrant name: {full_name}, entrant: {entrant}")
+    logger.debug(f"entrant name: {coop_partner}, entrant: {partner}")
+    logger.debug(f"entrant name: {coop_opponent1}, entrant: {opponent1}")
+    logger.debug(f"entrant name: {coop_opponent2}, entrant: {opponent2}")
 
     if not use_coop or entrant is None or partner is None or opponent1 is None or opponent2 is None:
         return
@@ -214,23 +222,21 @@ def update_coop_text():
     opponent_total = None
     if entrant.finish_time and partner.finish_time:
         our_total = entrant.finish_time + partner.finish_time
-        logging.info(f"calculated our average is {our_total / 2}")
+        logger.info(f"calculated our average is {our_total / 2}")
     else:
-        logging.info(f"we haven't finished yet")
+        logger.info(f"we haven't finished yet")
     if opponent1.finish_time and opponent2.finish_time:
         opponent_total = opponent1.finish_time + opponent2.finish_time
-        logging.info(f"calculated our average is {our_total / 2}")
+        logger.info(f"calculated our opponent's average is {opponent_total / 2}")
     else:
-        logging.info(f"our opponents haven't finished")
+        logger.info(f"our opponents haven't finished")
     if race.entrants_count_finished == 2:
-        if our_total:
+        if our_total is not None:
             coop_label_text = "We won!"
             coop_text = str(our_total / 2)[:9]
-        elif opponent_total:
+        elif opponent_total is not None:
             coop_label_text = "They won. :("
             coop_text = str(opponent_total / 2)[:9]
-        else:
-            logging.error("no finished team found. only head to head coop races are currently supported")
     if race.entrants_count_finished == 3:
         current_timer = datetime.now(timezone.utc) - race.started_at
         time_to_beat = None
@@ -332,6 +338,7 @@ async def race_updater():
 def refresh_pressed(props, prop, *args, **kwargs):
     fill_source_list(obs.obs_properties_get(props, "source"))
     fill_race_list(obs.obs_properties_get(props, "race"), obs.obs_properties_get(props, "category_filter"))
+    update_coop_text()
     return True
 
 def new_race_selected(props, prop, settings):
