@@ -131,7 +131,10 @@ def update_text():
             if use_podium_colors:
                 color = racing_color
             timer = datetime.now(timezone.utc) - race.started_at
-            time = str(timer)[:9]
+            if timer.total_seconds() < 0.0:
+                time = "-0:00:{:04.1f}".format(timer.total_seconds() * -1.0)
+            else:
+                time = str(timer)[:9]
     elif race.status.value == "finished":
         # race is finished and our user is not an entrant
         time = str(race.ended_at - race.started_at)[:9]
