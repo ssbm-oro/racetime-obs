@@ -8,7 +8,10 @@ This is the main code repository for racetime-obs, a plugin to add realtime info
 
 What's the point of this? Why not just capture Livesplit or the racetime.gg website? Well, right now there isn't much point and this is really just a proof of concept. The only feature this currently has over those other methods is that you can set your timer's color to change based on what place you come in.But I think there are some other neat and entertaining ideas that this could be used to implement. These are just ideas right now, not plans or features yet. Please let me know if you have any suggestions!
 
-There is also an experimental option for Co-op races which will automatically calculate the finish time of your team and your opponents once 2 or 3 of you have finished and either who won or when the last player needs to finish by to win.
+### Experimental features
+
+* Co-op mode: Co-op races will automatically calculate the finish time of your team and your opponents once 2 or 3 of you have finished and either who won or when the last player needs to finish by to win. This will not work outside of head to head co-op races.
+* Qualifier mode: Calculate the par time and your score when the top 3 have finished using the formula score = 2 - (par time - your time)
 
 ### Ideas for future development
 
@@ -17,7 +20,6 @@ The general goal for this is to enable you to do fun things on your stream with 
 * Playing media: Play a sound or video file automatically, like an announcer saying "Ready... GO!" when the race starts or a victory fanfare when you come in first place.
 * Friends: Announce or list specified friends' finish times if they're in the same race as you
 * Automatically select a layout or scene depending on what game or mode you are racing.
-* For qualifier races, automatically calculate and display the par time of the top racers and your qualifier score.
 * Your idea here!
 
 ### Screenshot

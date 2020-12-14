@@ -110,6 +110,12 @@ coop_source_name        = None
 coop_label_source_name  = None
 coop_text               = " "
 coop_label_text         = "Race still in progress"
+use_qualifier           = False
+qualifier_cutoff        = 3
+qualifier_par_source    = ""
+qualifier_score_source  = ""
+qualifier_par_text      = " "
+entrant_score           = " "
 
 # ------------------------------------------------------------
 
@@ -123,6 +129,9 @@ def set_text():
 
     if use_coop:
         set_coop_text()
+    
+    if use_qualifier:
+        set_qualifier_text()
 
     entrant = next((x for x in race.entrants if x.user.full_name == full_name), None)
 
@@ -180,9 +189,6 @@ def set_coop_text():
     if race is None:
         return
 
-    #coop_label_text = "Race still in progress"
-    #coop_text = " "
-
     with source_ar(coop_source_name) as coop_source, data_ar() as settings:
         obs.obs_data_set_string(settings, "text", coop_text)
         obs.obs_source_update(coop_source, settings)
@@ -190,6 +196,22 @@ def set_coop_text():
     with source_ar(coop_label_source_name) as coop_label_source, data_ar() as settings:
         obs.obs_data_set_string(settings, "text", coop_label_text)
         obs.obs_source_update(coop_label_source, settings)
+
+def set_qualifier_text():
+    global qualifier_par_text
+    global entrant_score
+    global logged_once
+
+    if race is None:
+        return
+
+    with source_ar(qualifier_par_source) as par_source, data_ar() as settings:
+        obs.obs_data_set_string(settings, "text", qualifier_par_text)
+        obs.obs_source_update(par_source, settings)
+    
+    with source_ar(qualifier_score_source) as score_source, data_ar() as settings:
+        obs.obs_data_set_string(settings, "text", entrant_score)
+        obs.obs_source_update(score_source, settings)
 
 def race_update_thread():
     global race_event_loop
@@ -202,12 +224,13 @@ def update_coop_text():
     global coop_label_text
     global coop_text
 
-
-
     entrant = next((x for x in race.entrants if x.user.full_name == full_name), None)
     partner = next((x for x in race.entrants if x.user.full_name == coop_partner), None)
     opponent1 = next((x for x in race.entrants if x.user.full_name == coop_opponent1), None)
     opponent2 = next((x for x in race.entrants if x.user.full_name == coop_opponent2), None)
+
+    if not use_coop or entrant is None or partner is None or opponent1 is None or opponent2 is None:
+        return
 
     logger.debug(f"use_coop: {use_coop}")
     logger.debug(f"entrant name: {full_name}, entrant: {entrant}")
@@ -215,21 +238,18 @@ def update_coop_text():
     logger.debug(f"entrant name: {coop_opponent1}, entrant: {opponent1}")
     logger.debug(f"entrant name: {coop_opponent2}, entrant: {opponent2}")
 
-    if not use_coop or entrant is None or partner is None or opponent1 is None or opponent2 is None:
-        return
-
     our_total = None
     opponent_total = None
     if entrant.finish_time and partner.finish_time:
         our_total = entrant.finish_time + partner.finish_time
-        logger.info(f"calculated our average is {our_total / 2}")
+        logger.debug(f"calculated our average is {our_total / 2}")
     else:
-        logger.info(f"we haven't finished yet")
+        logger.debug(f"we haven't finished yet")
     if opponent1.finish_time and opponent2.finish_time:
         opponent_total = opponent1.finish_time + opponent2.finish_time
-        logger.info(f"calculated our opponent's average is {opponent_total / 2}")
+        logger.debug(f"calculated our opponent's average is {opponent_total / 2}")
     else:
-        logger.info(f"our opponents haven't finished")
+        logger.debug(f"our opponents haven't finished")
     if race.entrants_count_finished == 2:
         if our_total is not None:
             coop_label_text = "We won!"
@@ -288,6 +308,36 @@ def update_coop_text():
             opponent_avg = opponent_total / 2
             coop_text = str(opponent_avg)[:9]
 
+def update_qualifier_text():
+    global qualifier_par_text
+    global entrant_score
+    if not use_qualifier or race is None:
+        return
+    
+    entrant = next((x for x in race.entrants if x.user.full_name == full_name), None)
+    logger.debug(entrant)
+
+    qualifier_par_text = " "
+    entrant_score = " "
+    if race.entrants_count_finished >= qualifier_cutoff:
+        par_time = timedelta(microseconds=0)
+        for i in range(1, qualifier_cutoff + 1):
+            finish_time = next((x.finish_time for x in race.entrants if x.place == i), None)
+            if finish_time is None:
+                logger.error("error: qualifier finish time is None")
+                return
+            logger.debug(f"finish time for rank {i} is {finish_time}")
+            par_time += finish_time
+        par_time = par_time / qualifier_cutoff
+        logger.debug(par_time)
+        qualifier_par_text = str(par_time)[:9]
+
+        if entrant and entrant.finish_time is not None:
+            entrant_score = str(2 - (entrant.finish_time / par_time))[:4]
+        logger.debug(entrant_score)
+    
+    pass
+
 async def race_updater():
     global race
     global race_changed
@@ -322,6 +372,7 @@ async def race_updater():
                                 if r is not None and r.version > race.version:
                                     race = r
                                     update_coop_text()
+                                    update_qualifier_text()
                             elif data.get("type") == "pong":
                                 last_pong = dateutil.parser.parse(data.get("date"))
                                 pass
@@ -337,8 +388,13 @@ async def race_updater():
 
 def refresh_pressed(props, prop, *args, **kwargs):
     fill_source_list(obs.obs_properties_get(props, "source"))
+    fill_source_list(obs.obs_properties_get(props, "coop_text"))
+    fill_source_list(obs.obs_properties_get(props, "coop_label"))
+    fill_source_list(obs.obs_properties_get(props, "qualifier_par_source"))
+    fill_source_list(obs.obs_properties_get(props, "qualifier_score_source"))
     fill_race_list(obs.obs_properties_get(props, "race"), obs.obs_properties_get(props, "category_filter"))
     update_coop_text()
+    update_qualifier_text()
     return True
 
 def new_race_selected(props, prop, settings):
@@ -351,6 +407,7 @@ def new_race_selected(props, prop, settings):
     if r is not None:
         race = r
         update_coop_text()
+        update_qualifier_text()
         logger.info(f"new race selected: {race}")
         obs.obs_data_set_default_string(settings, "race_info", r.info)
         fill_coop_entrant_lists(props)
@@ -375,6 +432,11 @@ def podium_toggled(props, prop, settings):
 def coop_toggled(props, prop, settings):
     vis = obs.obs_data_get_bool(settings, "use_coop")
     obs.obs_property_set_visible(obs.obs_properties_get(props, "coop_group"), vis)
+    return True
+
+def qualifier_toggled(props, prop, settings):
+    vis = obs.obs_data_get_bool(settings, "use_qualifier")
+    obs.obs_property_set_visible(obs.obs_properties_get(props, "qualifier_group"), vis)
     return True
 
 # copied and modified from scripted-text.py by UpgradeQ
@@ -437,6 +499,11 @@ def script_update(settings):
     global coop_source_name
     global coop_label_source_name
 
+    global use_qualifier
+    global qualifier_cutoff
+    global qualifier_par_source
+    global qualifier_score_source
+
     obs.timer_remove(set_text)
     
     logger.disabled = not obs.obs_data_get_bool(settings, "enable_log")
@@ -486,6 +553,11 @@ def script_update(settings):
         check_race_updates = False
 
     full_name = obs.obs_data_get_string(settings, "username")
+
+    use_qualifier = obs.obs_data_get_bool(settings, "use_qualifier")
+    qualifier_cutoff = obs.obs_data_get_int(settings, "qualifier_cutoff")
+    qualifier_par_source = obs.obs_data_get_string(settings, "qualifier_par_source")
+    qualifier_score_source = obs.obs_data_get_string(settings, "qualifier_score_source")
 
 def script_defaults(settings):
 	obs.obs_data_set_default_string(settings, "race_info", "Race info")
@@ -590,6 +662,17 @@ def script_properties():
     fill_source_list(p)
     p = obs.obs_properties_add_list(coop_group, "coop_label", "Coop Label Text Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
     obs.obs_property_set_long_description(p, "This text source will be use to display a label such as \'<PartnerName> needs to finish before\' based on who the last racer is")
+    fill_source_list(p)
+
+    p = obs.obs_properties_add_bool(props, "use_qualifier", "Display race results as tournament qualifier?")
+    obs.obs_property_set_modified_callback(p, qualifier_toggled)
+
+    qualifier_group = obs.obs_properties_create()
+    obs.obs_properties_add_group(props, "qualifier_group", "Qualifier Mode", obs.OBS_GROUP_NORMAL, qualifier_group)
+    p = obs.obs_properties_add_int_slider(qualifier_group, "qualifier_cutoff", "Use Top X as par time, where X=", 3, 10, 1)
+    p = obs.obs_properties_add_list(qualifier_group, "qualifier_par_source", "Qualifier Par Time Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
+    fill_source_list(p)
+    p = obs.obs_properties_add_list(qualifier_group, "qualifier_score_source", "Qualifier Score Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
     fill_source_list(p)
 
     return props
