@@ -12,10 +12,13 @@ There is also an experimental option for Co-op races which will automatically ca
 
 ### Ideas for future development
 
+The general goal for this is to enable you to do fun things on your stream with the information from racetime.gg. Informational features that are boring will probably be prioritized behind features that are fun :grin:
+
 * Playing media: Play a sound or video file automatically, like an announcer saying "Ready... GO!" when the race starts or a victory fanfare when you come in first place.
 * Friends: Announce or list specified friends' finish times if they're in the same race as you
 * Automatically select a layout or scene depending on what game or mode you are racing.
 * For qualifier races, automatically calculate and display the par time of the top racers and your qualifier score.
+* Your idea here!
 
 ### Screenshot
 
