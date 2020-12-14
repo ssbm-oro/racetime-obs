@@ -15,6 +15,7 @@ There is also an experimental option for Co-op races which will automatically ca
 * Playing media: Play a sound or video file automatically, like an announcer saying "Ready... GO!" when the race starts or a victory fanfare when you come in first place.
 * Friends: Announce or list specified friends' finish times if they're in the same race as you
 * Automatically select a layout or scene depending on what game or mode you are racing.
+* For qualifier races, automatically calculate and display the par time of the top racers and your qualifier score.
 
 ### Screenshot
 
