@@ -20,7 +20,7 @@ There is also an experimental option for Co-op races which will automatically ca
 
 ![Screenshot of Settings](/img/Screenshot1.png)
 
-![Video demo of Coop Mode](/img/coop_demo.mp4)
+![Video demo of Coop Mode](/img/coop_demo.gif)
 
 In this demo, you can see two of the features. The timer has turned gold, indicating that I finished first. Then, once both of our opponents have finished, it shows what time my partner Amarith would have needed to finish at for us to win
 
