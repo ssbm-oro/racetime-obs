@@ -19,7 +19,7 @@ jobs:
         run: |
           cp requirements.txt src/
           mv src racetime-obs
-          zip -rl release.zip racetime-obs/ -x racetime-obs/pyproject.toml -x racetime-obs/poetry.lock
+          zip -rl release.zip racetime-obs/ -x racetime-obs/pyproject.toml -x racetime-obs/poetry.lock -x obspython.py
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
