@@ -1,5 +1,7 @@
 # racetime-obs (working title)
 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ssbm-oro/racetime-obs/test-build)
+
 ## Introduction
 
 > :warning: **This script is in prerelease.** I do not make any guarantees that it will not crash OBS while you are racing. Please do not use yet it in a race that you couldn't afford to lose your stream and local recording (e.g. league or tournament races).
