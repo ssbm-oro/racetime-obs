@@ -28,6 +28,8 @@ The general goal for this is to enable you to do fun things on your stream with 
 
 ![Video demo of Coop Mode](/img/coop_demo.gif)
 
+![Example of Tournament Qualifier Mode](/img/Screenshot2.png)
+
 In this demo, you can see two of the features. The timer has turned gold, indicating that I finished first. Then, once both of our opponents have finished, it shows what time my partner Amarith would have needed to finish at for us to win
 
 ## Setup
