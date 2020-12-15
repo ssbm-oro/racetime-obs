@@ -4,7 +4,7 @@
 
 ## Introduction
 
-> :warning: **This script is in prerelease.** I do not make any guarantees that it will not crash OBS while you are racing. Please do not use yet it in a race that you couldn't afford to lose your stream and local recording (e.g. league or tournament races).
+> :warning: **This is a relatively new project** :warning: I am testing it as much as I can, but I can't test every possible configuration. Please do not use yet it in a race that you couldn't afford to lose your stream and local recording (e.g. league or tournament races). Please do let me know if you use it and whether you have issues or not. I think that this should be fairly stable, but I would like confirmation with more data points. :smile: If you do decide to use this in an important race, thank you for your bravery and *any issues you encounter are between you and the tournament admins*.
 
 This is the main code repository for racetime-obs, a plugin to add realtime information from [racetime.gg](https://racetime.gg) to your stream in OBS.
 
@@ -30,9 +30,11 @@ The general goal for this is to enable you to do fun things on your stream with 
 
 ![Video demo of Coop Mode](/img/coop_demo.gif)
 
+In this demo, you can see two of the features. The timer has turned gold, indicating that I finished first. Then, once both of our opponents have finished, it shows what time my partner Amarith would have needed to finish at for us to win
+
 ![Example of Tournament Qualifier Mode](/img/Screenshot2.png)
 
-In this demo, you can see two of the features. The timer has turned gold, indicating that I finished first. Then, once both of our opponents have finished, it shows what time my partner Amarith would have needed to finish at for us to win
+Example output when using tournament qualifier mode.
 
 ## Setup
 
@@ -53,6 +55,10 @@ In this demo, you can see two of the features. The timer has turned gold, indica
 8) (optional) Check the "Use custom color for podium finishes" box to have your timer change color depending on what phase the race is in and what place you finished in.
 
 9) Join a racetime.gg race, and select your race room from the drop down. You can select a category to only show races in that category as well.
+
+## Contact
+
+You can find me on Discord, oro#7777
 
 ## Acknowledgments
 
