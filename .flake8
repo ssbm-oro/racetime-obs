@@ -1,0 +1,10 @@
+[flake8]
+exclude = 
+    .git,
+    __pypackages__,
+    src/obspython.py
+    .pytest_cach
+    .github
+    .venv*
+    .vscode
+    env
