@@ -6,13 +6,13 @@ name: test-build
 on:
   push:
     branches: [ master ]
-    paths: [ src/** ]
+    paths: [ 'src/**', 'tests/**' ]
   pull_request:
     branches: [ master ]
-    paths: [ src/** ]
+    paths: [ 'src/**', 'tests/**' ]
   pull_request_target:
     branches: [ master ]
-    paths: [ src/** ]
+    paths: [ 'src/**', 'tests/**' ]
   workflow_dispatch:
 
 jobs:
