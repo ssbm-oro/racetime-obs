@@ -2,36 +2,10 @@ from dataclasses import dataclass
 from typing import Optional, Any, List
 from models import from_str, from_bool, from_union, from_none, from_int, from_datetime, from_timedelta, from_list
 from models.user import User
+from models.race import Status, Goal
 from datetime import datetime, timedelta
 
 
-@dataclass
-class Goal:
-    name: str
-    custom: bool
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Goal':
-        if not isinstance(obj, dict):
-            return None
-        name = from_str(obj.get("name"))
-        custom = from_bool(obj.get("custom"))
-        return Goal(name, custom)
-
-@dataclass
-class Status:
-    value: str
-    verbose_value: str
-    help_text: str
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Status':
-        if not isinstance(obj, dict):
-            return None
-        value = from_str(obj.get("value"))
-        verbose_value = from_str(obj.get("verbose_value"))
-        help_text = from_str(obj.get("help_text"))
-        return Status(value, verbose_value, help_text)   
 @dataclass
 class CurrentRace:
     name: Optional[str] = None
