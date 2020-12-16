@@ -30,12 +30,18 @@ class CurrentRace:
         data_url = from_union([from_str, from_none], obj.get("data_url"))
         goal = from_union([Goal.from_dict, from_none], obj.get("goal"))
         info = from_union([from_str, from_none], obj.get("info"))
-        entrants_count = from_union([from_int, from_none], obj.get("entrants_count"))
-        entrants_count_inactive = from_union([from_int, from_none], obj.get("entrants_count_inactive"))
-        opened_at = from_union([from_datetime, from_none], obj.get("opened_at"))
-        started_at = from_union([from_datetime, from_none], obj.get("started_at"))
-        time_limit = from_union([from_timedelta, from_none], obj.get("time_limit"))
+        entrants_count = from_union(
+            [from_int, from_none], obj.get("entrants_count"))
+        entrants_count_inactive = from_union(
+            [from_int, from_none], obj.get("entrants_count_inactive"))
+        opened_at = from_union(
+            [from_datetime, from_none], obj.get("opened_at"))
+        started_at = from_union(
+            [from_datetime, from_none], obj.get("started_at"))
+        time_limit = from_union(
+            [from_timedelta, from_none], obj.get("time_limit"))
         return CurrentRace(name, status, url, data_url, goal, info, entrants_count, entrants_count_inactive, opened_at, started_at, time_limit)
+
 
 @dataclass
 class Category:
@@ -66,7 +72,8 @@ class Category:
         owners = from_list(User.from_dict, obj.get("owners"))
         moderators = from_list(User.from_dict, obj.get("moderators"))
         goals = from_list(from_str, obj.get("goals"))
-        current_races = from_list(CurrentRace.from_dict, obj.get("current_races"))
+        current_races = from_list(
+            CurrentRace.from_dict, obj.get("current_races"))
         return Category(name, short_name, slug, url, data_url, image, info, streaming_required, owners, moderators, goals, current_races)
 
 

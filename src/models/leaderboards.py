@@ -3,6 +3,7 @@ from typing import Any, List
 from models import from_int, from_str, from_list
 from models.user import User
 
+
 @dataclass
 class Ranking:
     user: User
@@ -48,7 +49,8 @@ class Leaderboards:
     @staticmethod
     def from_dict(obj: Any) -> 'Leaderboards':
         assert isinstance(obj, dict)
-        leaderboards = from_list(Leaderboard.from_dict, obj.get("leaderboards"))
+        leaderboards = from_list(
+            Leaderboard.from_dict, obj.get("leaderboards"))
         return Leaderboards(leaderboards)
 
 

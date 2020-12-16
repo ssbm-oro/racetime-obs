@@ -36,10 +36,13 @@ def from_datetime(x: Any) -> datetime:
 
 # 'P0DT01H44M03.313433S'
 # using an iso 8601 lib to parse this seems like overkill
+
+
 def from_timedelta(x: Any) -> timedelta:
     if x is None:
         return
-    return timedelta(hours= float(x[4:6]), minutes= float(x[7:9]), seconds= float(x[10:-1]))
+    return timedelta(hours=float(x[4:6]), minutes=float(x[7:9]), seconds=float(x[10:-1]))
+
 
 def from_none(x: Any) -> Any:
     assert x is None
@@ -67,6 +70,7 @@ def from_union(fs, x):
         except:
             pass
     assert False
+
 
 def is_type(t: Type[T], x: Any) -> T:
     if x is None:

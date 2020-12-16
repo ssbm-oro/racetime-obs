@@ -2,6 +2,8 @@ from contextlib import contextmanager
 import obspython as obs
 
 # auto release context managers
+
+
 @contextmanager
 def source_ar(source_name):
     source = obs.obs_get_source_by_name(source_name)
@@ -49,6 +51,7 @@ def filter_ar(source, name):
         yield source
     finally:
         obs.obs_source_release(source)
+
 
 @contextmanager
 def source_list_ar():

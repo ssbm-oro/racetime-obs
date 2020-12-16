@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Any, Optional
 from models import from_int, from_str, from_union, from_none, from_bool
 
+
 @dataclass
 class Stats:
     joined: int
@@ -37,7 +38,7 @@ class User:
     twitch_name: Optional[str] = None
     twitch_display_name: Optional[str] = None
     twitch_channel: Optional[str] = None
-    can_moderate: Optional[bool] = None    
+    can_moderate: Optional[bool] = None
     avatar: Optional[str] = None
 
     @staticmethod
@@ -47,15 +48,19 @@ class User:
         id = from_str(obj.get("id"))
         full_name = from_str(obj.get("full_name"))
         name = from_str(obj.get("name"))
-        discriminator = from_union([from_str, from_none], obj.get("discriminator"))
+        discriminator = from_union(
+            [from_str, from_none], obj.get("discriminator"))
         url = from_str(obj.get("url"))
         avatar = from_union([from_str, from_none], obj.get("avatar"))
         pronouns = from_union([from_str, from_none], obj.get("pronouns"))
         flair = from_union([from_str, from_none], obj.get("flair"))
         twitch_name = from_union([from_str, from_none], obj.get("twitch_name"))
-        twitch_display_name = from_union([from_str, from_none], obj.get("twitch_display_name"))
-        twitch_channel = from_union([from_str, from_none], obj.get("twitch_channel"))
-        can_moderate = from_union([from_bool, from_none], obj.get("can_moderate"))
+        twitch_display_name = from_union(
+            [from_str, from_none], obj.get("twitch_display_name"))
+        twitch_channel = from_union(
+            [from_str, from_none], obj.get("twitch_channel"))
+        can_moderate = from_union(
+            [from_bool, from_none], obj.get("can_moderate"))
         stats = from_union([Stats.from_dict, from_none], obj.get("stats"))
         return User(id=id, full_name=full_name, name=name, discriminator=discriminator, url=url, avatar=avatar, pronouns=pronouns, flair=flair, twitch_name=twitch_name, twitch_display_name=twitch_display_name, twitch_channel=twitch_channel, can_moderate=can_moderate, stats=stats)
 

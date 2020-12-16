@@ -3,6 +3,7 @@ from typing import Any, List
 from models import from_int, from_list
 from models.race import Race
 
+
 @dataclass
 class CategoryPastRaces:
     count: int
