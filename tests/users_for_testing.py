@@ -1,4 +1,6 @@
+from datetime import datetime, timedelta
 import random
+from models.race import Entrant, Status
 from models.user import User
 
 test_users = [
@@ -60,3 +62,11 @@ test_users = [
 
 def get_test_user():
     return random.choice(test_users)
+
+def get_test_entrant(status_value="joined", finished_at: datetime = None, finish_time: timedelta = None, place: int = None) -> Entrant:
+    return Entrant(get_test_user(), status=get_test_status(status_value), has_comment=False, stream_live=True,
+     stream_override=False, actions=[], finished_at=finished_at, finish_time=finish_time, place=place)
+
+def get_test_status(status_value):
+    return Status(value=status_value, verbose_value="", help_text="")
+
