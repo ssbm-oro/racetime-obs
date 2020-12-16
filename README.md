@@ -8,7 +8,7 @@
 
 This is the main code repository for racetime-obs, a plugin to add realtime information from [racetime.gg](https://racetime.gg) to your stream in OBS.
 
-What's the point of this? Why not just capture Livesplit or the racetime.gg website? Well, right now there isn't much point and this is really just a proof of concept. The only feature this currently has over those other methods is that you can set your timer's color to change based on what place you come in.But I think there are some other neat and entertaining ideas that this could be used to implement. These are just ideas right now, not plans or features yet. Please let me know if you have any suggestions!
+What's the point of this? Why not just capture Livesplit or the racetime.gg website? Well, right now there isn't much point and this is really just a proof of concept. The only feature this currently has over those other methods is that you can set your timer's color to change based on what place you come in and a couple of experimental features. But I think there are some other neat and entertaining ideas that this could be used to implement. These are just ideas right now, not plans or features yet. Please let me know if you have any suggestions!
 
 ### Experimental features
 
@@ -20,8 +20,10 @@ What's the point of this? Why not just capture Livesplit or the racetime.gg webs
 The general goal for this is to enable you to do fun things on your stream with the information from racetime.gg. Informational features that are boring will probably be prioritized behind features that are fun :grin:
 
 * Playing media: Play a sound or video file automatically, like an announcer saying "Ready... GO!" when the race starts or a victory fanfare when you come in first place.
-* Friends: Announce or list specified friends' finish times if they're in the same race as you
+* Friends: Announce or list specified friends' finish times if they're in the same race as you.
 * Automatically select a layout or scene depending on what game or mode you are racing.
+* Restreamers: Make setup for restreaming easier by pulling the racers' information from the race room.
+* Race history: List information from your race history, like current win streak or head-to-head record against current opponent.
 * Your idea here!
 
 ### Screenshot
