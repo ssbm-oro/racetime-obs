@@ -4,8 +4,12 @@ python:
   - "3.7"
 # command to install dependencies
 install:
+  - pip install pytest-cov coverage
   - pip install -r requirements.txt
   - pip install .
 # command to run tests
 script:
-  - pytest
+  - coverage run -m pytest
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+  

@@ -1,6 +1,6 @@
 # racetime-obs (working title)
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ssbm-oro/racetime-obs/test-build) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ssbm-oro/racetime-obs/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ssbm-oro/racetime-obs/?branch=master)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ssbm-oro/racetime-obs/test-build) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ssbm-oro/racetime-obs/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ssbm-oro/racetime-obs/?branch=master) [![codecov](https://codecov.io/gh/ssbm-oro/racetime-obs/branch/master/graph/badge.svg?token=UOGW4FNM8J)](https://codecov.io/gh/ssbm-oro/racetime-obs)
 
 ## Introduction
 
@@ -62,7 +62,7 @@ Example output when using tournament qualifier mode.
 
 You can find me on Discord, oro#7777.
 
-Also, follow me on Twitch:
+Also, follow me on [Twitch](https://www.twitch.com/ssbmoro)!
 
  ![Twitch Status](https://img.shields.io/twitch/status/ssbmoro)
 
