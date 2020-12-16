@@ -1,0 +1,87 @@
+{
+    "races": [{
+        "name": "alttpr/dizzy-southshore-5884",
+        "status": {
+            "value": "in_progress",
+            "verbose_value": "In progress",
+            "help_text": "Race is in progress"
+        },
+        "url": "/alttpr/dizzy-southshore-5884",
+        "data_url": "/alttpr/dizzy-southshore-5884/data",
+        "goal": {
+            "name": "Criss Cross Idiots only",
+            "custom": true
+        },
+        "info": "",
+        "entrants_count": 3,
+        "entrants_count_finished": 0,
+        "entrants_count_inactive": 0,
+        "opened_at": "2020-12-16T17:11:20.574Z",
+        "started_at": "2020-12-16T17:41:51.316Z",
+        "time_limit": "P1DT00H00M00S",
+        "category": {
+            "name": "A Link to the Past Randomizer",
+            "short_name": "ALttPR",
+            "slug": "alttpr",
+            "url": "/alttpr",
+            "data_url": "/alttpr/data",
+            "image": "https://racetime.gg/media/alttpr.png"
+        }
+    }, {
+        "name": "z2r/neutral-nabooru-4617",
+        "status": {
+            "value": "in_progress",
+            "verbose_value": "In progress",
+            "help_text": "Race is in progress"
+        },
+        "url": "/z2r/neutral-nabooru-4617",
+        "data_url": "/z2r/neutral-nabooru-4617/data",
+        "goal": {
+            "name": "Casual",
+            "custom": false
+        },
+        "info": "Seed: 897248124 - Flags: iyhqh$j9g7@$ZqTBT!BhSAdEz$@",
+        "entrants_count": 2,
+        "entrants_count_finished": 0,
+        "entrants_count_inactive": 0,
+        "opened_at": "2020-12-16T17:22:39.109Z",
+        "started_at": "2020-12-16T17:27:32.178Z",
+        "time_limit": "P1DT00H00M00S",
+        "category": {
+            "name": "Zelda 2 Randomizer",
+            "short_name": "Z2R",
+            "slug": "z2r",
+            "url": "/z2r",
+            "data_url": "/z2r/data",
+            "image": "https://racetime.gg/media/Zelda_II__The_Adventure_of_Link-285x380.jpg"
+        }
+    }, {
+        "name": "ootr/tasty-toad-9980",
+        "status": {
+            "value": "open",
+            "verbose_value": "Open",
+            "help_text": "Anyone may join this race"
+        },
+        "url": "/ootr/tasty-toad-9980",
+        "data_url": "/ootr/tasty-toad-9980/data",
+        "goal": {
+            "name": "Standard Tournament Season 4",
+            "custom": false
+        },
+        "info": "OOTR Standard Season 4 Tournament: Qualifier 3 - Please use #qualifier-chat-room in the OOTR Discord instead of this Racetime room for discussion.",
+        "entrants_count": 66,
+        "entrants_count_finished": 0,
+        "entrants_count_inactive": 0,
+        "opened_at": "2020-12-16T17:59:44.359Z",
+        "started_at": null,
+        "time_limit": "P1DT00H00M00S",
+        "category": {
+            "name": "Ocarina of Time Randomizer",
+            "short_name": "OoTR",
+            "slug": "ootr",
+            "url": "/ootr",
+            "data_url": "/ootr/data",
+            "image": "https://racetime.gg/media/zootr.png"
+        }
+    }]
+}
