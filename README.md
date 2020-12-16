@@ -62,7 +62,7 @@ Example output when using tournament qualifier mode.
 
 You can find me on Discord, oro#7777.
 
-Also, follow me on Twitch:
+Also, follow me on [Twitch](https://www.twitch.com/ssbmoro)!
 
  ![Twitch Status](https://img.shields.io/twitch/status/ssbmoro)
 
