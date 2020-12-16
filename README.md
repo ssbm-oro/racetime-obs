@@ -1,6 +1,6 @@
 # racetime-obs (working title)
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ssbm-oro/racetime-obs/test-build)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ssbm-oro/racetime-obs/test-build) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ssbm-oro/racetime-obs/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ssbm-oro/racetime-obs/?branch=master)
 
 ## Introduction
 
