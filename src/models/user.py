@@ -1,14 +1,6 @@
-# To use this code, make sure you
-#
-#     import json
-#
-# and then, to convert JSON from a string, do
-#
-#     result = user_from_dict(json.loads(json_string))
-
 from dataclasses import dataclass
-from typing import Any, TypeVar, Type, cast, Optional
-from models import *
+from typing import Any, Optional
+from models import from_int, from_str, from_union, from_none, from_bool
 
 @dataclass
 class Stats:
@@ -30,16 +22,6 @@ class Stats:
         forfeits = from_int(obj.get("forfeits"))
         dqs = from_int(obj.get("dqs"))
         return Stats(joined, first, second, third, forfeits, dqs)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["joined"] = from_int(self.joined)
-        result["first"] = from_int(self.first)
-        result["second"] = from_int(self.second)
-        result["third"] = from_int(self.third)
-        result["forfeits"] = from_int(self.forfeits)
-        result["dqs"] = from_int(self.dqs)
-        return result
 
 
 @dataclass
@@ -77,27 +59,6 @@ class User:
         stats = from_union([Stats.from_dict, from_none], obj.get("stats"))
         return User(id=id, full_name=full_name, name=name, discriminator=discriminator, url=url, avatar=avatar, pronouns=pronouns, flair=flair, twitch_name=twitch_name, twitch_display_name=twitch_display_name, twitch_channel=twitch_channel, can_moderate=can_moderate, stats=stats)
 
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["id"] = from_str(self.id)
-        result["full_name"] = from_str(self.full_name)
-        result["name"] = from_str(self.name)
-        result["discriminator"] = from_str(self.discriminator)
-        result["url"] = from_str(self.url)
-        result["avatar"] = from_str(self.avatar)
-        result["pronouns"] = from_str(self.pronouns)
-        result["flair"] = from_str(self.flair)
-        result["twitch_name"] = from_str(self.twitch_name)
-        result["twitch_display_name"] = from_str(self.twitch_display_name)
-        result["twitch_channel"] = from_str(self.twitch_channel)
-        result["can_moderate"] = from_bool(self.can_moderate)
-        result["stats"] = to_class(Stats, self.stats)
-        return result
-
 
 def user_from_dict(s: Any) -> User:
     return User.from_dict(s)
-
-
-def user_to_dict(x: User) -> Any:
-    return to_class(User, x)

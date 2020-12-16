@@ -1,16 +1,8 @@
-# To use this code, make sure you
-#
-#     import json
-#
-# and then, to convert JSON from a string, do
-#
-#     result = category_from_dict(json.loads(json_string))
-
-from enum import Enum
 from dataclasses import dataclass
-from typing import Optional, Any, List, TypeVar, Type, Callable, cast
-from models import *
+from typing import Optional, Any, List
+from models import from_str, from_bool, from_union, from_none, from_int, from_datetime, from_timedelta, from_list
 from models.user import User
+from datetime import datetime, timedelta
 
 
 @dataclass
@@ -26,12 +18,6 @@ class Goal:
         custom = from_bool(obj.get("custom"))
         return Goal(name, custom)
 
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["name"] = from_str(self.name)
-        result["custom"] = from_bool(self.custom)
-        return result
-
 @dataclass
 class Status:
     value: str
@@ -45,14 +31,7 @@ class Status:
         value = from_str(obj.get("value"))
         verbose_value = from_str(obj.get("verbose_value"))
         help_text = from_str(obj.get("help_text"))
-        return Status(value, verbose_value, help_text)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["value"] = from_str(self.value)
-        result["verbose_value"] = from_str(self.verbose_value)
-        result["help_text"] = from_str(self.help_text)
-        return result        
+        return Status(value, verbose_value, help_text)   
 @dataclass
 class CurrentRace:
     name: Optional[str] = None
@@ -83,21 +62,6 @@ class CurrentRace:
         started_at = from_union([from_datetime, from_none], obj.get("started_at"))
         time_limit = from_union([from_timedelta, from_none], obj.get("time_limit"))
         return CurrentRace(name, status, url, data_url, goal, info, entrants_count, entrants_count_inactive, opened_at, started_at, time_limit)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["status"] = from_union([lambda x: to_class(Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["data_url"] = from_union([from_str, from_none], self.data_url)
-        result["goal"] = from_union([lambda x: to_class(Goal, x), from_none], self.goal)
-        result["info"] = from_union([from_str, from_none], self.info)
-        result["entrants_count"] = from_union([from_int, from_none], self.entrants_count)
-        result["entrants_count_inactive"] = from_union([from_int, from_none], self.entrants_count_inactive)
-        result["opened_at"] = from_union([lambda x: x.isoformat(), from_none], self.opened_at)
-        result["started_at"] = from_union([lambda x: x.isoformat(), from_none], self.started_at)
-        result["time_limit"] = from_union([from_str, from_none], self.time_limit)
-        return result
 
 @dataclass
 class Category:
@@ -131,27 +95,6 @@ class Category:
         current_races = from_list(CurrentRace.from_dict, obj.get("current_races"))
         return Category(name, short_name, slug, url, data_url, image, info, streaming_required, owners, moderators, goals, current_races)
 
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["name"] = from_str(self.name)
-        result["short_name"] = from_str(self.short_name)
-        result["slug"] = from_str(self.slug)
-        result["url"] = from_str(self.url)
-        result["data_url"] = from_str(self.data_url)
-        result["image"] = from_str(self.image)
-        result["info"] = from_str(self.info)
-        result["streaming_required"] = from_bool(self.streaming_required)
-        result["owners"] = from_list(lambda x: to_class(User, x), self.owners)
-        result["moderators"] = from_list(lambda x: to_class(User, x), self.moderators)
-        result["goals"] = from_list(from_str, self.goals)
-        result["current_races"] = from_list(lambda x: to_class(CurrentRace, x), self.current_races)
-        return result
-
 
 def category_from_dict(s: Any) -> Category:
     return Category.from_dict(s)
-
-
-def category_to_dict(x: Category) -> Any:
-    return to_class(Category, x)
-

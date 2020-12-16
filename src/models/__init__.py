@@ -1,16 +1,3 @@
-# This code parses date/times, so please
-#
-#     pip install python-dateutil
-#
-# To use this code, make sure you
-#
-#     import json
-#
-# and then, to convert JSON from a string, do
-#
-#     result = category_past_races_from_dict(json.loads(json_string))
-
-from dataclasses import dataclass
 from typing import Any, List, TypeVar, Type, cast, Callable
 from enum import Enum
 from datetime import datetime, timedelta
@@ -48,7 +35,7 @@ def from_datetime(x: Any) -> datetime:
     return dateutil.parser.parse(x)
 
 # 'P0DT01H44M03.313433S'
-#  ^^^^ dunno what these chars mean, so i'll just ignore
+# using an iso 8601 lib to parse this seems like overkill
 def from_timedelta(x: Any) -> timedelta:
     if x is None:
         return
