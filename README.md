@@ -40,7 +40,7 @@ Example output when using tournament qualifier mode.
 
 1) Install the correct version of Python for your system. On Windows, this is Python 3.6. Note on Windows whether you are using the 64-bit or 32-bit version of OBS, as you'll need to use the same version of Python. On macOS, this is Python 3.7. Note on macOS, you also need to use OBS version 25.0.8. Version 26 broke python scripts for macOS.
 
-2) Download and unzip source archive to any folder
+2) Download and unzip the latest release archive to any folder
 
 3) Install the correct python requirements with `python -m pip install -r requirements.txt`
 
@@ -48,7 +48,7 @@ Example output when using tournament qualifier mode.
 
 5) From the OBS menu, select `Tools` -> `Scripts`. Click the Python Settings tab, and click the Browse button. Navigate to and select the folder where you installed Python.
 
-6) Switch back to the Scripts tab and press the `+` button, and add `timer.py`
+6) Switch back to the Scripts tab and press the `+` button, and add `racetime_obs.py`
 
 7) Enable the `Initial Setup` checkbox and select the text source you created in step 4 from the script properties drop down and type in your racetime.gg username (in the form `username#0000`)
 
@@ -58,7 +58,11 @@ Example output when using tournament qualifier mode.
 
 ## Contact
 
-You can find me on Discord, oro#7777
+You can find me on Discord, oro#7777.
+
+Also, follow me on Twitch:
+
+ ![Twitch Status](https://img.shields.io/twitch/status/ssbmoro)
 
 ## Acknowledgments
 
