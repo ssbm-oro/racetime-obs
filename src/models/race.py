@@ -180,6 +180,12 @@ class Race:
     websocket_bot_url: Optional[str] = None
     websocket_oauth_url: Optional[str] = None
 
+    def get_entrant_by_name(self, full_name : str) -> Entrant:
+        return next((x for x in self.entrants if x.user.full_name == full_name), None)
+
+    def get_entrant_by_place(self, place : int) -> Entrant:
+        return next((x.finish_time for x in self.entrants if x.place == place), None)
+
 
     @staticmethod
     def from_dict(obj: Any) -> 'Race':

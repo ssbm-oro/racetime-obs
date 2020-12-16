@@ -1,6 +1,7 @@
 import json
 import time
 import websockets
+from websockets.client import WebSocketClientProtocol
 import obspython as obs
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
@@ -132,55 +133,55 @@ def set_text():
     
     if use_qualifier:
         set_qualifier_text()
-
-    entrant = next((x for x in race.entrants if x.user.full_name == full_name), None)
-
-    color = None
-    time = "0:00:00.0"
-    if race.status.value == "open" or race.status.value == "invitational":
-        time = "-" + str(race.start_delay) + ".0"
-        color = pre_color
-    elif entrant is not None:
-        if entrant.finish_time is not None:
-            time = str(entrant.finish_time)[:9]
-            if entrant.place == 1:
-                color = first_color
-            elif entrant.place == 2:
-                color = second_color
-            elif entrant.place == 3:
-                color = third_color
-            else:
-                color = finished_color
-        elif entrant.status.value == "dnf" or entrant.status.value == "dq" \
-        or race.status.value == "cancelled":
-            time = "--:--:--.-"
-            color = 0xFF0000
-        elif race.started_at is not None:
-            if use_podium_colors:
-                color = racing_color
-            timer = datetime.now(timezone.utc) - race.started_at
-            if timer.total_seconds() < 0.0:
-                time = "-0:00:{:04.1f}".format(timer.total_seconds() * -1.0)
-            else:
-                time = str(timer)[:9]
-    elif race.status.value == "finished":
-        # race is finished and our user is not an entrant
-        time = str(race.ended_at - race.started_at)[:9]
-    elif race.started_at is not None:
-        if use_podium_colors:
-            color = racing_color
-        timer = datetime.now(timezone.utc) - race.started_at
-        if timer.total_seconds() < 0.0:
-            time = "-0:00:{:04.1f}".format(timer.total_seconds() * -1.0)
-        else:
-            time = str(timer)[:9]
-    else:
-        return
+    
+    color, time = get_timer_text(race, full_name)
     with source_ar(source_name) as source, data_ar() as settings:
         obs.obs_data_set_string(settings, "text", time)
         if use_podium_colors:
             set_color(source, settings, color)
         obs.obs_source_update(source, settings)
+
+def get_timer_text(race: Race, full_name : str):
+    entrant = race.get_entrant_by_name(full_name)
+    color = racing_color
+    time = "--:--:--.-"
+    if race.status.value == "open" or race.status.value == "invitational":
+        time = timer_to_str(race.start_delay)
+        color = pre_color
+    elif entrant is not None:
+        if entrant.finish_time is not None:
+            time = timer_to_str(entrant.finish_time)
+            color = get_color(entrant.place)
+        elif entrant.status.value == "dnf" or entrant.status.value == "dq" or race.status.value == "cancelled":
+            color = 0xFF0000
+        elif race.started_at is not None:
+            timer = datetime.now(timezone.utc) - race.started_at
+            time = timer_to_str(timer)
+    elif race.status.value == "finished":
+        # race is finished and our user is not an entrant
+        time = timer_to_str(race.ended_at - race.started_at)
+    elif race.started_at is not None:
+        timer = datetime.now(timezone.utc) - race.started_at
+        time = timer_to_str(timer)
+    else:
+        return
+    return color,time
+
+def get_color(place : int) -> int:
+    if place == 1:
+        return first_color
+    elif place == 2:
+        return second_color
+    elif place == 3:
+        return third_color
+    else:
+        return finished_color
+
+def timer_to_str(timer: timedelta) -> str:
+    if timer.total_seconds() < 0.0:
+        return "-0:00:{:04.1f}".format(timer.total_seconds() * -1.0)
+    else:
+        return str(timer)[:9]
 
 def set_coop_text():
     global coop_label_text
@@ -200,7 +201,6 @@ def set_coop_text():
 def set_qualifier_text():
     global qualifier_par_text
     global entrant_score
-    global logged_once
 
     if race is None:
         return
@@ -220,9 +220,12 @@ def race_update_thread():
     race_event_loop.run_until_complete(race_updater())
     race_event_loop.run_forever()
 
-def update_coop_text():
+def update_coop_text(race: Race):
     global coop_label_text
     global coop_text
+
+    if not race:
+        return
 
     entrant = next((x for x in race.entrants if x.user.full_name == full_name), None)
     partner = next((x for x in race.entrants if x.user.full_name == coop_partner), None)
@@ -253,68 +256,62 @@ def update_coop_text():
     if race.entrants_count_finished == 2:
         if our_total is not None:
             coop_label_text = "We won!"
-            coop_text = str(our_total / 2)[:9]
+            coop_text = timer_to_str(our_total / 2)
         elif opponent_total is not None:
             coop_label_text = "They won. :("
-            coop_text = str(opponent_total / 2)[:9]
+            coop_text = timer_to_str(opponent_total / 2)
     if race.entrants_count_finished == 3:
         current_timer = datetime.now(timezone.utc) - race.started_at
         time_to_beat = None
         if not entrant.finish_time:
             time_to_beat = opponent_total - partner.finish_time
             if time_to_beat < current_timer:
-                coop_text = str(time_to_beat)[:9]
+                coop_text = timer_to_str(time_to_beat)
                 coop_label_text = "I need to finish before"
             else:
                 coop_label_text = "They won. :("
-                opponent_avg = opponent_total / 2
-                coop_text = str(opponent_avg)[:9]
+                coop_text = timer_to_str(opponent_total / 2)
         elif not partner.finish_time:
             time_to_beat = opponent_total - entrant.finish_time
             if time_to_beat < current_timer:
-                coop_text = str(time_to_beat)[:9]
+                coop_text = timer_to_str(time_to_beat)
                 coop_label_text = f"{partner.user.name} needs to finish before"
             else:
                 coop_label_text = "Opponents won, average time:"
-                opponent_avg = opponent_total / 2
-                coop_label_text = str(opponent_avg)[:9]
+                coop_label_text = timer_to_str(opponent_total / 2)
         elif not opponent1.finish_time:
             time_to_beat = our_total - opponent2.finish_time
             if time_to_beat < current_timer:
-                coop_text = str(time_to_beat)[:9]
+                coop_text = timer_to_str(time_to_beat)
                 coop_label_text = f"{opponent1.user.name} needs to finish before"
             else:
                 coop_label_text = "We won!!! Average time:"
-                our_avg = our_total / 2
-                coop_text = str(our_avg)[:9]
+                coop_text = timer_to_str(our_total / 2)
         elif not opponent2.finish_time:
             time_to_beat = our_total - opponent1.finish_time
             if time_to_beat < current_timer:
-                coop_text = str(time_to_beat)[:9]
+                coop_text = timer_to_str(time_to_beat)
                 coop_label_text = f"{opponent2.user.name} needs to finish before"
             else:
                 coop_label_text = "We won!!! Average time:"
-                our_avg = our_total / 2
-                coop_text = str(our_avg)[:9]
+                coop_text = timer_to_str(our_total / 2)
     if race.entrants_count_finished == 4:
         our_total = entrant.finish_time + partner.finish_time
         opponent_total = opponent1.finish_time + opponent2.finish_time
         if our_total < opponent_total:
             coop_label_text = "We won!!! Average time:"
-            our_avg = our_total / 2
-            coop_text = str(our_avg)[:9]
+            coop_text = timer_to_str(our_total / 2)
         else:
             coop_label_text = "Opponents won, average time:"
-            opponent_avg = opponent_total / 2
-            coop_text = str(opponent_avg)[:9]
+            coop_text = timer_to_str(opponent_total / 2)
 
-def update_qualifier_text():
+def update_qualifier_text(race: Race):
     global qualifier_par_text
     global entrant_score
     if not use_qualifier or race is None:
         return
     
-    entrant = next((x for x in race.entrants if x.user.full_name == full_name), None)
+    entrant = race.get_entrant_by_name(full_name)
     logger.debug(entrant)
 
     qualifier_par_text = " "
@@ -322,26 +319,23 @@ def update_qualifier_text():
     if race.entrants_count_finished >= qualifier_cutoff:
         par_time = timedelta(microseconds=0)
         for i in range(1, qualifier_cutoff + 1):
-            finish_time = next((x.finish_time for x in race.entrants if x.place == i), None)
-            if finish_time is None:
+            if race.get_entrant_by_place(i).finish_time is None:
                 logger.error("error: qualifier finish time is None")
                 return
-            logger.debug(f"finish time for rank {i} is {finish_time}")
-            par_time += finish_time
+            logger.debug(f"finish time for rank {i} is {race.get_entrant_by_place(i).finish_time}")
+            par_time += race.get_entrant_by_place(i).finish_time
         par_time = par_time / qualifier_cutoff
         logger.debug(par_time)
-        qualifier_par_text = str(par_time)[:9]
+        qualifier_par_text = timer_to_str(par_time)
 
         if entrant and entrant.finish_time is not None:
             entrant_score = str(2 - (entrant.finish_time / par_time))[:4]
         logger.debug(entrant_score)
-    
-    pass
+
+
 
 async def race_updater():
     global race
-    global race_changed
-
     headers = {
         'User-Agent': "oro-obs-bot_alpha"
     }
@@ -356,34 +350,40 @@ async def race_updater():
             if race is not None and race.websocket_url != "":
                 async with websockets.connect("wss://racetime.gg" + race.websocket_url, host=host, extra_headers=headers) as ws:
                     logger.info(f"connected to websocket: {race.websocket_url}")
-                    last_pong = datetime.now(timezone.utc)
-                    race_changed = False
-                    while True:
-                        try:
-                            if race_changed:
-                                logger.info("new race selected")
-                                race_changed = False
-                                break
-                            message = await asyncio.wait_for(ws.recv(), 5.0)
-                            logger.info(f"received message from websocket: {message}")
-                            data = json.loads(message)
-                            if data.get("type") == "race.data":
-                                r = race_from_dict(data.get("race"))
-                                if r is not None and r.version > race.version:
-                                    race = r
-                                    update_coop_text()
-                                    update_qualifier_text()
-                            elif data.get("type") == "pong":
-                                last_pong = dateutil.parser.parse(data.get("date"))
-                                pass
-                        except asyncio.TimeoutError:
-                            if datetime.now(timezone.utc) - last_pong > timedelta(seconds=20):
-                                await ws.send(json.dumps({"action": "ping"}))
-                        except websockets.ConnectionClosed:
-                            logger.error(f"websocket connection closed")
-                            race = None
-                            break
+                    await process_messages(ws)
         await asyncio.sleep(5.0)
+
+async def process_messages(ws : WebSocketClientProtocol):
+    global race
+    global race_changed
+
+    last_pong = datetime.now(timezone.utc)
+    race_changed = False
+    while True:
+        try:
+            if race_changed:
+                logger.info("new race selected")
+                race_changed = False
+                break
+            message = await asyncio.wait_for(ws.recv(), 5.0)
+            logger.info(f"received message from websocket: {message}")
+            data = json.loads(message)
+            if data.get("type") == "race.data":
+                r = race_from_dict(data.get("race"))
+                if r is not None and r.version > race.version:
+                    race = r
+                    update_coop_text(race)
+                    update_qualifier_text(race)
+            elif data.get("type") == "pong":
+                last_pong = dateutil.parser.parse(data.get("date"))
+                pass
+        except asyncio.TimeoutError:
+            if datetime.now(timezone.utc) - last_pong > timedelta(seconds=20):
+                await ws.send(json.dumps({"action": "ping"}))
+        except websockets.ConnectionClosed:
+            logger.error(f"websocket connection closed")
+            race = None
+            break
 
 
 def refresh_pressed(props, prop, *args, **kwargs):
@@ -393,8 +393,8 @@ def refresh_pressed(props, prop, *args, **kwargs):
     fill_source_list(obs.obs_properties_get(props, "qualifier_par_source"))
     fill_source_list(obs.obs_properties_get(props, "qualifier_score_source"))
     fill_race_list(obs.obs_properties_get(props, "race"), obs.obs_properties_get(props, "category_filter"))
-    update_coop_text()
-    update_qualifier_text()
+    update_coop_text(race)
+    update_qualifier_text(race)
     return True
 
 def new_race_selected(props, prop, settings):
@@ -406,8 +406,8 @@ def new_race_selected(props, prop, settings):
     r = racetime_client.get_race(selected_race)
     if r is not None:
         race = r
-        update_coop_text()
-        update_qualifier_text()
+        update_coop_text(race)
+        update_qualifier_text(race)
         logger.info(f"new race selected: {race}")
         obs.obs_data_set_default_string(settings, "race_info", r.info)
         fill_coop_entrant_lists(props)
