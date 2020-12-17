@@ -4,7 +4,7 @@ import logging
 from .timer import Timer
 
 class Coop:
-    logger: logging.Logger = None
+    logger: logging.Logger = logging.Logger("racetime-obs")
     enabled = False
     partner = None
     opponent2 = None
@@ -33,47 +33,47 @@ class Coop:
             entrant, partner, opponent1, opponent2)
         if race.entrants_count_finished == 2:
             if our_total is not None:
-                label_text = "We won!"
-                text = Timer.timer_to_str(our_total / 2)
+                self.label_text = "We won!"
+                self.text = Timer.timer_to_str(our_total / 2)
             elif opponent_total is not None:
-                label_text = "They won. :("
-                text = Timer.timer_to_str(opponent_total / 2)
+                self.label_text = "They won. :("
+                self.text = Timer.timer_to_str(opponent_total / 2)
         if race.entrants_count_finished == 3:
             current_timer = datetime.now(timezone.utc) - race.started_at
             if not entrant.finish_time:
-                coop_label_text, coop_text = self.get_coop_text(
-                    "I need ", partner, opponent_total, current_timer)
+                self.label_text, self.text = self.get_coop_text(
+                    "I need ", partner, opponent1, opponent2, current_timer)
             elif not partner.finish_time:
-                prefix = partner.user.name + " needs to finish before"
-                coop_label_text, coop_text = self.get_coop_text(
+                prefix = partner.user.name + " needs "
+                self.label_text, self.text = self.get_coop_text(
                     prefix, entrant, opponent1, opponent2, current_timer)
             elif not opponent1.finish_time:
                 prefix = opponent1.user.name + " needs "
-                coop_label_text, coop_text = self.get_coop_text(
+                self.label_text, self.text = self.get_coop_text(
                     prefix, opponent2, entrant, partner, current_timer)
             elif not opponent2.finish_time:
                 prefix = opponent2.user.name + " needs "
-                coop_label_text, coop_text = self.get_coop_text(
+                self.label_text, self.text = self.get_coop_text(
                     prefix, opponent1, entrant, partner, current_timer)
         if race.entrants_count_finished == 4:
             our_total = entrant.finish_time + partner.finish_time
             opponent_total = opponent1.finish_time + opponent2.finish_time
             if our_total < opponent_total:
-                coop_label_text = "We won!!! Average time:"
-                coop_text = Timer.timer_to_str(our_total / 2)
+                self.label_text = "We won!!! Average time:"
+                self.text = Timer.timer_to_str(our_total / 2)
             else:
-                coop_label_text = "Opponents won, average time:"
-                coop_text = Timer.timer_to_str(opponent_total / 2)
+                self.label_text = "Opponents won, average time:"
+                self.text = Timer.timer_to_str(opponent_total / 2)
 
-
+    @staticmethod
     def get_coop_text(label_text_start: str, finished_partner: Entrant, finished1: Entrant, finished2: Entrant, current_timer: timedelta):
         finished_team_total = finished1.finish_time + finished2.finish_time
         time_to_beat = finished_team_total - finished_partner.finish_time
-        if time_to_beat < current_timer:
+        if time_to_beat > current_timer:
             coop_text = Timer.timer_to_str(time_to_beat)
             coop_label_text = label_text_start + "to finish before"
         else:
-            coop_label_text = finished1.user.name + finished2.user.name + " won"
+            coop_label_text = str.format(f"{finished1.user.name} and {finished2.user.name} won")
             coop_text = Timer.timer_to_str(finished_team_total / 2)
         return coop_label_text, coop_text
 

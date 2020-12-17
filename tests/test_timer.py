@@ -3,51 +3,8 @@ from gadgets.timer import Timer
 from models.race import Entrant, Goal, Race, Status
 from users_for_testing import get_test_user, get_test_entrant
 from categories_for_testing import get_test_race_category
+from races_for_testing import get_test_race
 
-
-def get_test_race(status_value="in_progress", version=1, entrants_count=2, started_at=datetime.now(timezone.utc),
-                start_delay=timedelta(seconds=-15), opened_at=datetime.now(timezone.utc), ended_at=None, 
-                cancelled_at: datetime = None, entrant: Entrant = None) -> Race:
-    test_race= Race(name="",
-                status=Status(value=status_value,
-                              verbose_value="", help_text=""),
-                category=get_test_race_category(),
-                goal=Goal("", False),
-                info="A test race",
-                url="",
-                data_url="",
-                websocket_url="",
-                websocket_bot_url="",
-                websocket_oauth_url="",
-                entrants_count=entrants_count,
-                entrants_count_inactive=0,
-                entrants_count_finished=0,
-                entrants=(list(get_test_entrant()
-                          for x in range(0, entrants_count))),
-                version=version,
-                started_at=started_at,
-                start_delay=start_delay,
-                ended_at=ended_at,
-                cancelled_at=cancelled_at,
-                unlisted=False,
-                time_limit=timedelta(days=1),
-                streaming_required=True,
-                auto_start=True,
-                opened_by=get_test_user(),
-                opened_at=opened_at,
-                monitors=[],
-                recordable=True,
-                recorded=False,
-                recorded_by=None,
-                allow_comments=True,
-                hide_comments=False,
-                allow_midrace_chat=True
-                )
-    if entrant is not None:
-        if not entrant in test_race.entrants:
-            test_race.entrants.pop()
-            test_race.entrants.append(entrant)
-    return test_race
 
 def get_test_timer():
     timer = Timer()

@@ -2,6 +2,7 @@ from threading import Thread
 import obspython as obs
 import racetime_client
 from rtgg_obs import RacetimeObs
+from helpers.obs_context_manager import source_ar, source_list_ar, data_ar
 
 rtgg_obs = RacetimeObs()
 
@@ -47,7 +48,7 @@ def script_update_coop_settings(settings):
     rtgg_obs.coop.label_source_name = obs.obs_data_get_string(settings, "coop_label")
 
 def script_update_timer_settings(settings):
-    obs.timer_remove(rtgg_obs.update_sources)
+    obs.timer_remove(update_sources)
 
     rtgg_obs.timer.use_podium_colors = obs.obs_data_get_bool(settings, "use_podium")
     rtgg_obs.timer.pre_color = obs.obs_data_get_int(settings, "pre_color")
@@ -58,7 +59,7 @@ def script_update_timer_settings(settings):
     rtgg_obs.timer.finished_color = obs.obs_data_get_int(settings, "finished_color")
 
     if rtgg_obs.timer.source_name != "" and rtgg_obs.selected_race != "":
-        obs.timer_add(rtgg_obs.update_sources, 100)
+        obs.timer_add(update_sources, 100)
         rtgg_obs.timer.enabled = True
     else:
         rtgg_obs.timer.enabled = False
@@ -247,3 +248,77 @@ def qualifier_toggled(props, prop, settings):
     obs.obs_property_set_visible(
         obs.obs_properties_get(props, "qualifier_group"), vis)
     return True
+
+def update_sources():
+    if rtgg_obs.race is not None:
+        if rtgg_obs.timer.enabled:
+            color, time = rtgg_obs.timer.get_timer_text(rtgg_obs.race, rtgg_obs.full_name)
+            set_source_text(rtgg_obs.timer.source_name, time, color)
+        if rtgg_obs.coop.enabled:
+            set_source_text(rtgg_obs.coop.source_name, rtgg_obs.coop.text, None)
+            set_source_text(rtgg_obs.coop.label_source_name, rtgg_obs.coop.label_text, None)
+        if rtgg_obs.qualifier.enabled:
+            set_source_text(rtgg_obs.qualifier.qualifier_par_source, rtgg_obs.qualifier.qualifier_par_text, None)
+            set_source_text(rtgg_obs.qualifier.qualifier_score_source, rtgg_obs.qualifier.entrant_score, None)
+        pass
+
+def fill_source_list(p):
+    obs.obs_property_list_clear(p)
+    obs.obs_property_list_add_string(p, "", "")
+    with source_list_ar() as sources:
+        if sources is not None:
+            for source in sources:
+                source_id = obs.obs_source_get_unversioned_id(source)
+                if source_id == "text_gdiplus" or source_id == "text_ft2_source":
+                    name = obs.obs_source_get_name(source)
+                    obs.obs_property_list_add_string(p, name, name)
+
+def fill_race_list(self, race_list, category_list):
+    obs.obs_property_list_clear(race_list)
+    obs.obs_property_list_clear(category_list)
+    obs.obs_property_list_add_string(category_list, "All", "All")
+
+    obs.obs_property_list_add_string(race_list, "", "")
+    races = racetime_client.get_races()
+    if races is not None:
+        categories = []
+        for race in races:
+            if self.category == "" or self.category == "All" or race.category.name == self.category:
+                obs.obs_property_list_add_string(
+                    race_list, race.name, race.name)
+            if not race.category.name in categories:
+                categories.append(race.category.name)
+                obs.obs_property_list_add_string(
+                    category_list, race.category.name, race.category.name)
+
+
+def fill_coop_entrant_lists(self, props):
+    self.fill_entrant_list(obs.obs_properties_get(props, "coop_partner"))
+    self.fill_entrant_list(obs.obs_properties_get(props, "coop_opponent1"))
+    self.fill_entrant_list(obs.obs_properties_get(props, "coop_opponent2"))
+
+
+def fill_entrant_list(self, entrant_list):
+    obs.obs_property_list_clear(entrant_list)
+    obs.obs_property_list_add_string(entrant_list, "", "")
+    if self.race is not None:
+        for entrant in self.race.entrants:
+            obs.obs_property_list_add_string(
+                entrant_list, entrant.user.full_name, entrant.user.full_name)
+
+# copied and modified from scripted-text.py by UpgradeQ
+
+def set_source_text(source_name: str, text: str, color: int):
+    with source_ar(source_name) as source, data_ar() as settings:
+        obs.obs_data_set_string(settings, "text", text)
+        source_id = obs.obs_source_get_unversioned_id(source)
+        if color is not None:
+            if source_id == "text_gdiplus":
+                obs.obs_data_set_int(settings, "color", color)  # colored text
+
+            else:  # freetype2,if taken from user input it should be reversed for getting correct color
+                number = "".join(hex(color)[2:])
+                color = int("0xff" f"{number}", base=16)
+                obs.obs_data_set_int(settings, "color1", color)
+        
+        obs.obs_source_update(source, settings)
