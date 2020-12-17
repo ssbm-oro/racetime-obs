@@ -40,9 +40,9 @@ def test_timer_midrace_no_entrant():
 
 
 def test_timer_midrace_w_entrant():
-    timer = get_test_timer()
     entrant = get_test_entrant(status_value="finished", finished_at=datetime.now(timezone.utc), finish_time=timedelta(hours=1, minutes=42, seconds=6.9))
-    race = get_test_race(version=16, entrants_count=2, entrant=entrant)
+    race = get_test_race(version=16, entrants_count=2, entrant=entrant, entrants=[entrant])
+    timer = get_test_timer()
     color, text = timer.get_timer_text(race, entrant.user.full_name)
     assert color is None
     assert text == "1:42:06.9"
@@ -51,8 +51,8 @@ def test_timer_midrace_w_entrant():
     assert color == timer.racing_color
 
 def test_timer_midrace_w_user_not_in_race():
-    timer = get_test_timer()
     race = get_test_race(version=17, entrants_count=2, started_at=datetime.now(timezone.utc)-timedelta(hours=1, minutes=42, seconds=42.0))
+    timer = get_test_timer()
     color, text = timer.get_timer_text(race, "user_not_in_race#6969")
     assert color is None
     assert text == "1:42:42.0"
@@ -61,8 +61,8 @@ def test_timer_midrace_w_user_not_in_race():
     assert color == timer.racing_color
 
 def test_timer_race_cancelled():
-    timer = get_test_timer()
     race = get_test_race(status_value="cancelled", cancelled_at=datetime.now(timezone.utc)+timedelta(minutes=20))
+    timer = get_test_timer()
     color, text = timer.get_timer_text(race, "")
     assert color is None
     assert text == "--:--:--.-"
@@ -72,9 +72,9 @@ def test_timer_race_cancelled():
     assert color is timer.cancel_dq_color
 
 def test_timer_user_dqed():
-    timer = get_test_timer()
     entrant = get_test_entrant(status_value="dq")
-    race = get_test_race(entrant=entrant)
+    race = get_test_race(entrant=entrant, entrants=[entrant])
+    timer = get_test_timer()
     color, text = timer.get_timer_text(race, entrant.user.full_name)
     assert color is None
     assert text == "--:--:--.-"
@@ -83,9 +83,9 @@ def test_timer_user_dqed():
     assert color == timer.cancel_dq_color
 
 def test_user_finished_first():
-    timer = get_test_timer()
     entrant = get_test_entrant(status_value="finished", finished_at=datetime.now(timezone.utc), finish_time=timedelta(hours=1, minutes=9, seconds=42, microseconds=1), place=1)
-    race = get_test_race(started_at=datetime.now(timezone.utc)-entrant.finish_time, entrant=entrant, entrants_count=5)
+    race = get_test_race(started_at=datetime.now(timezone.utc)-entrant.finish_time, entrant=entrant, entrants_count=5, entrants=[entrant])
+    timer = get_test_timer()
     color, text = timer.get_timer_text(race, entrant.user.full_name)
     assert color is None
     assert text == "1:09:42.0"
@@ -93,10 +93,10 @@ def test_user_finished_first():
     color, text = timer.get_timer_text(race, entrant.user.full_name)
     assert color == timer.first_color
 
-def test_user_finished_first():
-    timer = get_test_timer()
+def test_user_finished_second():
     entrant = get_test_entrant(status_value="finished", finished_at=datetime.now(timezone.utc), finish_time=timedelta(hours=1, minutes=9, seconds=42, microseconds=1), place=2)
-    race = get_test_race(started_at=datetime.now(timezone.utc)-entrant.finish_time, entrant=entrant, entrants_count=5)
+    race = get_test_race(started_at=datetime.now(timezone.utc)-entrant.finish_time, entrant=entrant, entrants_count=5, entrants=[entrant])
+    timer = get_test_timer()
     color, text = timer.get_timer_text(race, entrant.user.full_name)
     assert color is None
     assert text == "1:09:42.0"
@@ -104,10 +104,10 @@ def test_user_finished_first():
     color, text = timer.get_timer_text(race, entrant.user.full_name)
     assert color == timer.second_color
 
-def test_user_finished_first():
-    timer = get_test_timer()
+def test_user_finished_third():
     entrant = get_test_entrant(status_value="finished", finished_at=datetime.now(timezone.utc), finish_time=timedelta(hours=1, minutes=9, seconds=42, microseconds=1), place=3)
-    race = get_test_race(started_at=datetime.now(timezone.utc)-entrant.finish_time, entrant=entrant, entrants_count=5)
+    race = get_test_race(started_at=datetime.now(timezone.utc)-entrant.finish_time, entrant=entrant, entrants_count=5, entrants=[entrant])
+    timer = get_test_timer()
     color, text = timer.get_timer_text(race, entrant.user.full_name)
     assert color is None
     assert text == "1:09:42.0"

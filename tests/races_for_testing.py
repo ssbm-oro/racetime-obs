@@ -8,7 +8,10 @@ def get_test_race(status_value="in_progress", version=1, entrants_count=2, start
                 start_delay=timedelta(seconds=-15), opened_at=datetime.now(timezone.utc), ended_at=None, 
                 cancelled_at: datetime = None, entrant: Entrant = None, entrants: List[Entrant] = None) -> Race:
     if not entrants:
-        entrants = (list(get_test_entrant() for x in range(0, entrants_count)))
+        entrants = []
+        for i in range(0, entrants_count):
+            e = get_test_entrant(entrants)
+            entrants.append(e)
         entrant_count_finished = 0
     else:
         entrant_count_finished = list.count((list((x.status.value == "finished" for x in entrants))), True)

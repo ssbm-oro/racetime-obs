@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import random
+from typing import List
 from models.race import Entrant, Status
 from models.user import User
 
@@ -60,11 +61,14 @@ test_users = [
     User(id='zM65aWXNnd31y8q0', full_name='YEAHBUDDY911#1971', name='YEAHBUDDY911', url='/user/zM65aWXNnd31y8q0', discriminator='1971', stats=None, pronouns=None, flair='', twitch_name='yeahbuddy911', twitch_display_name='yeahbuddy911', twitch_channel='https://www.twitch.tv/yeahbuddy911', can_moderate=False, avatar=None
 )]
 
-def get_test_user():
-    return random.choice(test_users)
+def get_test_user(users_used: List[User] = []):
+    choice = random.choice(test_users)
+    while choice.id in users_used:
+        choice = random.choice(test_users)
+    return choice
 
-def get_test_entrant(status_value="joined", finished_at: datetime = None, finish_time: timedelta = None, place: int = None) -> Entrant:
-    return Entrant(get_test_user(), status=get_test_status(status_value), has_comment=False, stream_live=True,
+def get_test_entrant(status_value="joined", finished_at: datetime = None, finish_time: timedelta = None, place: int = None, users_used: List[User] = []) -> Entrant:
+    return Entrant(get_test_user(users_used), status=get_test_status(status_value), has_comment=False, stream_live=True,
      stream_override=False, actions=[], finished_at=finished_at, finish_time=finish_time, place=place)
 
 def get_test_status(status_value):
