@@ -2,6 +2,11 @@ import json
 from datetime import timedelta, datetime, timezone
 from models.race import Race, Status, RaceCategory, Goal, Entrant
 from models.user import User, Stats
+from models.category import Category
+from models.category_past_races import CategoryPastRaces
+from models.leaderboards import Leaderboard, Leaderboards
+from models.user_past_races import UserPastRaces
+from models.user_search import UserSearch
 
 
 def test_race1():

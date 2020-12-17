@@ -30,6 +30,9 @@ class RacetimeObs():
     coop = Coop()
     qualifier = Qualifier()
 
+    def __init__(self):
+        self.timer.logger = self.coop.logger = self.qualifier.logger = self.logger
+
     def update_sources(self):
         if self.race is not None:
             if self.timer.enabled:

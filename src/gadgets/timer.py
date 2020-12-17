@@ -5,7 +5,7 @@ import logging
 # ------------------------------------------------------------
 
 class Timer:
-    logger = logging.Logger("racetime-obs")
+    logger: logging.Logger = None
     enabled: bool = False
     source_name = ""
     timer_text = ""

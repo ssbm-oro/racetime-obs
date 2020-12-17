@@ -141,7 +141,7 @@ class Race:
 
     def get_entrant_by_place(self, place: int) -> Entrant:
         entrant = next(
-            (x.finish_time for x in self.entrants if x.place == place), None)
+            (x for x in self.entrants if x.place == place), None)
         return entrant
 
     @staticmethod

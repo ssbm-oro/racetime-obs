@@ -4,7 +4,7 @@ import logging
 from .timer import Timer
 
 class Coop:
-    logger = logging.Logger("racetime-obs")
+    logger: logging.Logger = None
     enabled = False
     partner = None
     opponent2 = None
@@ -34,10 +34,10 @@ class Coop:
         if race.entrants_count_finished == 2:
             if our_total is not None:
                 label_text = "We won!"
-                text = self.timer_to_str(our_total / 2)
+                text = Timer.timer_to_str(our_total / 2)
             elif opponent_total is not None:
                 label_text = "They won. :("
-                text = self.timer_to_str(opponent_total / 2)
+                text = Timer.timer_to_str(opponent_total / 2)
         if race.entrants_count_finished == 3:
             current_timer = datetime.now(timezone.utc) - race.started_at
             if not entrant.finish_time:
