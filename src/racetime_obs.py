@@ -34,9 +34,9 @@ def script_update_qualifier_settings(settings):
     rtgg_obs.qualifier.enabled = obs.obs_data_get_bool(settings, "use_qualifier")
     rtgg_obs.qualifier.qualifier_cutoff = obs.obs_data_get_int(settings, "qualifier_cutoff")
     rtgg_obs.logger.debug(f"qualifier_cutoff is {rtgg_obs.qualifier.qualifier_cutoff}")
-    rtgg_obs.qualifier.qualifier_par_source = obs.obs_data_get_string(
+    rtgg_obs.qualifier.par_source = obs.obs_data_get_string(
         settings, "qualifier_par_source")
-    rtgg_obs.qualifier.qualifier_score_source = obs.obs_data_get_string(
+    rtgg_obs.qualifier.score_source = obs.obs_data_get_string(
         settings, "qualifier_score_source")
 
 def script_update_coop_settings(settings):
@@ -44,8 +44,8 @@ def script_update_coop_settings(settings):
     rtgg_obs.coop.partner = obs.obs_data_get_string(settings, "coop_partner")
     rtgg_obs.coop.opponent1 = obs.obs_data_get_string(settings, "coop_opponent1")
     rtgg_obs.coop.opponent2 = obs.obs_data_get_string(settings, "coop_opponent2")
-    rtgg_obs.coop.source_name = obs.obs_data_get_string(settings, "coop_source")
-    rtgg_obs.coop.label_source_name = obs.obs_data_get_string(settings, "coop_label")
+    rtgg_obs.coop.source = obs.obs_data_get_string(settings, "coop_source")
+    rtgg_obs.coop.label_source = obs.obs_data_get_string(settings, "coop_label")
 
 def script_update_timer_settings(settings):
     obs.timer_remove(update_sources)
@@ -107,10 +107,10 @@ def script_qualifier_settings(props):
         qualifier_group, "qualifier_cutoff", "Use Top X as par time, where X=", 3, 10, 1)
     p = obs.obs_properties_add_list(qualifier_group, "qualifier_par_source",
                                     "Qualifier Par Time Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
-    rtgg_obs.fill_source_list(p)
+    fill_source_list(p)
     p = obs.obs_properties_add_list(qualifier_group, "qualifier_score_source",
                                     "Qualifier Score Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
-    rtgg_obs.fill_source_list(p)
+    fill_source_list(p)
 
 def script_coop_settings(props):
     p = obs.obs_properties_add_bool(
@@ -127,17 +127,17 @@ def script_coop_settings(props):
         coop_group, "coop_opponent1", "Co-op Opponent 1", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
     p = obs.obs_properties_add_list(
         coop_group, "coop_opponent2", "Co-op Opponent 2", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
-    rtgg_obs.fill_coop_entrant_lists(props)
+    fill_coop_entrant_lists(props)
     p = obs.obs_properties_add_list(coop_group, "coop_source", "Coop Text Source",
                                     obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
     obs.obs_property_set_long_description(
         p, "This text source will display the time that the last racer needs to finish for their team to win")
-    rtgg_obs.fill_source_list(p)
+    fill_source_list(p)
     p = obs.obs_properties_add_list(coop_group, "coop_label", "Coop Label Text Source",
                                     obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
     obs.obs_property_set_long_description(
         p, "This text source will be use to display a label such as \'<PartnerName> needs to finish before\' based on who the last racer is")
-    rtgg_obs.fill_source_list(p)
+    fill_source_list(p)
 
 def script_timer_settings(props):
     p = obs.obs_properties_add_bool(props, "use_podium", "Use custom color for podium finishes?")
@@ -161,7 +161,7 @@ def script_setup(props):
         props, "initial_setup", "Initial setup - Check to make changes", obs.OBS_GROUP_CHECKABLE, setup_group)
     p = obs.obs_properties_add_list(
         setup_group, "source", "Text Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
-    rtgg_obs.fill_source_list(p)
+    fill_source_list(p)
     obs.obs_properties_add_text(
         setup_group, "username", "Username", obs.OBS_TEXT_DEFAULT)
     logging = obs.obs_properties_add_bool(
@@ -191,12 +191,12 @@ def script_setup(props):
     obs.obs_property_set_modified_callback(refresh, refresh_pressed)
 
 def refresh_pressed(props, prop, *args, **kwargs):
-    rtgg_obs.fill_source_list(obs.obs_properties_get(props, "source"))
-    rtgg_obs.fill_source_list(obs.obs_properties_get(props, "coop_label"))
-    rtgg_obs.fill_source_list(obs.obs_properties_get(props, "coop_text"))
-    rtgg_obs.fill_source_list(obs.obs_properties_get(props, "qualifier_par_source"))
-    rtgg_obs.fill_source_list(obs.obs_properties_get(props, "qualifier_score_source"))
-    rtgg_obs.fill_race_list(obs.obs_properties_get(props, "race"),
+    fill_source_list(obs.obs_properties_get(props, "source"))
+    fill_source_list(obs.obs_properties_get(props, "coop_label"))
+    fill_source_list(obs.obs_properties_get(props, "coop_text"))
+    fill_source_list(obs.obs_properties_get(props, "qualifier_par_source"))
+    fill_source_list(obs.obs_properties_get(props, "qualifier_score_source"))
+    fill_race_list(obs.obs_properties_get(props, "race"),
                 obs.obs_properties_get(props, "category_filter"))
     if rtgg_obs.race is not None:
         rtgg_obs.coop.update_coop_text(rtgg_obs.race, rtgg_obs.full_name)
@@ -213,7 +213,7 @@ def new_race_selected(props, prop, settings):
         rtgg_obs.qualifier.update_qualifier_text(rtgg_obs.race, rtgg_obs.full_name)
         rtgg_obs.logger.info(f"new race selected: {rtgg_obs.race}")
         obs.obs_data_set_default_string(settings, "race_info", r.info)
-        rtgg_obs.fill_coop_entrant_lists(props)
+        fill_coop_entrant_lists(props)
     else:
         obs.obs_data_set_default_string(
             settings, "race_info", "Race not found")
@@ -225,7 +225,7 @@ def new_race_selected(props, prop, settings):
 def new_category_selected(props, prop, settings):
     rtgg_obs.category = obs.obs_data_get_string(settings, "category_filter")
     rtgg_obs.logger.info(f"new category selected: {rtgg_obs.category}")
-    rtgg_obs.fill_race_list(obs.obs_properties_get(props, "race"), prop)
+    fill_race_list(obs.obs_properties_get(props, "race"), prop)
     return True
 
 
@@ -255,11 +255,11 @@ def update_sources():
             color, time = rtgg_obs.timer.get_timer_text(rtgg_obs.race, rtgg_obs.full_name)
             set_source_text(rtgg_obs.timer.source_name, time, color)
         if rtgg_obs.coop.enabled:
-            set_source_text(rtgg_obs.coop.source_name, rtgg_obs.coop.text, None)
-            set_source_text(rtgg_obs.coop.label_source_name, rtgg_obs.coop.label_text, None)
+            set_source_text(rtgg_obs.coop.source, rtgg_obs.coop.text, None)
+            set_source_text(rtgg_obs.coop.label_source, rtgg_obs.coop.label_text, None)
         if rtgg_obs.qualifier.enabled:
-            set_source_text(rtgg_obs.qualifier.qualifier_par_source, rtgg_obs.qualifier.qualifier_par_text, None)
-            set_source_text(rtgg_obs.qualifier.qualifier_score_source, rtgg_obs.qualifier.entrant_score, None)
+            set_source_text(rtgg_obs.qualifier.par_source, rtgg_obs.qualifier.par_text, None)
+            set_source_text(rtgg_obs.qualifier.score_source, rtgg_obs.qualifier.entrant_score, None)
         pass
 
 def fill_source_list(p):
@@ -273,7 +273,7 @@ def fill_source_list(p):
                     name = obs.obs_source_get_name(source)
                     obs.obs_property_list_add_string(p, name, name)
 
-def fill_race_list(self, race_list, category_list):
+def fill_race_list(race_list, category_list):
     obs.obs_property_list_clear(race_list)
     obs.obs_property_list_clear(category_list)
     obs.obs_property_list_add_string(category_list, "All", "All")
@@ -283,7 +283,7 @@ def fill_race_list(self, race_list, category_list):
     if races is not None:
         categories = []
         for race in races:
-            if self.category == "" or self.category == "All" or race.category.name == self.category:
+            if rtgg_obs.category == "" or rtgg_obs.category == "All" or race.category.name == rtgg_obs.category:
                 obs.obs_property_list_add_string(
                     race_list, race.name, race.name)
             if not race.category.name in categories:
@@ -292,17 +292,17 @@ def fill_race_list(self, race_list, category_list):
                     category_list, race.category.name, race.category.name)
 
 
-def fill_coop_entrant_lists(self, props):
-    self.fill_entrant_list(obs.obs_properties_get(props, "coop_partner"))
-    self.fill_entrant_list(obs.obs_properties_get(props, "coop_opponent1"))
-    self.fill_entrant_list(obs.obs_properties_get(props, "coop_opponent2"))
+def fill_coop_entrant_lists(props):
+    fill_entrant_list(rtgg_obs.race, obs.obs_properties_get(props, "coop_partner"))
+    fill_entrant_list(rtgg_obs.race, obs.obs_properties_get(props, "coop_opponent1"))
+    fill_entrant_list(rtgg_obs.race, obs.obs_properties_get(props, "coop_opponent2"))
 
 
-def fill_entrant_list(self, entrant_list):
+def fill_entrant_list(race, entrant_list):
     obs.obs_property_list_clear(entrant_list)
     obs.obs_property_list_add_string(entrant_list, "", "")
-    if self.race is not None:
-        for entrant in self.race.entrants:
+    if race is not None:
+        for entrant in race.entrants:
             obs.obs_property_list_add_string(
                 entrant_list, entrant.user.full_name, entrant.user.full_name)
 

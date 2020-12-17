@@ -4,6 +4,9 @@ from models.race import Race, Goal, Status, Entrant
 from users_for_testing import get_test_user, get_test_entrant
 from categories_for_testing import get_test_race_category
 
+def time_ago(**kwargs):
+    return datetime.now(timezone.utc)-timedelta(**kwargs)
+
 def get_test_race(status_value="in_progress", version=1, entrants_count=2, started_at=datetime.now(timezone.utc),
                 start_delay=timedelta(seconds=-15), opened_at=datetime.now(timezone.utc), ended_at=None, 
                 cancelled_at: datetime = None, entrant: Entrant = None, entrants: List[Entrant] = None) -> Race:

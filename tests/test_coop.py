@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from gadgets.coop import Coop
 from users_for_testing import get_test_entrant
-from races_for_testing import get_test_race
+from races_for_testing import get_test_race, time_ago
 
 def test_coop_no_one_finished():
     entrant = get_test_entrant(status_value="in_progress")
@@ -178,9 +178,6 @@ def test_entrant_and_partner_and_opponent1_finished_race_over():
     coop.update_coop_text(race, entrant.user.full_name)
     assert coop.label_text == f"{entrant.user.name} and {partner.user.name} won"
     assert coop.text == "1:30:00.0"
-
-def time_ago(**kwargs):
-    return datetime.now(timezone.utc)-timedelta(**kwargs)
 
 def test_opponents_and_entrant_finished_race_ongoing():
     entrant = get_test_entrant(status_value="finished", finished_at=datetime.now(timezone.utc), finish_time=timedelta(hours=1, microseconds=1))

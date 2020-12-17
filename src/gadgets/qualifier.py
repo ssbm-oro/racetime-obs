@@ -7,12 +7,12 @@ import websockets
 import logging
 
 class Qualifier:
-    logger: logging.Logger = None
+    logger: logging.Logger = logging.Logger("racetime-obs")
     enabled = False
     qualifier_cutoff = 3
-    qualifier_par_source = ""
-    qualifier_score_source = ""
-    qualifier_par_text = " "
+    par_source = ""
+    score_source = ""
+    par_text = " "
     entrant_score = " "
 
     def update_qualifier_text(self, race: Race, full_name: str):
@@ -22,7 +22,7 @@ class Qualifier:
         entrant = race.get_entrant_by_name(full_name)
         self.logger.debug(entrant)
 
-        self.qualifier_par_text = " "
+        self.par_text = " "
         self.entrant_score = " "
         if race.entrants_count_finished >= self.qualifier_cutoff:
             par_time = timedelta(microseconds=0)
@@ -35,8 +35,8 @@ class Qualifier:
                 par_time += race.get_entrant_by_place(i).finish_time
             par_time = par_time / self.qualifier_cutoff
             self.logger.debug(par_time)
-            self.qualifier_par_text = Timer.timer_to_str(par_time)
+            self.par_text = Timer.timer_to_str(par_time)
 
             if entrant and entrant.finish_time is not None:
-                self.entrant_score = str(2 - (entrant.finish_time / par_time))[:4]
+                self.entrant_score = "{:04.2f}".format(2 - (entrant.finish_time / par_time))
             self.logger.debug(self.entrant_score)

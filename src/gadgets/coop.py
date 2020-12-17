@@ -9,8 +9,8 @@ class Coop:
     partner = None
     opponent2 = None
     opponent1 = None
-    source_name = None
-    label_source_name = None
+    source = None
+    label_source = None
     text = " "
     label_text = "Race still in progress"
     
