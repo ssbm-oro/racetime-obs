@@ -39,4 +39,4 @@ class Qualifier:
 
             if entrant and entrant.finish_time is not None:
                 self.entrant_score = str(2 - (entrant.finish_time / par_time))[:4]
-            self.logger.debug(entrant_score)
+            self.logger.debug(self.entrant_score)
