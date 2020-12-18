@@ -4,7 +4,7 @@
 
 ## Introduction
 
-> :warning: **This is a relatively new project** :warning: I am testing it as much as I can, but I can't test every possible configuration. Please do not use yet it in a race that you couldn't afford to lose your stream and local recording (e.g. league or tournament races). Please do let me know if you use it and whether you have issues or not. I think that this should be fairly stable, but I would like confirmation with more data points. :smile: If you do decide to use this in an important race, thank you for your bravery and *any issues you encounter are between you and the tournament admins*.
+> :warning: **This is a relatively new project** :warning: I am testing it as much as I can, but I can't test every possible configuration. Please try it in a casual pickup race a few times before you consider using it in a race that you couldn't afford to lose your stream and local recording (e.g. league or tournament races). Please do let me know if you use it and whether you have issues or not. I think that this should be fairly stable, but I would like confirmation with more data points. :smile: If you do decide to use this in an important race, thank you for your bravery and *any issues you encounter are between you and the tournament admins*.
 
 This is the main code repository for racetime-obs, a plugin to add realtime information from [racetime.gg](https://racetime.gg) to your stream in OBS.
 
@@ -40,9 +40,9 @@ Example output when using tournament qualifier mode.
 
 ## Setup
 
-1) Install the correct version of Python for your system. On Windows, this is Python 3.6. Note on Windows whether you are using the 64-bit or 32-bit version of OBS, as you'll need to use the same version of Python. On macOS, this is Python 3.7. Note on macOS, you also need to use OBS version 25.0.8. Version 26 broke python scripts for macOS.
+1) Install the correct version of Python for your system. On Windows, this is Python 3.6. Note on Windows whether you are using the [64-bit](https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe) or [32-bit version](https://www.python.org/ftp/python/3.6.8/python-3.6.8.exe) of OBS, as you'll need to use the same version of Python which you can find at those links. On macOS, this is [Python 3.7](https://www.python.org/ftp/python/3.7.9/python-3.7.9-macosx10.9.pkg). Note on macOS, you also need to use OBS version 25.0.8. Version 26 broke python scripts for macOS.
 
-2) Download and unzip the latest release archive to any folder
+2) Download and unzip the [latest release archive](https://github.com/ssbm-oro/racetime-obs/releases/latest/) to any folder
 
 3) Install the correct python requirements with `python -m pip install -r requirements.txt`
 
