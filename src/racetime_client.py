@@ -1,14 +1,17 @@
 import requests
+
 from models.category import category_from_dict
 from models.category_past_races import category_past_races_from_dict
 from models.leaderboards import leaderboards_from_dict
 from models.race import race_from_dict, races_from_dict
+from models.user import user_from_dict
 from models.user_past_races import user_past_races_from_dict
 from models.user_search import user_search_from_dict
-from models.user import user_from_dict
+
 
 def script_description():
     return "<p>You've loaded the incorrect script.<br><br>Please remove this file and add 'racetime_obs.py' instead</p>"
+
 
 base_url = "http://racetime.gg/"
 

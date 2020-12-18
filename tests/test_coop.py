@@ -1,7 +1,10 @@
 from datetime import datetime, timedelta, timezone
+
 from gadgets.coop import Coop
-from users_for_testing import get_test_entrant
+
 from races_for_testing import get_test_race, time_ago
+from users_for_testing import get_test_entrant
+
 
 def test_coop_no_one_finished():
     entrant = get_test_entrant(status_value="in_progress")

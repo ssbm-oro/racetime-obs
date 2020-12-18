@@ -1,10 +1,12 @@
-import websockets
-from websockets.client import WebSocketClientProtocol
-from datetime import timedelta
-from gadgets.timer import Timer
-from models.race import Race
-import websockets
 import logging
+from datetime import timedelta
+
+import websockets
+from models.race import Race
+from websockets.client import WebSocketClientProtocol
+
+from gadgets.timer import Timer
+
 
 class Qualifier:
     logger: logging.Logger = logging.Logger("racetime-obs")
@@ -25,18 +27,23 @@ class Qualifier:
         self.par_text = " "
         self.entrant_score = " "
         if race.entrants_count_finished >= self.qualifier_cutoff:
-            par_time = timedelta(microseconds=0)
-            for i in range(1, self.qualifier_cutoff + 1):
-                if race.get_entrant_by_place(i).finish_time is None:
-                    self.logger.error("error: qualifier finish time is None")
-                    return
-                self.logger.debug(
-                    f"finish time for rank {i} is {race.get_entrant_by_place(i).finish_time}")
-                par_time += race.get_entrant_by_place(i).finish_time
-            par_time = par_time / self.qualifier_cutoff
+            par_time = self.calculate_par_time(race)
             self.logger.debug(par_time)
             self.par_text = Timer.timer_to_str(par_time)
 
             if entrant and entrant.finish_time is not None:
-                self.entrant_score = "{:04.2f}".format(2 - (entrant.finish_time / par_time))
+                self.entrant_score = "{:04.2f}".format(
+                    2 - (entrant.finish_time / par_time))
             self.logger.debug(self.entrant_score)
+
+    def calculate_par_time(self, race: Race) -> timedelta:
+        par_time = timedelta(microseconds=0)
+        for i in range(1, self.qualifier_cutoff + 1):
+            if race.get_entrant_by_place(i).finish_time is None:
+                self.logger.error("error: qualifier finish time is None")
+                return
+            self.logger.debug(
+                f"finish time for rank {i} is {race.get_entrant_by_place(i).finish_time}")
+            par_time += race.get_entrant_by_place(i).finish_time
+        par_time = par_time / self.qualifier_cutoff
+        return par_time

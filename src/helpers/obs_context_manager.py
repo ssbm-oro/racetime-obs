@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+
 import obspython as obs
 
 # auto release context managers

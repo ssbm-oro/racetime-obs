@@ -1,9 +1,11 @@
 from dataclasses import dataclass
-from typing import Optional, Any, List
-from models import from_str, from_bool, from_union, from_none, from_int, from_datetime, from_timedelta, from_list
-from models.user import User
-from models.race import Status, Goal
 from datetime import datetime, timedelta
+from typing import Any, List, Optional
+
+from models import (from_bool, from_datetime, from_int, from_list, from_none,
+                    from_str, from_timedelta, from_union)
+from models.race import Goal, Status
+from models.user import User
 
 
 @dataclass

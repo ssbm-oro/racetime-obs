@@ -1,8 +1,10 @@
-from datetime import datetime, timedelta, timezone
-from models.race import Entrant, Race
 import logging
+from datetime import datetime, timedelta, timezone
+
+from models.race import Entrant, Race
 
 # ------------------------------------------------------------
+
 
 class Timer:
     logger: logging.Logger = None
@@ -22,15 +24,18 @@ class Timer:
         entrant = race.get_entrant_by_name(full_name)
         color = self.racing_color
         time = "--:--:--.-"
-        
+
         # default value used if user is not in race and race is running currently
-        color, time = self.get_color_and_text_by_started_at(race.started_at, race.status.value, race.ended_at)
-        
+        color, time = self.get_color_and_text_by_started_at(
+            race.started_at, race.status.value, race.ended_at)
+
         # if race is has not started or cancelled
-        color, time = self.get_color_and_text_by_race_status(race.status.value, race.start_delay, color, time)
+        color, time = self.get_color_and_text_by_race_status(
+            race.status.value, race.start_delay, color, time)
 
         # value if user is an entrant in this race
-        color, time = self.get_color_and_text_by_entrant(entrant, race.started_at, color, time)
+        color, time = self.get_color_and_text_by_entrant(
+            entrant, race.started_at, color, time)
         if not self.use_podium_colors:
             color = None
         return color, time
@@ -58,7 +63,7 @@ class Timer:
         else:
             return fallback_color, fallback_text
         return color, time
-        
+
     def get_color_and_text_by_entrant(self, entrant: Entrant = None, started_at: datetime = None, fallback_color: int = None, fallback_text: str = None):
         time = fallback_text
         color = fallback_color
@@ -83,7 +88,6 @@ class Timer:
             return self.third_color
         else:
             return self.finished_color
-
 
     @staticmethod
     def timer_to_str(timer: timedelta) -> str:

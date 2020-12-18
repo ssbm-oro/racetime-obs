@@ -1,20 +1,23 @@
+import asyncio
 import json
+import logging
+from datetime import datetime, timedelta, timezone
+
+import dateutil
 import websockets
 from websockets.client import WebSocketClientProtocol
-from datetime import datetime, timedelta, timezone
+
 import racetime_client
-from models.race import Race, race_from_dict
-import asyncio
-import websockets
-import dateutil
-import logging
-from helpers.LogFormatter import LogFormatter
-from gadgets.timer import Timer
 from gadgets.coop import Coop
 from gadgets.qualifier import Qualifier
+from gadgets.timer import Timer
+from helpers.LogFormatter import LogFormatter
+from models.race import Race, race_from_dict
+
 
 def script_description():
     return "<p>You've loaded the incorrect script.<br><br>Please remove this file and add 'racetime_obs.py' instead</p>"
+
 
 class RacetimeObs():
     logger = logging.Logger("racetime-obs")
@@ -31,14 +34,11 @@ class RacetimeObs():
     def __init__(self):
         self.timer.logger = self.coop.logger = self.qualifier.logger = self.logger
 
-    
-
     def race_update_thread(self):
         self.logger.debug("starting race update")
         race_event_loop = asyncio.new_event_loop()
         race_event_loop.run_until_complete(self.race_updater())
         race_event_loop.run_forever()
-
 
     async def race_updater(self):
         headers = {
@@ -59,7 +59,6 @@ class RacetimeObs():
                             f"connected to websocket: {self.race.websocket_url}")
                         await self.process_messages(ws)
             await asyncio.sleep(5.0)
-
 
     async def process_messages(self, ws: WebSocketClientProtocol):
         last_pong = datetime.now(timezone.utc)
@@ -95,7 +94,6 @@ class RacetimeObs():
             last_pong = dateutil.parser.parse(data.get("date"))
             pass
         return last_pong
-
 
     def update_logger(self, enabled: bool, log_to_file: bool, log_file: str, level: str):
         self.logger.disabled = not enabled

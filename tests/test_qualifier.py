@@ -5,14 +5,19 @@ from users_for_testing import get_test_user, get_test_entrant
 from categories_for_testing import get_test_race_category
 from races_for_testing import get_test_race, time_ago
 
-def test_no_one_finished():
-    entrant = get_test_entrant(status_value="in_progress")
-    race = get_test_race(entrants_count=20, entrant=entrant)
+
+def get_test_qualifier():
     qualifier = Qualifier()
     qualifier.enabled = True
     qualifier.qualifier_cutoff = 3
     qualifier.par_source = "par source"
     qualifier.score_source = "score source"
+    return qualifier
+
+def test_no_one_finished():
+    entrant = get_test_entrant(status_value="in_progress")
+    race = get_test_race(entrants_count=20, entrant=entrant)
+    qualifier = get_test_qualifier()
     qualifier.update_qualifier_text(race, entrant.user.full_name)
     assert qualifier.entrant_score == " "
     assert qualifier.par_text == " "
@@ -26,11 +31,7 @@ def test_some_finished():
         users_used = (x.user for x in entrants)
         entrants.append(get_test_entrant(users_used=users_used))
     race = get_test_race(entrants=entrants)
-    qualifier = Qualifier()
-    qualifier.enabled = True
-    qualifier.qualifier_cutoff = 3
-    qualifier.par_source = "par source"
-    qualifier.score_source = "score source"
+    qualifier = get_test_qualifier()
     qualifier.update_qualifier_text(race, entrant.user.full_name)
     assert qualifier.entrant_score == " "
     assert qualifier.par_text == " "
@@ -45,11 +46,7 @@ def test_cutoff_finished():
         users_used = (x.user for x in entrants)
         entrants.append(get_test_entrant(users_used=users_used))
     race = get_test_race(entrants=entrants)
-    qualifier = Qualifier()
-    qualifier.enabled = True
-    qualifier.qualifier_cutoff = 3
-    qualifier.par_source = "par source"
-    qualifier.score_source = "score source"
+    qualifier = get_test_qualifier()
     qualifier.update_qualifier_text(race, entrant.user.full_name)
     assert qualifier.entrant_score == " "
     assert qualifier.par_text == "1:35:00.0"
@@ -64,11 +61,7 @@ def test_cutoff_and_entrant_finished():
         users_used = (x.user for x in entrants)
         entrants.append(get_test_entrant(users_used=users_used))
     race = get_test_race(entrants=entrants)
-    qualifier = Qualifier()
-    qualifier.enabled = True
-    qualifier.qualifier_cutoff = 3
-    qualifier.par_source = "par source"
-    qualifier.score_source = "score source"
+    qualifier = get_test_qualifier()
     qualifier.update_qualifier_text(race, entrant.user.full_name)
     # par is 95 minutes, entrant's time is 105 minutes. 2-(105/95) ~= 0.89
     assert qualifier.entrant_score == "0.89"
@@ -83,11 +76,7 @@ def test_cutoff_and_entrant_finished_in_top():
         users_used = (x.user for x in entrants)
         entrants.append(get_test_entrant(users_used=users_used))
     race = get_test_race(entrants=entrants)
-    qualifier = Qualifier()
-    qualifier.enabled = True
-    qualifier.qualifier_cutoff = 3
-    qualifier.par_source = "par source"
-    qualifier.score_source = "score source"
+    qualifier = get_test_qualifier()
     qualifier.update_qualifier_text(race, entrant.user.full_name)
     # par is 95 minutes, entrant's time is 95 minutes. 2-(95/95) = 1.00
     assert qualifier.entrant_score == "1.00"
@@ -102,11 +91,7 @@ def test_cutoff_and_entrant_finished_in_first():
         users_used = (x.user for x in entrants)
         entrants.append(get_test_entrant(users_used=users_used))
     race = get_test_race(entrants=entrants)
-    qualifier = Qualifier()
-    qualifier.enabled = True
-    qualifier.qualifier_cutoff = 3
-    qualifier.par_source = "par source"
-    qualifier.score_source = "score source"
+    qualifier = get_test_qualifier()
     qualifier.update_qualifier_text(race, entrant.user.full_name)
     # par is 95 minutes, entrant's time is 90 minutes. 2-(90/95) ""= 1.05
     assert qualifier.entrant_score == "1.05"
