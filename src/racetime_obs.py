@@ -106,6 +106,7 @@ def script_update_setup_settings(settings):
 def script_defaults(settings):
     obs.obs_data_set_default_string(settings, "race_info", "Race info")
     obs.obs_data_set_default_string(settings, "race", "")
+    obs.obs_data_set_default_int(settings, "qualifier_cutoff", 3)
 
 
 def script_properties():
