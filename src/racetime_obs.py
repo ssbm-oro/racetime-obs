@@ -12,10 +12,13 @@ rtgg_obs = RacetimeObs()
 
 
 def script_description():
-    return "<center><p>Select a text source to use as your timer and enter your full " + \
-        "username on racetime.gg  (including discriminator). This only needs " + \
-        "to be done once.\n\nThen select the race room each race you join and " + \
-        "stop worrying about whether you started your timer or not.<hr/></p>"
+    return (
+        "<center><p>Select a text source to use as your timer and enter your"
+        "full username on racetime.gg  (including discriminator). This only"
+        "needs to be done once.\n\nThen select the race room each race you "
+        "join and stop worrying about whether you started your timer or not."
+        "<hr/></p>"
+    )
 
 
 def script_load(settings):
@@ -79,21 +82,25 @@ def script_update_timer_settings(settings):
     rtgg_obs.timer.finished_color = obs.obs_data_get_int(
         settings, "finished_color")
 
-    if rtgg_obs.timer.source_name != "" and rtgg_obs.selected_race != "":
-        obs.timer_add(update_sources, 100)
+    if rtgg_obs.selected_race != "":
         rtgg_obs.timer.enabled = True
     else:
         rtgg_obs.timer.enabled = False
+
+    if rtgg_obs.timer.is_enabled():
+        obs.timer_add(update_sources, 100)
     rtgg_obs.logger.debug(f"timer.enabled is {rtgg_obs.timer.enabled}")
     rtgg_obs.logger.debug(f"timer.source_name is {rtgg_obs.timer.source_name}")
     rtgg_obs.logger.debug(f"selected_race is {rtgg_obs.selected_race}")
 
 
 def script_update_setup_settings(settings):
-    rtgg_obs.update_logger(obs.obs_data_get_bool(settings, "enable_log"),
-                           obs.obs_data_get_bool(settings, "log_to_file"),
-                           obs.obs_data_get_string(settings, "log_file"),
-                           obs.obs_data_get_string(settings, "log_level"))
+    rtgg_obs.update_logger(
+        obs.obs_data_get_bool(settings, "enable_log"),
+        obs.obs_data_get_bool(settings, "log_to_file"),
+        obs.obs_data_get_string(settings, "log_file"),
+        obs.obs_data_get_string(settings, "log_level")
+    )
 
     rtgg_obs.full_name = obs.obs_data_get_string(settings, "username")
 
@@ -121,20 +128,38 @@ def script_properties():
 
 def script_qualifier_settings(props):
     p = obs.obs_properties_add_bool(
-        props, "use_qualifier", "Display race results as tournament qualifier?")
+            props, "use_qualifier",
+            "Display race results as tournament qualifier?"
+        )
     obs.obs_property_set_modified_callback(p, qualifier_toggled)
     qualifier_group = obs.obs_properties_create()
     obs.obs_properties_add_group(
-        props, "qualifier_group", "Qualifier Mode", obs.OBS_GROUP_NORMAL, qualifier_group)
+            props, "qualifier_group", "Qualifier Mode",
+            obs.OBS_GROUP_NORMAL, qualifier_group
+        )
     obs.obs_property_set_visible(
-        obs.obs_properties_get(props, "qualifier_group"), rtgg_obs.qualifier.enabled)
+        obs.obs_properties_get(props, "qualifier_group"),
+        rtgg_obs.qualifier.enabled
+    )
     p = obs.obs_properties_add_int_slider(
-        qualifier_group, "qualifier_cutoff", "Use Top X as par time, where X=", 3, 10, 1)
-    p = obs.obs_properties_add_list(qualifier_group, "qualifier_par_source",
-                                    "Qualifier Par Time Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
+            qualifier_group, "qualifier_cutoff",
+            "Use Top X as par time, where X=", 3, 10, 1
+        )
+    p = obs.obs_properties_add_list(
+            qualifier_group,
+            "qualifier_par_source",
+            "Qualifier Par Time Source",
+            obs.OBS_COMBO_TYPE_EDITABLE,
+            obs.OBS_COMBO_FORMAT_STRING
+        )
     fill_source_list(p)
-    p = obs.obs_properties_add_list(qualifier_group, "qualifier_score_source",
-                                    "Qualifier Score Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
+    p = obs.obs_properties_add_list(
+            qualifier_group,
+            "qualifier_score_source",
+            "Qualifier Score Source",
+            obs.OBS_COMBO_TYPE_EDITABLE,
+            obs.OBS_COMBO_FORMAT_STRING
+        )
     fill_source_list(p)
 
 
@@ -144,25 +169,41 @@ def script_coop_settings(props):
     obs.obs_property_set_modified_callback(p, coop_toggled)
     coop_group = obs.obs_properties_create()
     obs.obs_properties_add_group(
-        props, "coop_group", "Co-op Mode", obs.OBS_GROUP_NORMAL, coop_group)
+        props, "coop_group", "Co-op Mode", obs.OBS_GROUP_NORMAL, coop_group
+    )
     obs.obs_property_set_visible(
         obs.obs_properties_get(props, "coop_group"), rtgg_obs.coop.enabled)
     p = obs.obs_properties_add_list(
-        coop_group, "coop_partner", "Co-op Partner", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+        coop_group, "coop_partner", "Co-op Partner",
+        obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING
+    )
     p = obs.obs_properties_add_list(
-        coop_group, "coop_opponent1", "Co-op Opponent 1", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+        coop_group, "coop_opponent1", "Co-op Opponent 1",
+        obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING
+    )
     p = obs.obs_properties_add_list(
-        coop_group, "coop_opponent2", "Co-op Opponent 2", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+        coop_group, "coop_opponent2", "Co-op Opponent 2",
+        obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING
+    )
     fill_coop_entrant_lists(props)
-    p = obs.obs_properties_add_list(coop_group, "coop_source", "Coop Text Source",
-                                    obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
-    obs.obs_property_set_long_description(
-        p, "This text source will display the time that the last racer needs to finish for their team to win")
+    p = obs.obs_properties_add_list(
+        coop_group, "coop_source", "Coop Text Source",
+        obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING
+    )
+    obs.obs_property_set_long_description(p, (
+        "This text source will display the time that the last racer needs to"
+        " finish for their team to win"
+    ))
     fill_source_list(p)
-    p = obs.obs_properties_add_list(coop_group, "coop_label", "Coop Label Text Source",
-                                    obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
-    obs.obs_property_set_long_description(
-        p, "This text source will be use to display a label such as \'<PartnerName> needs to finish before\' based on who the last racer is")
+    p = obs.obs_properties_add_list(
+        coop_group, "coop_label", "Coop Label Text Source",
+        obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING
+    )
+    obs.obs_property_set_long_description(p, (
+        "This text source will be use to display a label such as "
+        "\'<PartnerName> needs to finish before\' based on who the last racer"
+        " is"
+    ))
     fill_source_list(p)
 
 
@@ -172,7 +213,9 @@ def script_timer_settings(props):
     obs.obs_property_set_modified_callback(p, podium_toggled)
     podium_group = obs.obs_properties_create()
     obs.obs_properties_add_group(
-        props, "podium_group", "Podium Colors", obs.OBS_GROUP_NORMAL, podium_group)
+        props, "podium_group", "Podium Colors",
+        obs.OBS_GROUP_NORMAL, podium_group
+    )
     obs.obs_property_set_visible(obs.obs_properties_get(
         props, "podium_group"), rtgg_obs.timer.use_podium_colors)
     obs.obs_properties_add_color(podium_group, "pre_color", "Pre-race:")
@@ -187,26 +230,38 @@ def script_timer_settings(props):
 def script_setup(props):
     setup_group = obs.obs_properties_create()
     obs.obs_properties_add_group(
-        props, "initial_setup", "Initial setup - Check to make changes", obs.OBS_GROUP_CHECKABLE, setup_group)
+        props, "initial_setup", "Initial setup - Check to make changes",
+        obs.OBS_GROUP_CHECKABLE, setup_group
+    )
     p = obs.obs_properties_add_list(
-        setup_group, "source", "Text Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
+        setup_group, "source", "Text Source", obs.OBS_COMBO_TYPE_EDITABLE,
+        obs.OBS_COMBO_FORMAT_STRING
+    )
     fill_source_list(p)
     obs.obs_properties_add_text(
         setup_group, "username", "Username", obs.OBS_TEXT_DEFAULT)
     logging = obs.obs_properties_add_bool(
         setup_group, "enable_log", "Enable logging")
     log_levels = obs.obs_properties_add_list(
-        setup_group, "log_level", "Log lever", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+        setup_group, "log_level", "Log lever", obs.OBS_COMBO_TYPE_LIST,
+        obs.OBS_COMBO_FORMAT_STRING
+    )
     obs.obs_property_list_add_string(log_levels, "Error", "Error")
     obs.obs_property_list_add_string(log_levels, "Debug", "Debug")
     obs.obs_property_list_add_string(log_levels, "Info", "Info")
     obs.obs_property_set_long_description(
-        logging, "Generally, only log errors unless you are developing or are trying to find a specific problem.")
+        logging, "Generally, only log errors unless you are developing or are "
+        "trying to find a specific problem."
+    )
     obs.obs_properties_add_bool(setup_group, "log_to_file", "Log to file?")
     category_list = obs.obs_properties_add_list(
-        props, "category_filter", "Filter by Category", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+        props, "category_filter", "Filter by Category",
+        obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING
+    )
     race_list = obs.obs_properties_add_list(
-        props, "race", "Race", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+        props, "race", "Race",
+        obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING
+        )
     obs.obs_property_set_modified_callback(race_list, new_race_selected)
     obs.obs_property_set_modified_callback(
         category_list, new_category_selected)
@@ -237,7 +292,7 @@ def refresh_pressed(props, prop, *args, **kwargs):
 
 def new_race_selected(props, prop, settings):
     rtgg_obs.selected_race = obs.obs_data_get_string(settings, "race")
-    r = racetime_client.get_race(rtgg_obs.selected_race)
+    r = racetime_client.get_race_by_name(rtgg_obs.selected_race)
     if r is not None:
         rtgg_obs.race = r
         rtgg_obs.coop.update_coop_text(rtgg_obs.race, rtgg_obs.full_name)
@@ -284,15 +339,15 @@ def qualifier_toggled(props, prop, settings):
 
 def update_sources():
     if rtgg_obs.race is not None:
-        if rtgg_obs.timer.enabled:
+        if rtgg_obs.timer.is_enabled():
             color, time = rtgg_obs.timer.get_timer_text(
                 rtgg_obs.race, rtgg_obs.full_name)
             set_source_text(rtgg_obs.timer.source_name, time, color)
-        if rtgg_obs.coop.enabled:
+        if rtgg_obs.coop.is_enabled():
             set_source_text(rtgg_obs.coop.source, rtgg_obs.coop.text, None)
             set_source_text(rtgg_obs.coop.label_source,
                             rtgg_obs.coop.label_text, None)
-        if rtgg_obs.qualifier.enabled:
+        if rtgg_obs.qualifier.is_enabled():
             set_source_text(rtgg_obs.qualifier.par_source,
                             rtgg_obs.qualifier.par_text, None)
             set_source_text(rtgg_obs.qualifier.score_source,
@@ -307,7 +362,10 @@ def fill_source_list(p):
         if sources is not None:
             for source in sources:
                 source_id = obs.obs_source_get_unversioned_id(source)
-                if source_id == "text_gdiplus" or source_id == "text_ft2_source":
+                if (
+                    source_id == "text_gdiplus" or
+                    source_id == "text_ft2_source"
+                ):
                     name = obs.obs_source_get_name(source)
                     obs.obs_property_list_add_string(p, name, name)
 
@@ -328,7 +386,7 @@ def fill_race_list(race_list, category_list):
 def fill_category_list(category_list, races: List[Race]):
     categories = []
     for race in races:
-        if not race.category.name in categories:
+        if race.category.name not in categories:
             categories.append(race.category.name)
             obs.obs_property_list_add_string(
                 category_list, race.category.name, race.category.name)
@@ -336,7 +394,10 @@ def fill_category_list(category_list, races: List[Race]):
 
 def filter_races_by_category(races: List[Race], category: Category) -> Race:
     for race in races:
-        if rtgg_obs.category == "" or rtgg_obs.category == "All" or race.category.name == rtgg_obs.category:
+        if (
+            rtgg_obs.category == "" or rtgg_obs.category == "All" or
+            race.category.name == rtgg_obs.category
+        ):
             yield race
 
 
@@ -368,7 +429,8 @@ def set_source_text(source_name: str, text: str, color: int):
             if source_id == "text_gdiplus":
                 obs.obs_data_set_int(settings, "color", color)  # colored text
 
-            else:  # freetype2,if taken from user input it should be reversed for getting correct color
+            # freetype2 is BGR, should be reversed for getting correct color
+            else:
                 number = "".join(hex(color)[2:])
                 color = int("0xff" f"{number}", base=16)
                 obs.obs_data_set_int(settings, "color1", color)

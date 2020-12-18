@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, List, TypeVar, Callable, Type, cast
+from typing import Any, List
 from models import from_list
 from models.user import User
 

@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 from datetime import datetime, timedelta, timezone
+from typing import Any
 
 import dateutil
 import websockets
@@ -16,7 +17,10 @@ from models.race import Race, race_from_dict
 
 
 def script_description():
-    return "<p>You've loaded the incorrect script.<br><br>Please remove this file and add 'racetime_obs.py' instead</p>"
+    return (
+        "<p>You've loaded the incorrect script.<br><br>Please remove this file"
+        "and add 'racetime_obs.py' instead</p>"
+    )
 
 
 class RacetimeObs():
@@ -32,7 +36,9 @@ class RacetimeObs():
     qualifier = Qualifier()
 
     def __init__(self):
-        self.timer.logger = self.coop.logger = self.qualifier.logger = self.logger
+        self.timer.logger = self.logger
+        self.coop.logger = self.logger
+        self.qualifier.logger = self.logger
 
     def race_update_thread(self):
         self.logger.debug("starting race update")
@@ -47,16 +53,23 @@ class RacetimeObs():
         host = "racetime.gg"
 
         while True:
-            if not self.timer.enabled:
+            if not self.timer.is_enabled():
                 await asyncio.sleep(5.0)
             else:
                 if self.race is None and self.selected_race != "":
-                    self.race = racetime_client.get_race(self.selected_race)
+                    self.race = (
+                        racetime_client.get_race_by_name(self.selected_race)
+                    )
                 if self.race is not None and self.race.websocket_url != "":
-                    async with websockets.connect("wss://racetime.gg" + self.race.websocket_url, host=host, extra_headers=headers) as ws:
+                    async with websockets.connect(
+                        "wss://racetime.gg" + self.race.websocket_url,
+                        host=host, extra_headers=headers
+                    ) as ws:
                         self.race_changed = False
                         self.logger.info(
-                            f"connected to websocket: {self.race.websocket_url}")
+                            "connected to websocket:"
+                            " {self.race.websocket_url}"
+                        )
                         await self.process_messages(ws)
             await asyncio.sleep(5.0)
 
@@ -73,12 +86,15 @@ class RacetimeObs():
                 data = json.loads(message)
                 last_pong = self.process_ws_message(data, last_pong)
             except asyncio.TimeoutError:
-                if datetime.now(timezone.utc) - last_pong > timedelta(seconds=20):
-                    await ws.send(json.dumps({"action": "ping"}))
+                await self.ping_ws(ws, last_pong)
             except websockets.ConnectionClosed:
-                self.logger.error(f"websocket connection closed")
+                self.logger.error("websocket connection closed")
                 self.race = None
                 break
+
+    async def ping_ws(self, ws, last_pong):
+        if datetime.now(timezone.utc) - last_pong > timedelta(seconds=20):
+            await ws.send(json.dumps({"action": "ping"}))
 
     def process_ws_message(self, data, last_pong):
         if data.get("type") == "race.data":
@@ -95,14 +111,16 @@ class RacetimeObs():
             pass
         return last_pong
 
-    def update_logger(self, enabled: bool, log_to_file: bool, log_file: str, level: str):
+    def update_logger(
+        self, enabled: bool, log_to_file: bool, log_file: str, level: str
+    ):
         self.logger.disabled = not enabled
         self.logger.handlers = []
         handler = logging.StreamHandler()
         if log_to_file:
             try:
                 handler = logging.FileHandler(log_file)
-            except:
+            except Any:
                 self.logger.error(f"Unable to open {log_file}")
         elif level == "Debug":
             handler.setLevel(logging.DEBUG)

@@ -23,7 +23,9 @@ class Ranking:
         score = from_int(obj.get("score"))
         best_time = from_str(obj.get("best_time"))
         times_raced = from_int(obj.get("times_raced"))
-        return Ranking(user, place, place_ordinal, score, best_time, times_raced)
+        return Ranking(
+            user=user, place=place, place_ordinal=place_ordinal, score=score,
+            best_time=best_time, times_raced=times_raced)
 
 
 @dataclass

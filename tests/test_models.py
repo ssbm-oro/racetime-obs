@@ -1,13 +1,15 @@
 import json
 from datetime import datetime, timedelta, timezone
 
-from models.category import Category
-from models.category_past_races import CategoryPastRaces
-from models.leaderboards import Leaderboard, Leaderboards
+# ignore warning for these imports, they're included so i can
+# keep track of modules which don't have tests written yet
+from models.category import Category  # noqa: F401
+from models.category_past_races import CategoryPastRaces  # noqa: F401
+from models.leaderboards import Leaderboard, Leaderboards  # noqa: F401
 from models.race import Entrant, Goal, Race, RaceCategory, Status
 from models.user import Stats, User
-from models.user_past_races import UserPastRaces
-from models.user_search import UserSearch
+from models.user_past_races import UserPastRaces  # noqa: F401
+from models.user_search import UserSearch  # noqa: F401
 
 
 def test_race1():
@@ -45,7 +47,10 @@ def test_finished_race():
             websocket_url="/ws/race/dazzling-oldman-0937",
             websocket_bot_url="/ws/o/bot/dazzling-oldman-0937",
             websocket_oauth_url="/ws/o/race/dazzling-oldman-0937",
-            info="crosskeys - https://alttpr.com/h/QJG8VkrjvB - (Flute/Pendant/Magic Powder/Heart/Cape) - Quickswap Enabled",
+            info=(
+                "crosskeys - https://alttpr.com/h/QJG8VkrjvB - "
+                "(Flute/Pendant/Magic Powder/Heart/Cape) - Quickswap Enabled"
+            ),
             entrants_count=10,
             entrants_count_finished=9,
             entrants_count_inactive=1,
@@ -53,11 +58,12 @@ def test_finished_race():
             category=expected_catogeroy,
             goal=expected_goal,
             entrants=expected_entrants,
-            opened_at=datetime(year=2020, month=12, day=14, hour=3, minute=16,
-                               second=59, microsecond=822000, tzinfo=timezone.utc),
+            opened_at=datetime(
+                year=2020, month=12, day=14, hour=3, minute=16, second=59,
+                microsecond=822000, tzinfo=timezone.utc),
             time_limit=timedelta(days=1)
         )
-        #assert expected_race == race
+        # assert expected_race == race
         assert len(expected_race.entrants) == len(race.entrants)
 
 
@@ -68,27 +74,15 @@ def expected_entrants_finished_race1():
         name="SEJay",
         discriminator="5897",
         url="/user/kzM65aWX7do1y8q0",
-        avatar="https://racetime.gg/media/lukeacevedo_beer_videogames-01_1x.png",
+        avatar=(
+            "https://racetime.gg/media/lukeacevedo_beer_videogames-01_1x.png"
+        ),
         pronouns="he/him",
         flair="",
         twitch_name="sejay_28",
         twitch_display_name="SEJay_28",
         twitch_channel="https://www.twitch.tv/sejay_28",
         can_moderate=False,
-    )
-    expected_user2 = User(
-        id="XzVwZWqaJRW5k8eb",
-        full_name="Zaruvyen#7867",
-        name="Zaruvyen",
-        discriminator="7867",
-        url="/user/XzVwZWqaJRW5k8eb",
-        avatar="https://racetime.gg/media/Zarufaceicon.png",
-        pronouns="he/him",
-        flair="",
-        twitch_name="zaruvyen",
-        twitch_display_name="Zaruvyen",
-        twitch_channel="https://www.twitch.tv/zaruvyen",
-        can_moderate=False
     )
     expected_status_finished = Status(
         value="done",

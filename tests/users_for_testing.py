@@ -1,3 +1,4 @@
+# flake8: noqa
 import random
 from datetime import datetime, timedelta
 from typing import List
@@ -117,6 +118,7 @@ test_users = [
          )]
 
 
+# TODO(There's probably a better way to do this with fixtures i should learn)
 def get_test_user(users_used: List[User] = []):
     choice = random.choice(test_users)
     while choice.id in users_used:
@@ -124,9 +126,17 @@ def get_test_user(users_used: List[User] = []):
     return choice
 
 
-def get_test_entrant(status_value="joined", finished_at: datetime = None, finish_time: timedelta = None, place: int = None, users_used: List[User] = []) -> Entrant:
-    return Entrant(get_test_user(users_used), status=get_test_status(status_value), has_comment=False, stream_live=True,
-                   stream_override=False, actions=[], finished_at=finished_at, finish_time=finish_time, place=place)
+def get_test_entrant(
+     status_value="joined", finished_at: datetime = None,
+     finish_time: timedelta = None, place: int = None,
+     users_used: List[User] = []
+) -> Entrant:
+    return Entrant(
+         get_test_user(users_used), status=get_test_status(status_value),
+         has_comment=False, stream_live=True, stream_override=False,
+         actions=[], finished_at=finished_at, finish_time=finish_time,
+         place=place
+     )
 
 
 def get_test_status(status_value):

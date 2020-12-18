@@ -41,7 +41,9 @@ def from_datetime(x: Any) -> datetime:
 def from_timedelta(x: Any) -> timedelta:
     if x is None:
         return
-    return timedelta(hours=float(x[4:6]), minutes=float(x[7:9]), seconds=float(x[10:-1]))
+    return timedelta(
+        hours=float(x[4:6]), minutes=float(x[7:9]), seconds=float(x[10:-1])
+    )
 
 
 def from_none(x: Any) -> Any:
@@ -67,7 +69,7 @@ def from_union(fs, x):
     for f in fs:
         try:
             return f(x)
-        except:
+        except Any:
             pass
     assert False
 

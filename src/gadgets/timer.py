@@ -25,7 +25,8 @@ class Timer:
         color = self.racing_color
         time = "--:--:--.-"
 
-        # default value used if user is not in race and race is running currently
+        # default value used if user is not in race and race is running
+        #  currently
         color, time = self.get_color_and_text_by_started_at(
             race.started_at, race.status.value, race.ended_at)
 
@@ -40,7 +41,10 @@ class Timer:
             color = None
         return color, time
 
-    def get_color_and_text_by_race_status(self, status_value: str, start_delay: timedelta, fallback_color: int = None, fallback_text: str = None):
+    def get_color_and_text_by_race_status(
+        self, status_value: str, start_delay: timedelta,
+        fallback_color: int = None, fallback_text: str = None
+    ):
         if status_value == "open" or status_value == "invitational":
             time = self.timer_to_str(start_delay)
             color = self.pre_color
@@ -51,7 +55,11 @@ class Timer:
             return fallback_color, fallback_text
         return color, time
 
-    def get_color_and_text_by_started_at(self, started_at: datetime, status_value: str, ended_at: datetime = None, fallback_color: int = None, fallback_text: str = None):
+    def get_color_and_text_by_started_at(
+        self, started_at: datetime, status_value: str,
+        ended_at: datetime = None, fallback_color: int = None,
+        fallback_text: str = None
+    ):
         if status_value == "finished":
             # race is finished and assume user is not an entrant
             time = self.timer_to_str(ended_at - started_at)
@@ -64,7 +72,10 @@ class Timer:
             return fallback_color, fallback_text
         return color, time
 
-    def get_color_and_text_by_entrant(self, entrant: Entrant = None, started_at: datetime = None, fallback_color: int = None, fallback_text: str = None):
+    def get_color_and_text_by_entrant(
+        self, entrant: Entrant = None, started_at: datetime = None,
+        fallback_color: int = None, fallback_text: str = None
+    ):
         time = fallback_text
         color = fallback_color
         if entrant is not None:
@@ -88,6 +99,9 @@ class Timer:
             return self.third_color
         else:
             return self.finished_color
+
+    def is_enabled(self) -> bool:
+        return self.enabled and self.source_name != ""
 
     @staticmethod
     def timer_to_str(timer: timedelta) -> str:

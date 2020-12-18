@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 from typing import Any, Optional, List
 from datetime import datetime, timedelta
-from models import from_str, from_union, from_none, from_timedelta, from_int, from_bool, from_datetime, from_list
+from models import (
+    from_str, from_union, from_none, from_timedelta,
+    from_int, from_bool, from_datetime, from_list
+)
 from models.user import User
 
 
@@ -80,7 +83,13 @@ class Entrant:
         stream_override = from_bool(obj.get("stream_override"))
         actions = from_list(from_str, obj.get("actions"))
         score = from_union([from_int, from_none], obj.get("score"))
-        return Entrant(user=user, status=status, finish_time=finish_time, finished_at=finished_at, place=place, place_ordinal=place_ordinal, score_change=score_change, comment=comment, has_comment=has_comment, stream_live=stream_live, stream_override=stream_override, actions=actions, score=score)
+        return Entrant(
+            user=user, status=status, finish_time=finish_time,
+            finished_at=finished_at, place=place, place_ordinal=place_ordinal,
+            score_change=score_change, comment=comment,
+            has_comment=has_comment, stream_live=stream_live,
+            stream_override=stream_override, actions=actions, score=score
+        )
 
 
 @dataclass
@@ -110,6 +119,7 @@ class Race:
     entrants_count_inactive: int
     opened_at: datetime
     time_limit: timedelta
+    slug: Optional[str] = None
     entrants: Optional[List[Entrant]] = None
     version: Optional[int] = None
     started_at: Optional[datetime] = None
@@ -149,7 +159,7 @@ class Race:
         if not isinstance(obj, dict):
             return None
         name = from_str(obj.get("name"))
-        #slug = from_str(obj.get("slug"))
+        slug = from_str(obj.get("slug"))
         status = Status.from_dict(obj.get("status"))
         url = from_str(obj.get("url"))
         data_url = from_str(obj.get("data_url"))
@@ -201,7 +211,24 @@ class Race:
         version = from_union([from_int, from_none], obj.get("version"))
         entrants_count_finished = from_union(
             [from_int, from_none], obj.get("entrants_count_finished"))
-        return Race(name=name, status=status, url=url, data_url=data_url, websocket_url=websocket_url, websocket_bot_url=websocket_bot_url, websocket_oauth_url=websocket_oauth_url, category=category, goal=goal, info=info, entrants_count=entrants_count, entrants_count_inactive=entrants_count_inactive, opened_at=opened_at, time_limit=time_limit, entrants=entrants, version=version, started_at=started_at, ended_at=ended_at, cancelled_at=cancelled_at, unlisted=unlisted, streaming_required=streaming_required, auto_start=auto_start, opened_by=opened_by, monitors=monitors, recordable=recordable, recorded=recorded, recorded_by=recorded_by, allow_comments=allow_comments, hide_comments=hide_comments, allow_midrace_chat=allow_midrace_chat, allow_non_entrant_chat=allow_non_entrant_chat, chat_message_delay=chat_message_delay, start_delay=start_delay, entrants_count_finished=entrants_count_finished)
+        return Race(
+            name=name, status=status, url=url, data_url=data_url,
+            websocket_url=websocket_url, websocket_bot_url=websocket_bot_url,
+            websocket_oauth_url=websocket_oauth_url, category=category,
+            goal=goal, info=info, entrants_count=entrants_count,
+            entrants_count_inactive=entrants_count_inactive,
+            opened_at=opened_at, time_limit=time_limit, entrants=entrants,
+            version=version, started_at=started_at, ended_at=ended_at,
+            cancelled_at=cancelled_at, unlisted=unlisted,
+            streaming_required=streaming_required, auto_start=auto_start,
+            opened_by=opened_by, monitors=monitors, recordable=recordable,
+            recorded=recorded, recorded_by=recorded_by,
+            allow_comments=allow_comments, hide_comments=hide_comments,
+            allow_midrace_chat=allow_midrace_chat,
+            allow_non_entrant_chat=allow_non_entrant_chat,
+            chat_message_delay=chat_message_delay, start_delay=start_delay,
+            entrants_count_finished=entrants_count_finished, slug=slug
+        )
 
 
 def race_from_dict(s: Any) -> Race:
@@ -212,4 +239,6 @@ def races_from_dict(s: Any) -> List[Race]:
     assert isinstance(s, dict)
     if not s.get("races"):
         return []
-    return from_union([lambda x: from_list(Race.from_dict, x), from_none], s.get("races"))
+    return from_union(
+        [lambda x: from_list(Race.from_dict, x), from_none], s.get("races")
+    )

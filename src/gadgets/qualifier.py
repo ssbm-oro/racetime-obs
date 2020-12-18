@@ -1,10 +1,7 @@
 import logging
 from datetime import timedelta
 
-import websockets
 from models.race import Race
-from websockets.client import WebSocketClientProtocol
-
 from gadgets.timer import Timer
 
 
@@ -18,8 +15,7 @@ class Qualifier:
     entrant_score = " "
 
     def update_qualifier_text(self, race: Race, full_name: str):
-        self.logger.debug("entered update_qualifier_text")
-        if not self.enabled:
+        if not self.is_enabled():
             return
         entrant = race.get_entrant_by_name(full_name)
         self.logger.debug(entrant)
@@ -43,7 +39,14 @@ class Qualifier:
                 self.logger.error("error: qualifier finish time is None")
                 return
             self.logger.debug(
-                f"finish time for rank {i} is {race.get_entrant_by_place(i).finish_time}")
+                f"finish time for rank {i} is "
+                f"{race.get_entrant_by_place(i).finish_time}"
+            )
             par_time += race.get_entrant_by_place(i).finish_time
         par_time = par_time / self.qualifier_cutoff
         return par_time
+
+    def is_enabled(self) -> bool:
+        return (
+            self.enabled and self.par_source != "" and self.score_source != ""
+        )

@@ -62,7 +62,13 @@ class User:
         can_moderate = from_union(
             [from_bool, from_none], obj.get("can_moderate"))
         stats = from_union([Stats.from_dict, from_none], obj.get("stats"))
-        return User(id=id, full_name=full_name, name=name, discriminator=discriminator, url=url, avatar=avatar, pronouns=pronouns, flair=flair, twitch_name=twitch_name, twitch_display_name=twitch_display_name, twitch_channel=twitch_channel, can_moderate=can_moderate, stats=stats)
+        return User(
+            id=id, full_name=full_name, name=name, discriminator=discriminator,
+            url=url, avatar=avatar, pronouns=pronouns, flair=flair,
+            twitch_name=twitch_name, twitch_display_name=twitch_display_name,
+            twitch_channel=twitch_channel, can_moderate=can_moderate,
+            stats=stats
+        )
 
 
 def user_from_dict(s: Any) -> User:

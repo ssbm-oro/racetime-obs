@@ -42,7 +42,12 @@ class CurrentRace:
             [from_datetime, from_none], obj.get("started_at"))
         time_limit = from_union(
             [from_timedelta, from_none], obj.get("time_limit"))
-        return CurrentRace(name, status, url, data_url, goal, info, entrants_count, entrants_count_inactive, opened_at, started_at, time_limit)
+        return CurrentRace(
+            name=name, status=status, url=url, data_url=data_url, goal=goal,
+            info=info, entrants_count=entrants_count,
+            entrants_count_inactive=entrants_count_inactive,
+            opened_at=opened_at, started_at=started_at, time_limit=time_limit
+        )
 
 
 @dataclass
@@ -76,7 +81,12 @@ class Category:
         goals = from_list(from_str, obj.get("goals"))
         current_races = from_list(
             CurrentRace.from_dict, obj.get("current_races"))
-        return Category(name, short_name, slug, url, data_url, image, info, streaming_required, owners, moderators, goals, current_races)
+        return Category(
+            name=name, short_name=short_name, slug=slug, url=url,
+            data_url=data_url, image=image, info=info,
+            streaming_required=streaming_required, owners=owners,
+            moderators=moderators, goals=goals, current_races=current_races
+        )
 
 
 def category_from_dict(s: Any) -> Category:

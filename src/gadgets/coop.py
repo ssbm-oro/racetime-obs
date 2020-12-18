@@ -23,7 +23,8 @@ class Coop:
         opponent1 = race.get_entrant_by_name(self.opponent1)
         opponent2 = race.get_entrant_by_name(self.opponent2)
 
-        if not self.enabled or entrant is None or partner is None or opponent1 is None or opponent2 is None:
+        if (not self.enabled or entrant is None or partner is None
+                or opponent1 is None or opponent2 is None):
             return
 
         self.logger.debug(f"use_coop: {self.enabled}")
@@ -42,7 +43,8 @@ class Coop:
         self.set_text_if_four_finishers(
             race, entrant, partner, opponent1, opponent2)
 
-    def set_text_if_four_finishers(self, race, entrant, partner, opponent1, opponent2):
+    def set_text_if_four_finishers(self, race, entrant, partner,
+                                   opponent1, opponent2):
         if race.entrants_count_finished == 4:
             our_total = entrant.finish_time + partner.finish_time
             opponent_total = opponent1.finish_time + opponent2.finish_time
@@ -53,7 +55,8 @@ class Coop:
                 self.label_text = "Opponents won, average time:"
                 self.text = Timer.timer_to_str(opponent_total / 2)
 
-    def set_text_if_three_finishers(self, race, entrant, partner, opponent1, opponent2):
+    def set_text_if_three_finishers(self, race, entrant, partner,
+                                    opponent1, opponent2):
         if race.entrants_count_finished == 3:
             current_timer = datetime.now(timezone.utc) - race.started_at
             if not entrant.finish_time:
@@ -82,7 +85,9 @@ class Coop:
                 self.text = Timer.timer_to_str(opponent_total / 2)
 
     @staticmethod
-    def get_coop_text(label_text_start: str, finished_partner: Entrant, finished1: Entrant, finished2: Entrant, current_timer: timedelta):
+    def get_coop_text(label_text_start: str, finished_partner: Entrant,
+                      finished1: Entrant, finished2: Entrant,
+                      current_timer: timedelta):
         finished_team_total = finished1.finish_time + finished2.finish_time
         time_to_beat = finished_team_total - finished_partner.finish_time
         if time_to_beat > current_timer:
@@ -101,11 +106,18 @@ class Coop:
             our_total = entrant.finish_time + partner.finish_time
             self.logger.debug(f"calculated our average is {our_total / 2}")
         else:
-            self.logger.debug(f"we haven't finished yet")
+            self.logger.debug("we haven't finished yet")
         if opponent1.finish_time and opponent2.finish_time:
             opponent_total = opponent1.finish_time + opponent2.finish_time
             self.logger.debug(
                 f"calculated our opponent's average is {opponent_total / 2}")
         else:
-            self.logger.debug(f"our opponents haven't finished")
+            self.logger.debug("our opponents haven't finished")
         return our_total, opponent_total
+
+    def is_enabled(self) -> bool:
+        return (
+            self.enabled and self.label_source != "" and self.source != "" and
+            self.partner is not None and self.opponent1 is not None and
+            self.opponent2 is not None
+        )

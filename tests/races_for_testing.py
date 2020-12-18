@@ -11,9 +11,14 @@ def time_ago(**kwargs):
     return datetime.now(timezone.utc)-timedelta(**kwargs)
 
 
-def get_test_race(status_value="in_progress", version=1, entrants_count=2, started_at=datetime.now(timezone.utc),
-                  start_delay=timedelta(seconds=-15), opened_at=datetime.now(timezone.utc), ended_at=None,
-                  cancelled_at: datetime = None, entrant: Entrant = None, entrants: List[Entrant] = None) -> Race:
+def get_test_race(
+        status_value="in_progress", version=1, entrants_count=2,
+        started_at=datetime.now(timezone.utc),
+        start_delay=timedelta(seconds=-15),
+        opened_at=datetime.now(timezone.utc), ended_at=None,
+        cancelled_at: datetime = None, entrant: Entrant = None,
+        entrants: List[Entrant] = None
+        ) -> Race:
     if not entrants:
         entrants = []
         for i in range(0, entrants_count):
@@ -58,7 +63,7 @@ def get_test_race(status_value="in_progress", version=1, entrants_count=2, start
                      allow_midrace_chat=True
                      )
     if entrant is not None:
-        if not entrant in test_race.entrants:
+        if entrant not in test_race.entrants:
             test_race.entrants.pop()
             test_race.entrants.append(entrant)
     return test_race
