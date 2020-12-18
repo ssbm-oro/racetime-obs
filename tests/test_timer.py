@@ -1,5 +1,5 @@
 from datetime import datetime, time, timedelta, timezone
-from tests.races_for_testing import time_ago
+from races_for_testing import time_ago
 from gadgets.timer import Timer
 from models.race import Entrant, Goal, Race, Status
 from users_for_testing import get_test_user, get_test_entrant
