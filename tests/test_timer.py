@@ -1,4 +1,5 @@
 from datetime import datetime, time, timedelta, timezone
+from tests.races_for_testing import time_ago
 from gadgets.timer import Timer
 from models.race import Entrant, Goal, Race, Status
 from users_for_testing import get_test_user, get_test_entrant
@@ -25,6 +26,17 @@ def test_timer_prerace():
     color, text = timer.get_timer_text(race, "")
     assert color is timer.pre_color
     assert text == "-0:00:15.0"
+
+def test_timer_counting_down():
+    timer = get_test_timer()
+    race = get_test_race(status_value="pending", version=13, started_at=time_ago(seconds=-5), start_delay=timedelta(seconds=-15))
+    color, text = timer.get_timer_text(race, "")
+    assert color is None
+    assert text == "-0:00:05.0"
+    
+    timer.use_podium_colors = True
+    color, text = timer.get_timer_text(race, "")
+    assert color is timer.pre_color
 
 def test_timer_midrace_no_entrant():
     timer = get_test_timer()
