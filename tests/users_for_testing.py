@@ -118,21 +118,23 @@ test_users = [
          )]
 
 
-# TODO(There's probably a better way to do this with fixtures i should learn)
-def get_test_user(users_used: List[User] = []):
-    choice = random.choice(test_users)
-    while choice.id in users_used:
-        choice = random.choice(test_users)
-    return choice
+
+
+def get_test_entrants(random_users, *entrants):
+    _entrants = []
+    for entrant in entrants:
+        _entrants.append(entrant)
+    for i in range(len(_entrants), 20):
+        _entrants.append(get_test_entrant(next(random_users)))
+    return _entrants
 
 
 def get_test_entrant(
-     status_value="joined", finished_at: datetime = None,
-     finish_time: timedelta = None, place: int = None,
-     users_used: List[User] = []
+     user: User, status_value="joined", finished_at: datetime = None,
+     finish_time: timedelta = None, place: int = None
 ) -> Entrant:
     return Entrant(
-         get_test_user(users_used), status=get_test_status(status_value),
+         user=user, status=get_test_status(status_value),
          has_comment=False, stream_live=True, stream_override=False,
          actions=[], finished_at=finished_at, finish_time=finish_time,
          place=place

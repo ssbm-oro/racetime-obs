@@ -2,9 +2,9 @@ from datetime import datetime, timedelta, timezone
 from typing import List
 
 from models.race import Entrant, Goal, Race, Status
+from models.user import User
 
 from categories_for_testing import get_test_race_category
-from users_for_testing import get_test_entrant, get_test_user
 
 
 def time_ago(**kwargs):
@@ -16,17 +16,10 @@ def get_test_race(
         started_at=datetime.now(timezone.utc),
         start_delay=timedelta(seconds=-15),
         opened_at=datetime.now(timezone.utc), ended_at=None,
-        cancelled_at: datetime = None, entrant: Entrant = None,
-        entrants: List[Entrant] = None
+        cancelled_at: datetime = None, entrants: List[Entrant] = None,
+        opened_by: User = None
         ) -> Race:
-    if not entrants:
-        entrants = []
-        for i in range(0, entrants_count):
-            e = get_test_entrant(entrants)
-            entrants.append(e)
-        entrant_count_finished = 0
-    else:
-        entrant_count_finished = list.count(
+    entrant_count_finished = list.count(
             (list((x.status.value == "finished" for x in entrants))), True)
     test_race = Race(name="",
                      status=Status(value=status_value,
@@ -52,7 +45,7 @@ def get_test_race(
                      time_limit=timedelta(days=1),
                      streaming_required=True,
                      auto_start=True,
-                     opened_by=get_test_user(),
+                     opened_by=opened_by,
                      opened_at=opened_at,
                      monitors=[],
                      recordable=True,
@@ -62,8 +55,4 @@ def get_test_race(
                      hide_comments=False,
                      allow_midrace_chat=True
                      )
-    if entrant is not None:
-        if entrant not in test_race.entrants:
-            test_race.entrants.pop()
-            test_race.entrants.append(entrant)
     return test_race
