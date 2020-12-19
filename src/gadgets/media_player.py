@@ -131,35 +131,32 @@ class MediaPlayer:
         self, media_file_path: str, place_trigger: int = None,
         entrant_count_trigger: int = None, trigger_time: timedelta = None
     ):
+        async def add(
+            self, media_file_path: str, place_trigger: int = None,
+            entrant_count_trigger: int = None, trigger_time: timedelta = None
+        ):
+            async with self.triggers_lock:
+                self.triggers.append(MediaTrigger(
+                    media_file_path, place_trigger=place_trigger,
+                    entrant_count_trigger=entrant_count_trigger,
+                    trigger_time=trigger_time
+                ))
+
         media_event_loop = asyncio.get_event_loop()
         media_event_loop.run_until_complete(
-            self._add_trigger(
+            add(
                 media_file_path, place_trigger,
                 entrant_count_trigger, trigger_time
             )
         )
 
-    async def _add_trigger(
-        self, media_file_path: str, place_trigger: int = None,
-        entrant_count_trigger: int = None, trigger_time: timedelta = None
-    ):
-        async with self.triggers_lock:
-            self.triggers.append(MediaTrigger(
-                media_file_path, place_trigger=place_trigger,
-                entrant_count_trigger=entrant_count_trigger,
-                trigger_time=trigger_time
-            ))
-
     def remove_trigger(self, index: int):
-        media_event_loop = asyncio.get_event_loop()
-        media_event_loop.run_until_complete(
-            self._remove_trigger(index)
-        )
+        async def remove(index: int):
+            async with self.triggers_lock:
+                self.triggers.clear()
 
-    async def _remove_trigger(self, index: int):
-        async with self.triggers_lock:
-            self.triggers.clear()
-            # self.triggers.remove(self.triggers[index])
+        media_event_loop = asyncio.get_event_loop()
+        media_event_loop.run_until_complete(remove(index))
 
     async def monitor_race(self):
         while True:
