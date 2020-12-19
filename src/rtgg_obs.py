@@ -12,7 +12,7 @@ import racetime_client
 from gadgets.coop import Coop
 from gadgets.qualifier import Qualifier
 from gadgets.timer import Timer
-# from gadgets.media_player import MediaPlayer
+from gadgets.media_player import MediaPlayer
 from helpers.LogFormatter import LogFormatter
 from models.race import Race, race_from_dict
 
@@ -35,13 +35,14 @@ class RacetimeObs():
     timer = Timer()
     coop = Coop()
     qualifier = Qualifier()
-    # media_player: MediaPlayer = MediaPlayer()
+    media_player: MediaPlayer = None
 
     def __init__(self):
         self.timer.logger = self.logger
         self.coop.logger = self.logger
         self.qualifier.logger = self.logger
-        # self.media_player.logger = self.logger
+        self.media_player = MediaPlayer(self)
+        self.media_player.logger = self.logger
 
     def race_update_thread(self):
         self.logger.debug("starting race update")
@@ -109,7 +110,7 @@ class RacetimeObs():
                 self.logger.debug(f"self.race is {self.race}")
                 self.coop.update_coop_text(self.race, self.full_name)
                 self.qualifier.update_qualifier_text(self.race, self.full_name)
-                # self.media_player.update_race(self.race)
+                self.media_player.update_race(self.race)
         elif data.get("type") == "pong":
             last_pong = dateutil.parser.parse(data.get("date"))
             pass
