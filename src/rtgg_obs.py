@@ -36,19 +36,19 @@ class RacetimeObs():
     coop = Coop()
     qualifier = Qualifier()
     media_player: MediaPlayer = None
+    event_loop = asyncio.get_event_loop()
 
     def __init__(self):
         self.timer.logger = self.logger
         self.coop.logger = self.logger
         self.qualifier.logger = self.logger
-        self.media_player = MediaPlayer(self)
+        self.media_player = MediaPlayer(self.event_loop)
         self.media_player.logger = self.logger
 
     def race_update_thread(self):
         self.logger.debug("starting race update")
-        race_event_loop = asyncio.new_event_loop()
-        race_event_loop.run_until_complete(self.race_updater())
-        race_event_loop.run_forever()
+        self.event_loop.run_until_complete(self.race_updater())
+        self.event_loop.run_forever()
 
     async def race_updater(self):
         headers = {
@@ -110,7 +110,21 @@ class RacetimeObs():
                 self.logger.debug(f"self.race is {self.race}")
                 self.coop.update_coop_text(self.race, self.full_name)
                 self.qualifier.update_qualifier_text(self.race, self.full_name)
-                self.media_player.update_race(self.race)
+                self.event_loop.call_soon_threadsafe(
+                    self.media_player.race_updated, self.race)
+        elif data.get("type") == "chat.message":
+            self.logger.debug(
+                f"received chat message. chat sounds enabled is "
+                f"{self.media_player.ping_chat_messages}"
+            )
+            if self.media_player.ping_chat_messages:
+                self.logger.debug(
+                    f"trying to play {self.media_player.chat_media_file}")
+                self.event_loop.call_soon_threadsafe(
+                    self.media_player.play_media_callback,
+                    self.media_player.chat_media_file,
+                    True
+                )
         elif data.get("type") == "pong":
             last_pong = dateutil.parser.parse(data.get("date"))
             pass

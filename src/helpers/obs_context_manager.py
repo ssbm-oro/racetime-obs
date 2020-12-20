@@ -68,18 +68,18 @@ def media_source_ar(media_path: str, use_monitoring: bool):
     media_source = obs.obs_source_create_private(
         "ffmpeg_source", "Global Media Source", None
         )
-    settings = data_ar()
-    obs.obs_data_set_string(settings, "local_file", media_path)
-    obs.obs_source_update(media_source, settings)
-    if use_monitoring:
-        obs.obs_source_set_monitoring_type(
-            media_source, obs.OBS_MONITORING_TYPE_MONITOR_AND_OUTPUT
-        )
-    else:
-        obs.obs_source_set_monitoring_type(
-            media_source, obs.OBS_MONITORING_TYPE_NONE
-        )
-    try:
-        yield media_source
-    finally:
-        obs.obs_source_release(media_source)
+    with data_ar() as settings:
+        obs.obs_data_set_string(settings, "local_file", media_path)
+        obs.obs_source_update(media_source, settings)
+        if use_monitoring:
+            obs.obs_source_set_monitoring_type(
+                media_source, obs.OBS_MONITORING_TYPE_MONITOR_AND_OUTPUT
+            )
+        else:
+            obs.obs_source_set_monitoring_type(
+                media_source, obs.OBS_MONITORING_TYPE_NONE
+            )
+        try:
+            yield media_source
+        finally:
+            obs.obs_source_release(media_source)

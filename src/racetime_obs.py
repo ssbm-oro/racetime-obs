@@ -15,7 +15,7 @@ import scripting.setup_scripting as setup_scripting
 import scripting.timer_scripting as timer_scripting
 import scripting.coop_scripting as coop_scripting
 import scripting.qualifier_scripting as qualifier_scripting
-# import scripting.media_player_scripting as media_player_scripting
+import scripting.media_player_scripting as media_player_scripting
 
 rtgg_obs = RacetimeObs()
 
@@ -51,9 +51,9 @@ def script_update(settings):
     )
     coop_scripting.script_update_coop_settings(settings, rtgg_obs)
     qualifier_scripting.script_update_qualifier_settings(settings, rtgg_obs)
-    # media_player_scripting.script_update_media_player_settings(
-    #     settings, rtgg_obs
-    # )
+    media_player_scripting.script_update_media_player_settings(
+        settings, rtgg_obs
+    )
 
     rtgg_obs.full_name = obs.obs_data_get_string(settings, "username")
 
@@ -81,9 +81,9 @@ def script_properties():
     timer_scripting.script_timer_settings(props, rtgg_obs,)
     coop_scripting.script_coop_settings(props, rtgg_obs)
     qualifier_scripting.script_qualifier_settings(props, rtgg_obs)
-    # media_player_scripting.script_media_player_settings(
-    #     props, rtgg_obs, media_player_toggled
-    # )
+    media_player_scripting.script_media_player_settings(
+        props, rtgg_obs, media_player_toggled
+    )
 
     return props
 
@@ -100,7 +100,7 @@ def refresh_pressed(props, prop, *args, **kwargs):
         rtgg_obs.coop.update_coop_text(rtgg_obs.race, rtgg_obs.full_name)
         rtgg_obs.qualifier.update_qualifier_text(
             rtgg_obs.race, rtgg_obs.full_name)
-        # rtgg_obs.media_player.update_race(rtgg_obs.race)
+        rtgg_obs.media_player.race_updated(rtgg_obs.race)
     return True
 
 
@@ -112,7 +112,7 @@ def new_race_selected(props, prop, settings):
         rtgg_obs.coop.update_coop_text(rtgg_obs.race, rtgg_obs.full_name)
         rtgg_obs.qualifier.update_qualifier_text(
             rtgg_obs.race, rtgg_obs.full_name)
-        # rtgg_obs.media_player.update_race(rtgg_obs.race)
+        rtgg_obs.media_player.race_updated(rtgg_obs.race)
         rtgg_obs.logger.info(f"new race selected: {rtgg_obs.race}")
         obs.obs_data_set_default_string(settings, "race_info", r.info)
         coop_scripting.fill_coop_entrant_lists(props, rtgg_obs)
@@ -153,8 +153,8 @@ def update_sources():
                             rtgg_obs.qualifier.par_text, None)
             set_source_text(rtgg_obs.qualifier.score_source,
                             rtgg_obs.qualifier.entrant_score, None)
-        # if rtgg_obs.media_player.enabled:
-        #     rtgg_obs.media_player.update_race(rtgg_obs.race)
+        if rtgg_obs.media_player.enabled:
+            rtgg_obs.media_player.race_updated(rtgg_obs.race)
 
 
 def fill_race_list(race_list, category_list):
