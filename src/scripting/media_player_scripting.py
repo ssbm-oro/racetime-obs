@@ -43,16 +43,20 @@ def script_media_player_settings(
     )
     p = obs.obs_properties_add_bool(
         media_player_group, "use_chat_pings",
-        "Play a sound for chat messages?"
+        "Chat sounds?"
     )
-    obs.obs_properties_add_path(
+    obs.obs_property_set_long_description(
+        p, "Play a sound when a chat message arrives?")
+    p = obs.obs_properties_add_path(
         media_player_group, "chat_ping_sound",
-        "Sound to play when a new chat message arrives", obs.OBS_PATH_FILE,
+        "Chat media file", obs.OBS_PATH_FILE,
         "Audio Files (*.mp3 *.aac *.wav *.wma)", None
     )
+    obs.obs_property_set_long_description(
+        p, "Sound file to play when a message arrives.")
     obs.obs_properties_add_path(
         media_player_group, "debug_sound",
-        "Sound to play when debugging timer", obs.OBS_PATH_FILE,
+        "Debug sound", obs.OBS_PATH_FILE,
         "Audio Files (*.mp3 *.aac *.wav *.wma)", None
     )
 

@@ -117,7 +117,10 @@ class RacetimeObs():
                 f"received chat message. chat sounds enabled is "
                 f"{self.media_player.ping_chat_messages}"
             )
-            if self.media_player.ping_chat_messages:
+            if (
+                self.media_player.ping_chat_messages and
+                data.get("is_bot")
+            ):
                 self.logger.debug(
                     f"trying to play {self.media_player.chat_media_file}")
                 self.event_loop.call_soon_threadsafe(
