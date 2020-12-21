@@ -45,7 +45,7 @@ def script_setup(props, new_race_selected, new_category_selected):
     )
     race_list = obs.obs_properties_add_list(
         props, "race", "Race",
-        obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING
+        obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING
         )
     obs.obs_property_set_modified_callback(
         race_list, new_race_selected

@@ -98,6 +98,7 @@ def refresh_pressed(props, prop, *args, **kwargs):
                    obs.obs_properties_get(props, "category_filter"))
     if rtgg_obs.race is not None:
         rtgg_obs.coop.update_coop_text(rtgg_obs.race, rtgg_obs.full_name)
+        update_coop_sources()
         rtgg_obs.qualifier.update_qualifier_text(
             rtgg_obs.race, rtgg_obs.full_name)
         rtgg_obs.media_player.race_updated(rtgg_obs.race)
@@ -144,10 +145,7 @@ def update_sources():
             color, time = rtgg_obs.timer.get_timer_text(
                 rtgg_obs.race, rtgg_obs.full_name)
             set_source_text(rtgg_obs.timer.source_name, time, color)
-        if rtgg_obs.coop.is_enabled():
-            set_source_text(rtgg_obs.coop.source, rtgg_obs.coop.text, None)
-            set_source_text(rtgg_obs.coop.label_source,
-                            rtgg_obs.coop.label_text, None)
+        update_coop_sources()
         if rtgg_obs.qualifier.is_enabled():
             set_source_text(rtgg_obs.qualifier.par_source,
                             rtgg_obs.qualifier.par_text, None)
@@ -155,6 +153,21 @@ def update_sources():
                             rtgg_obs.qualifier.entrant_score, None)
         if rtgg_obs.media_player.enabled:
             rtgg_obs.media_player.race_updated(rtgg_obs.race)
+
+
+def update_coop_sources():
+    if rtgg_obs.coop.is_enabled():
+        rtgg_obs.coop.update_coop_text(rtgg_obs.race, rtgg_obs.full_name)
+        set_source_text(
+            rtgg_obs.coop.our_time_source,
+            rtgg_obs.coop.our_time_text,
+            rtgg_obs.coop.our_time_color
+        )
+        set_source_text(
+            rtgg_obs.coop.opponent_time_source,
+            rtgg_obs.coop.opponent_time_text,
+            rtgg_obs.coop.opponent_time_color
+        )
 
 
 def fill_race_list(race_list, category_list):
@@ -189,6 +202,8 @@ def filter_races_by_category(races: List[Race], category: Category) -> Race:
 
 
 def set_source_text(source_name: str, text: str, color: int):
+    if source_name is None or source_name == "":
+        return
     # copied and modified from scripted-text.py by UpgradeQ
     with source_ar(source_name) as source, data_ar() as settings:
         obs.obs_data_set_string(settings, "text", text)

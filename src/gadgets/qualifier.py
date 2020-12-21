@@ -2,7 +2,7 @@ import logging
 from datetime import timedelta
 
 from models.race import Race
-from gadgets.timer import Timer
+from helpers import timer_to_str
 
 
 class Qualifier:
@@ -25,7 +25,7 @@ class Qualifier:
         if race.entrants_count_finished >= self.qualifier_cutoff:
             par_time = self.calculate_par_time(race)
             self.logger.debug(par_time)
-            self.par_text = Timer.timer_to_str(par_time)
+            self.par_text = timer_to_str(par_time)
 
             if entrant and entrant.finish_time is not None:
                 self.entrant_score = "{:04.2f}".format(

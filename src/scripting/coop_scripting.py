@@ -18,32 +18,36 @@ def script_coop_settings(props, rtgg_obs: RacetimeObs):
         obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING
     )
     p = obs.obs_properties_add_list(
-        coop_group, "coop_opponent1", "Co-op Opponent 1",
+        coop_group, "coop_opponent1", "Co-op Rival 1",
         obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING
     )
     p = obs.obs_properties_add_list(
-        coop_group, "coop_opponent2", "Co-op Opponent 2",
+        coop_group, "coop_opponent2", "Co-op Rival 2",
         obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING
     )
     fill_coop_entrant_lists(props, rtgg_obs)
     p = obs.obs_properties_add_list(
-        coop_group, "coop_source", "Coop Text Source",
+        coop_group, "coop_our_source", "Our Team's Timer",
         obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING
     )
     obs.obs_property_set_long_description(p, (
-        "This text source will display the time that the last racer needs to"
-        " finish for their team to win"
+        "This text source will display your team's timer when you finish."
     ))
     fill_source_list(p)
     p = obs.obs_properties_add_list(
-        coop_group, "coop_label", "Coop Label Text Source",
+        coop_group, "coop_opponent_source", "Coop Label Text Source",
         obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING
     )
     obs.obs_property_set_long_description(p, (
-        "This text source will be use to display a label such as "
-        "\'<PartnerName> needs to finish before\' based on who the last racer"
-        " is"
+        "This text source will be use to display your rival's timer when they"
+        " finish"
     ))
+    obs.obs_properties_add_color(
+        coop_group, "coop_winner_color", "Winner Color:")
+    obs.obs_properties_add_color(
+        coop_group, "coop_loser_color", "Loser Color:")
+    obs.obs_properties_add_color(
+        coop_group, "coop_undetermined_color", "Winner Undetermined Color")
     fill_source_list(p)
 
 
@@ -79,6 +83,14 @@ def script_update_coop_settings(settings, rtgg_obs: RacetimeObs):
         settings, "coop_opponent1")
     rtgg_obs.coop.opponent2 = obs.obs_data_get_string(
         settings, "coop_opponent2")
-    rtgg_obs.coop.source = obs.obs_data_get_string(settings, "coop_source")
-    rtgg_obs.coop.label_source = obs.obs_data_get_string(
-        settings, "coop_label")
+    rtgg_obs.coop.our_time_source = (
+        obs.obs_data_get_string(settings, "coop_our_source"))
+    rtgg_obs.logger.info(f"our_time_sourc is {rtgg_obs.coop.our_time_source}")
+    rtgg_obs.coop.opponent_time_source = obs.obs_data_get_string(
+        settings, "coop_opponent_source")
+    rtgg_obs.coop.winner_color = obs.obs_data_get_int(
+        settings, "coop_winner_color")
+    rtgg_obs.coop.loser_color = obs.obs_data_get_int(
+        settings, "coop_loser_color")
+    rtgg_obs.coop.still_racing_color = obs.obs_data_get_int(
+        settings, "coop_undetermined_color")

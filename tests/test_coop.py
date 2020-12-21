@@ -42,8 +42,10 @@ def test_coop_no_one_finished():
     coop.opponent1 = opponent1.user.full_name
     coop.opponent2 = opponent2.user.full_name
     coop.update_coop_text(race, entrant.user.full_name)
-    assert coop.label_text == "Race still in progress"
-    assert coop.text == " "
+    assert coop.opponent_time_text == " "
+    assert coop.our_time_text == " "
+    assert coop.our_time_color == coop.still_racing_color
+    assert coop.opponent_time_color == coop.still_racing_color
 
 
 def test_only_entrant_finished():
@@ -75,8 +77,10 @@ def test_only_entrant_finished():
     coop.opponent1 = opponent1.user.full_name
     coop.opponent2 = opponent2.user.full_name
     coop.update_coop_text(race, entrant.user.full_name)
-    assert coop.label_text == "Race still in progress"
-    assert coop.text == " "
+    assert coop.opponent_time_text == " "
+    assert coop.our_time_text == " "
+    assert coop.our_time_color == coop.still_racing_color
+    assert coop.opponent_time_color == coop.still_racing_color
 
 
 def test_only_partner_finished():
@@ -106,8 +110,10 @@ def test_only_partner_finished():
     coop.opponent1 = opponent1.user.full_name
     coop.opponent2 = opponent2.user.full_name
     coop.update_coop_text(race, entrant.user.full_name)
-    assert coop.label_text == "Race still in progress"
-    assert coop.text == " "
+    assert coop.opponent_time_text == " "
+    assert coop.our_time_text == " "
+    assert coop.our_time_color == coop.still_racing_color
+    assert coop.opponent_time_color == coop.still_racing_color
 
 
 def test_only_opponent1_finished():
@@ -135,8 +141,10 @@ def test_only_opponent1_finished():
     coop.opponent1 = opponent1.user.full_name
     coop.opponent2 = opponent2.user.full_name
     coop.update_coop_text(race, entrant.user.full_name)
-    assert coop.label_text == "Race still in progress"
-    assert coop.text == " "
+    assert coop.opponent_time_text == " "
+    assert coop.our_time_text == " "
+    assert coop.our_time_color == coop.still_racing_color
+    assert coop.opponent_time_color == coop.still_racing_color
 
 
 def test_only_opponent2_finished():
@@ -164,8 +172,10 @@ def test_only_opponent2_finished():
     coop.opponent1 = opponent1.user.full_name
     coop.opponent2 = opponent2.user.full_name
     coop.update_coop_text(race, entrant.user.full_name)
-    assert coop.label_text == "Race still in progress"
-    assert coop.text == " "
+    assert coop.opponent_time_text == " "
+    assert coop.our_time_text == " "
+    assert coop.our_time_color == coop.still_racing_color
+    assert coop.opponent_time_color == coop.still_racing_color
 
 
 def test_entrant_and_partner_finished():
@@ -197,8 +207,10 @@ def test_entrant_and_partner_finished():
     coop.opponent1 = opponent1.user.full_name
     coop.opponent2 = opponent2.user.full_name
     coop.update_coop_text(race, entrant.user.full_name)
-    assert coop.label_text == "We won!"
-    assert coop.text == "1:30:00.0"
+    assert coop.opponent_time_text == "2:15:00.0"
+    assert coop.our_time_text == "1:30:00.0"
+    assert coop.our_time_color == coop.winner_color
+    assert coop.opponent_time_color == coop.loser_color
 
 
 def test_opponents_finished():
@@ -227,8 +239,10 @@ def test_opponents_finished():
     coop.opponent1 = opponent1.user.full_name
     coop.opponent2 = opponent2.user.full_name
     coop.update_coop_text(race, entrant.user.full_name)
-    assert coop.label_text == "They won. :("
-    assert coop.text == "1:30:00.0"
+    assert coop.opponent_time_text == "1:30:00.0"
+    assert coop.our_time_text == "2:15:00.0"
+    assert coop.our_time_color == coop.loser_color
+    assert coop.opponent_time_color == coop.winner_color
 
 
 def test_entrant_and_opponent1_finished():
@@ -259,8 +273,10 @@ def test_entrant_and_opponent1_finished():
     coop.opponent1 = opponent1.user.full_name
     coop.opponent2 = opponent2.user.full_name
     coop.update_coop_text(race, entrant.user.full_name)
-    assert coop.label_text == "Race still in progress"
-    assert coop.text == " "
+    assert coop.opponent_time_text == " "
+    assert coop.our_time_text == " "
+    assert coop.our_time_color == coop.still_racing_color
+    assert coop.opponent_time_color == coop.still_racing_color
 
 
 def test_partner_and_opponent1_finished():
@@ -290,8 +306,10 @@ def test_partner_and_opponent1_finished():
     coop.opponent1 = opponent1.user.full_name
     coop.opponent2 = opponent2.user.full_name
     coop.update_coop_text(race, entrant.user.full_name)
-    assert coop.label_text == "Race still in progress"
-    assert coop.text == " "
+    assert coop.opponent_time_text == " "
+    assert coop.our_time_text == " "
+    assert coop.our_time_color == coop.still_racing_color
+    assert coop.opponent_time_color == coop.still_racing_color
 
 
 def test_entrant_and_partner_and_opponent1_finished_race_ongoing():
@@ -324,8 +342,13 @@ def test_entrant_and_partner_and_opponent1_finished_race_ongoing():
     coop.opponent1 = opponent1.user.full_name
     coop.opponent2 = opponent2.user.full_name
     coop.update_coop_text(race, entrant.user.full_name)
-    assert coop.label_text == opponent2.user.name + " needs to finish before"
-    assert coop.text == "3:00:00.0"
+    assert coop.opponent_time_text == "0:23:59.9"
+    assert coop.our_time_text == "2:00:00.0"
+    assert coop.our_time_color == coop.still_racing_color
+    assert coop.opponent_time_color == coop.still_racing_color
+    race.started_at = time_ago(hours=2, minutes=52)
+    coop.update_coop_text(race, entrant.user.full_name)
+    assert coop.opponent_time_text == "0:03:59.9"
 
 
 def test_entrant_and_partner_and_opponent1_finished_race_over():
@@ -359,9 +382,9 @@ def test_entrant_and_partner_and_opponent1_finished_race_over():
     coop.opponent2 = opponent2.user.full_name
     coop.update_coop_text(race, entrant.user.full_name)
     assert (
-        coop.label_text == f"{entrant.user.name} and {partner.user.name} won"
+        coop.opponent_time_text == "3:02:00.0"
     )
-    assert coop.text == "1:30:00.0"
+    assert coop.our_time_text == "1:30:00.0"
 
 
 def test_opponents_and_entrant_finished_race_ongoing():
@@ -385,7 +408,7 @@ def test_opponents_and_entrant_finished_race_ongoing():
 
     race = get_test_race(
         entrants=[entrant, partner, opponent1, opponent2],
-        started_at=time_ago(hours=2, minutes=1)
+        started_at=time_ago(hours=2, microseconds=3)
     )
     coop = Coop()
     coop.enabled = True
@@ -393,8 +416,12 @@ def test_opponents_and_entrant_finished_race_ongoing():
     coop.opponent1 = opponent1.user.full_name
     coop.opponent2 = opponent2.user.full_name
     coop.update_coop_text(race, entrant.user.full_name)
-    assert coop.label_text == f"{partner.user.name} needs to finish before"
-    assert coop.text == "3:00:00.0"
+    assert coop.opponent_time_text == "2:00:00.0"
+    assert coop.our_time_text == "0:29:59.9"
+    race.started_at = time_ago(hours=2, minutes=30, microseconds=3)
+    coop.update_coop_text(race, entrant.user.full_name)
+    assert coop.opponent_time_text == "2:00:00.0"
+    assert coop.our_time_text == "0:14:59.9"
 
 
 def test_opponents_and_partner_finished_race_over():
@@ -426,9 +453,10 @@ def test_opponents_and_partner_finished_race_over():
     coop.opponent2 = opponent2.user.full_name
     coop.update_coop_text(race, entrant.user.full_name)
 
-    expected_text = f"{opponent1.user.name} and {opponent2.user.name} won"
-    assert coop.label_text == expected_text
-    assert coop.text == "1:30:00.0"
+    assert coop.opponent_time_text == "1:30:00.0"
+    assert coop.opponent_time_color == coop.winner_color
+    assert coop.our_time_text == "3:00:30.0"
+    assert coop.our_time_color == coop.loser_color
 
 
 def test_everyone_finished_we_won():
@@ -462,8 +490,10 @@ def test_everyone_finished_we_won():
     coop.opponent1 = opponent1.user.full_name
     coop.opponent2 = opponent2.user.full_name
     coop.update_coop_text(race, entrant.user.full_name)
-    assert coop.label_text == "We won!!! Average time:"
-    assert coop.text == "1:30:00.0"
+    assert coop.opponent_time_text == "2:00:00.0"
+    assert coop.opponent_time_color == coop.loser_color
+    assert coop.our_time_text == "1:30:00.0"
+    assert coop.our_time_color == coop.winner_color
 
 
 def test_everyone_finished_opponents_won():
@@ -497,5 +527,7 @@ def test_everyone_finished_opponents_won():
     coop.opponent1 = opponent1.user.full_name
     coop.opponent2 = opponent2.user.full_name
     coop.update_coop_text(race, entrant.user.full_name)
-    assert coop.label_text == "Opponents won, average time:"
-    assert coop.text == "1:30:00.0"
+    assert coop.opponent_time_text == "1:30:00.0"
+    assert coop.opponent_time_color == coop.winner_color
+    assert coop.our_time_text == "2:00:00.0"
+    assert coop.our_time_color == coop.loser_color
