@@ -6,8 +6,8 @@ import logging
 from threading import Timer
 from typing import List, Optional
 from asyncio import Condition, Event
+from helpers import timer_to_str
 from models.race import Entrant, Race
-from gadgets.timer import Timer as GadgetTimer
 
 
 class MediaConditionTrigger:
@@ -128,7 +128,7 @@ class MediaPlayer:
         asyncio.sleep(self.time_to_start_play(race_time))
         self.logger.debug(
             f"attempting to play {media_file_path} at "
-            f"{GadgetTimer.timer_to_str(race_time)}"
+            f"{timer_to_str(race_time)}"
         )
         self.event_loop.call_soon_threadsafe(
             self.play_media_callback, media_file_path, True
