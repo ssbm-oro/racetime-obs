@@ -30,12 +30,8 @@ class Coop:
         opponent1 = race.get_entrant_by_name(self.opponent1)
         opponent2 = race.get_entrant_by_name(self.opponent2)
 
-        self.logger.debug(f"self.enabled: {self.enabled}")
-
         our_total = self.get_coop_times(entrant, partner)
-        self.logger.info(f"our_total: {our_total}")
         opponent_total = self.get_coop_times(opponent1, opponent2)
-        self.logger.info(f"opponent_total: {opponent_total}")
 
         if our_total and opponent_total:
             self.update_text_if_both_finished(our_total, opponent_total)
