@@ -117,7 +117,7 @@ class RacetimeObs():
             )
         if (
                 self.media_player.ping_chat_messages and
-                data.get("is_bot")
+                data.get("is_bot") or data.get("highlight")
         ):
             self.logger.debug(
                     f"trying to play {self.media_player.chat_media_file}")
@@ -137,7 +137,8 @@ class RacetimeObs():
             self.coop.update_coop_text(self.race, self.full_name)
             self.qualifier.update_qualifier_text(self.race, self.full_name)
             self.event_loop.call_soon_threadsafe(
-                    self.media_player.race_updated, self.race)
+                    self.media_player.race_updated,
+                    self.race, self.full_name)
 
     def update_logger(
         self, enabled: bool, log_to_file: bool, log_file: str, level: str

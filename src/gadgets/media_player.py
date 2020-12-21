@@ -1,11 +1,11 @@
 import asyncio
 from asyncio.events import AbstractEventLoop
 from asyncio.locks import Lock
-from datetime import datetime, timedelta  # , timezone
+from datetime import datetime, timedelta
 import logging
 from threading import Timer
 from typing import List, Optional
-from asyncio import Condition, Event
+from asyncio import Event
 from helpers import timer_to_str
 from models.race import Entrant, Race
 
@@ -16,7 +16,6 @@ class MediaConditionTrigger:
     media_file_path: str = ""
     triggered: bool = False
     race_started_at: datetime = None
-    race_update_condition: Condition = Condition()
 
     def __init__(
         self, media_file_path: str, place_trigger: int = None,
@@ -27,42 +26,46 @@ class MediaConditionTrigger:
         self.entrant_count_trigger = entrant_count_trigger
 
     def check_trigger(self, race: Race, entrant: Entrant):
-        if self.triggered or self.media_file_path == "":
+        if (
+            self.triggered or self.media_file_path == "" or
+            race is None or entrant is None
+        ):
             return False
         else:
             if (
                 self.check_finish_place_entrant_count(race, entrant) or
-                self.check_finish_place(race, entrant)
+                self.check_finish_place(entrant)
             ):
                 self.triggered = True
                 return True
         return False
 
-    def check_finish_place(self, race: Race, entrant: Entrant):
+    def check_finish_place(self, entrant: Entrant):
         if (
-            self.entrant_count_trigger is None and race is not None and
-            entrant is not None and entrant.user is not None
+            self.entrant_count_trigger is not None or entrant.user is None or
+            entrant.place is None
         ):
-            user = race.get_entrant_by_name(entrant.user.full_name)
+            return False
+        else:
             return (
-                user.place <= self.place
+                entrant.place <= self.place
             )
 
     def check_finish_place_entrant_count(self, race: Race, entrant: Entrant):
-        if (
-            self.entrant_count_trigger is not None and race is not None and
-            entrant is not None and entrant.user is not None
-        ):
-            user = race.get_entrant_by_name(entrant.user.full_name)
+        if None in [
+            self.entrant_count_trigger, entrant.user, entrant.place,
+            race.entrants_count
+        ]:
+            return False
+        else:
             return (
-                user.place <= self.place and
+                entrant.place <= self.place and
                 race.entrants_count <= self.entrant_count_trigger
             )
 
 
 class MediaPlayer:
     logger: logging.Logger = logging.Logger("racetime-obs")
-    entrant_name: str = ""
     enabled: bool = False
     triggers: List[MediaConditionTrigger] = []
     timers: List[Timer] = []
@@ -73,15 +76,20 @@ class MediaPlayer:
     started_at: datetime = None
     ping_chat_messages: bool = False
     chat_media_file: str = None
+    last_session_race: str = ""
 
     def __init__(self, event_loop: AbstractEventLoop):
         self.event_loop = event_loop
 
-    def race_updated(self, race: Race):
+    def race_updated(self, race: Race, entrant_name: str):
+        # so the sound doesn't play when the user starts obs next time
+        if self.last_session_race == race.name:
+            return
         self.started_at = race.started_at
         for trigger in self.triggers:
+            self.logger.debug(trigger)
             if trigger.check_trigger(
-                race, race.get_entrant_by_name(self.entrant_name)
+                race, race.get_entrant_by_name(entrant_name)
             ):
                 self.play_media_callback(trigger.media_file_path, True)
                 self.logger.debug("trigger fired")
@@ -91,7 +99,7 @@ class MediaPlayer:
         entrant_count_trigger: int = None
     ):
         async def add(
-            self, media_file_path: str, place_trigger: int = None,
+            media_file_path: str, place_trigger: int = None,
             entrant_count_trigger: int = None
         ):
             async with self.triggers_lock:
@@ -100,12 +108,10 @@ class MediaPlayer:
                     entrant_count_trigger=entrant_count_trigger
                 ))
 
-        self.event_loop.run_until_complete(
-            add(
+        asyncio.ensure_future(add(
                 media_file_path, place_trigger,
                 entrant_count_trigger
-            )
-        )
+        ))
 
     def add_timer(self, media_file_path: str, race_time: timedelta):
         # try to wake up a little early and get ready
@@ -117,10 +123,6 @@ class MediaPlayer:
         timer.start()
 
     def time_to_start_play(self, race_time: timedelta) -> float:
-        # time_to_start_play = (
-        #     race_time - datetime.now(timezone.utc) -
-        #     self.started_at - timedelta(seconds=1.0)
-        # )
         time_to_start_play = 10000000000000.0
         return time_to_start_play
 
@@ -130,13 +132,10 @@ class MediaPlayer:
             f"attempting to play {media_file_path} at "
             f"{timer_to_str(race_time)}"
         )
-        self.event_loop.call_soon_threadsafe(
-            self.play_media_callback, media_file_path, True
-        )
+        asyncio.ensure_future(self.play_media_callback(media_file_path, True))
 
     def remove_trigger(self, index: int):
         async def remove(index: int):
             async with self.triggers_lock:
                 self.triggers.clear()
-
-        self.event_loop.run_until_complete(remove(index))
+        asyncio.ensure_future(remove(index))

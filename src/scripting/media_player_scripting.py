@@ -1,4 +1,3 @@
-from datetime import timedelta
 from helpers.obs_context_manager import media_source_ar
 import obspython as obs
 from rtgg_obs import RacetimeObs
@@ -12,24 +11,19 @@ def script_update_media_player_settings(settings, rtgg_obs: RacetimeObs):
         settings, "use_chat_pings")
     rtgg_obs.media_player.chat_media_file = obs.obs_data_get_string(
         settings, "chat_ping_sound")
-    # first_place_sound = obs.obs_data_get_string(settings,
-    #  "first_place_sound")
-    # if first_place_sound is not None and first_place_sound != "":
-    #     rtgg_obs.media_player.remove_trigger(0)
-    #     rtgg_obs.media_player.add_trigger(first_place_sound, place_trigger=1)
-    #     rtgg_obs.media_player.play_media_callback = play_sound
-    debug_sound = obs.obs_data_get_string(settings, "debug_sound")
-    if debug_sound is not None and debug_sound != "":
-        play_time = timedelta(seconds=-5)
-        print(f"setting timer to play {debug_sound} at {play_time})")
-        # rtgg_obs.media_player.add_timer(debug_sound, play_time)
+    first_place_sound = obs.obs_data_get_string(settings,
+                                                "first_place_sound")
+    if first_place_sound is not None and first_place_sound != "":
+        rtgg_obs.media_player.remove_trigger(0)
+        rtgg_obs.media_player.add_trigger(first_place_sound, place_trigger=1)
+        rtgg_obs.media_player.play_media_callback = play_sound
 
 
 def script_media_player_settings(
     props, rtgg_obs: RacetimeObs, media_player_toggled
 ):
     p = obs.obs_properties_add_bool(
-        props, "use_media_player", "Play sound if you win?"
+        props, "use_media_player", "Enable sounds?"
     )
     obs.obs_property_set_modified_callback(p, media_player_toggled)
     media_player_group = obs.obs_properties_create()
@@ -43,7 +37,8 @@ def script_media_player_settings(
     )
     p = obs.obs_properties_add_bool(
         media_player_group, "use_chat_pings",
-        "Chat sounds?"
+        ("Enable this and set choose a sound file to play when a bot posts or "
+            "when someone @s you in racetime.gg chat")
     )
     obs.obs_property_set_long_description(
         p, "Play a sound when a chat message arrives?")
@@ -53,15 +48,14 @@ def script_media_player_settings(
         "Audio Files (*.mp3 *.aac *.wav *.wma)", None
     )
     obs.obs_property_set_long_description(
-        p, "Sound file to play when a message arrives.")
+        p, "Sound file to play when you finish first.")
     obs.obs_properties_add_path(
-        media_player_group, "debug_sound",
-        "Debug sound", obs.OBS_PATH_FILE,
+        media_player_group, "first_place_sound",
+        "First Place Sound", obs.OBS_PATH_FILE,
         "Audio Files (*.mp3 *.aac *.wav *.wma)", None
     )
 
 
 def play_sound(media_path: str, use_monitoring: bool = True):
-    print(f"trying to play sound {media_path}")
     with media_source_ar(media_path, use_monitoring) as media_source:
         obs.obs_set_output_source(63, media_source)
