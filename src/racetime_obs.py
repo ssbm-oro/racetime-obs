@@ -170,36 +170,6 @@ def update_coop_sources():
         )
 
 
-def update_coop_sources():
-    if rtgg_obs.coop.is_enabled():
-        rtgg_obs.coop.update_coop_text(rtgg_obs.race, rtgg_obs.full_name)
-        set_source_text(
-            rtgg_obs.coop.our_time_source,
-            rtgg_obs.coop.our_time_text,
-            rtgg_obs.coop.our_time_color
-        )
-        set_source_text(
-            rtgg_obs.coop.opponent_time_source,
-            rtgg_obs.coop.opponent_time_text,
-            rtgg_obs.coop.opponent_time_color
-        )
-
-
-def update_coop_sources():
-    if rtgg_obs.coop.is_enabled():
-        rtgg_obs.coop.update_coop_text(rtgg_obs.race, rtgg_obs.full_name)
-        set_source_text(
-            rtgg_obs.coop.our_time_source,
-            rtgg_obs.coop.our_time_text,
-            rtgg_obs.coop.our_time_color
-        )
-        set_source_text(
-            rtgg_obs.coop.opponent_time_source,
-            rtgg_obs.coop.opponent_time_text,
-            rtgg_obs.coop.opponent_time_color
-        )
-
-
 def fill_race_list(race_list, category_list):
     obs.obs_property_list_clear(race_list)
     obs.obs_property_list_clear(category_list)

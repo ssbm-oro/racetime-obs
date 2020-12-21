@@ -146,7 +146,8 @@ class Race:
 
     def get_entrant_by_name(self, full_name: str) -> Entrant:
         entrant = next(
-            (x for x in self.entrants if x.user.full_name == full_name), None)
+            (x for x in self.entrants if (
+                x.user.full_name.lower() == full_name.lower())), None)
         return entrant
 
     def get_entrant_by_place(self, place: int) -> Entrant:
