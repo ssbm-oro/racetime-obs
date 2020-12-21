@@ -10,8 +10,8 @@ This is the main code repository for racetime-obs, a plugin to add realtime info
 
 ### Features
 
-* Co-op mode: Co-op races will automatically calculate the finish time of your team and your opponents once 2 or 3 of you have finished and either who won or when the last player needs to finish by to win. This will not work outside of head to head co-op races.
-* Qualifier mode: Calculate the par time and your score when the top 3 have finished using the formula score = 2 - (par time - your time)
+* Co-op mode: Co-op races will automatically calculate the average finish time of your team when you finish. You can also specify another pair of players as your opponent/rivals. Their average time will automatically calculated and displayed. If one team has finished, the other team's timer will count down how much time they have to still win. If it's too late to still win, it'll count up the average time if the last player finished now.
+* Qualifier mode: Calculate the par time and your score when the top 3 have finished using the formula score = 2 - (par time / your time)
 
 #### Experimental Features
 
