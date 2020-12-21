@@ -99,55 +99,9 @@ class Coop:
                 self.opponent_time_color = self.loser_color
                 self.our_time_color = self.winner_color
             else:
-                # a tie?!?!
+                # an exact tie?!?!
                 self.opponent_time_color = self.still_racing_color
                 self.our_time_color = self.still_racing_color
-        # self.set_text_if_two_finishers(race, our_total, opponent_total)
-        # self.set_text_if_three_finishers(
-        #     race, entrant, partner, opponent1, opponent2)
-        # self.set_text_if_four_finishers(
-        #     race, entrant, partner, opponent1, opponent2)
-
-    # def set_text_if_four_finishers(self, race, entrant, partner,
-    #                                opponent1, opponent2):
-    #     if race.entrants_count_finished == 4:
-    #         our_total = entrant.finish_time + partner.finish_time
-    #         opponent_total = opponent1.finish_time + opponent2.finish_time
-    #         if our_total < opponent_total:
-    #             self.label_text = "We won!!! Average time:"
-    #             self.text = timer_to_str(our_total / 2)
-    #         else:
-    #             self.label_text = "Opponents won, average time:"
-    #             self.text = timer_to_str(opponent_total / 2)
-
-    # def set_text_if_three_finishers(self, race, entrant, partner,
-    #                                 opponent1, opponent2):
-    #     if race.entrants_count_finished == 3:
-    #         current_timer = datetime.now(timezone.utc) - race.started_at
-    #         if not entrant.finish_time:
-    #             self.label_text, self.text = self.get_coop_text(
-    #                 "I need ", partner, opponent1, opponent2, current_timer)
-    #         elif not partner.finish_time:
-    #             prefix = partner.user.name + " needs "
-    #             self.label_text, self.text = self.get_coop_text(
-    #                 prefix, entrant, opponent1, opponent2, current_timer)
-    #         elif not opponent1.finish_time:
-    #             prefix = opponent1.user.name + " needs "
-    #             self.label_text, self.text = self.get_coop_text(
-    #                 prefix, opponent2, entrant, partner, current_timer)
-    #         elif not opponent2.finish_time:
-    #             prefix = opponent2.user.name + " needs "
-    #             self.label_text, self.text = self.get_coop_text(
-    #                 prefix, opponent1, entrant, partner, current_timer)
-
-    # def set_text_if_two_finishers(self, race, our_total, opponent_total):
-    #     if race.entrants_count_finished == 2:
-    #         if our_total is not None:
-    #             self.label_text = "We won!"
-    #             self.text = timer_to_str(our_total / 2)
-    #         elif opponent_total is not None:
-    #             self.label_text = "They won. :("
-    #             self.text = timer_to_str(opponent_total / 2)
 
     @staticmethod
     def get_coop_text(label_text_start: str, finished_partner: Entrant,

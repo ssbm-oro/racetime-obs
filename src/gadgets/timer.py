@@ -47,7 +47,7 @@ class Timer:
         fallback_color: int = None, fallback_text: str = None
     ):
         if status_value == "open" or status_value == "invitational":
-            time = timer_to_str(start_delay)
+            time = timer_to_str(start_delay * -1.0)
             color = self.pre_color
         elif status_value == "cancelled":
             color = self.cancel_dq_color

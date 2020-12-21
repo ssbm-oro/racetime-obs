@@ -100,38 +100,44 @@ class RacetimeObs():
         if datetime.now(timezone.utc) - last_pong > timedelta(seconds=20):
             await ws.send(json.dumps({"action": "ping"}))
 
-    def process_ws_message(self, data, last_pong):
+    def process_ws_message(self, data: dict, last_pong: datetime):
         if data.get("type") == "race.data":
-            r = race_from_dict(data.get("race"))
-            self.logger.debug(f"race data parsed: {r}")
-            self.logger.debug(f"current race is {self.race}")
-            if r is not None and r.version > self.race.version:
-                self.race = r
-                self.logger.debug(f"self.race is {self.race}")
-                self.coop.update_coop_text(self.race, self.full_name)
-                self.qualifier.update_qualifier_text(self.race, self.full_name)
-                self.event_loop.call_soon_threadsafe(
-                    self.media_player.race_updated, self.race)
+            self.update_race(data)
         elif data.get("type") == "chat.message":
-            self.logger.debug(
-                f"received chat message. chat sounds enabled is "
-                f"{self.media_player.ping_chat_messages}"
-            )
-            if (
-                self.media_player.ping_chat_messages and
-                data.get("is_bot")
-            ):
-                self.logger.debug(
-                    f"trying to play {self.media_player.chat_media_file}")
-                self.event_loop.call_soon_threadsafe(
-                    self.media_player.play_media_callback,
-                    self.media_player.chat_media_file,
-                    True
-                )
+            self.process_chat_message(data.get("message"))
         elif data.get("type") == "pong":
             last_pong = dateutil.parser.parse(data.get("date"))
             pass
         return last_pong
+
+    def process_chat_message(self, data: dict):
+        self.logger.debug(
+                f"received chat message. chat sounds enabled is "
+                f"{self.media_player.ping_chat_messages}"
+            )
+        if (
+                self.media_player.ping_chat_messages and
+                data.get("is_bot")
+        ):
+            self.logger.debug(
+                    f"trying to play {self.media_player.chat_media_file}")
+            self.event_loop.call_soon_threadsafe(
+                    self.media_player.play_media_callback,
+                    self.media_player.chat_media_file,
+                    True
+                )
+
+    def update_race(self, data: dict):
+        r = race_from_dict(data.get("race"))
+        self.logger.debug(f"race data parsed: {r}")
+        self.logger.debug(f"current race is {self.race}")
+        if r is not None and r.version > self.race.version:
+            self.race = r
+            self.logger.debug(f"self.race is {self.race}")
+            self.coop.update_coop_text(self.race, self.full_name)
+            self.qualifier.update_qualifier_text(self.race, self.full_name)
+            self.event_loop.call_soon_threadsafe(
+                    self.media_player.race_updated, self.race)
 
     def update_logger(
         self, enabled: bool, log_to_file: bool, log_file: str, level: str
