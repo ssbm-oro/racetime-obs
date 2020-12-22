@@ -7,6 +7,7 @@ from typing import Any
 import dateutil
 import websockets
 from websockets.client import WebSocketClientProtocol
+from websockets.exceptions import ConnectionClosedError
 
 import racetime_client
 from gadgets.coop import Coop
@@ -64,17 +65,23 @@ class RacetimeObs():
                     self.race = (
                         racetime_client.get_race_by_name(self.selected_race)
                     )
+                    self.logger.debug("got race, trying to connect to ws")
                 if self.race is not None and self.race.websocket_url != "":
-                    async with websockets.connect(
-                        "wss://racetime.gg" + self.race.websocket_url,
-                        host=host, extra_headers=headers
-                    ) as ws:
-                        self.race_changed = False
-                        self.logger.info(
-                            "connected to websocket:"
-                            " {self.race.websocket_url}"
-                        )
-                        await self.process_messages(ws)
+                    self.logger.debug("received race, trying to connect to ws")
+                    try:
+                        async with websockets.connect(
+                            "wss://racetime.gg" + self.race.websocket_url,
+                            host=host, extra_headers=headers
+                        ) as ws:
+                            self.race_changed = False
+                            self.logger.info(
+                                "connected to websocket:"
+                                " {self.race.websocket_url}"
+                            )
+                            await self.process_messages(ws)
+                    except (ConnectionRefusedError, ConnectionClosedError):
+                        self.logger.error("websocket closed unexpectedly.")
+                        continue
             await asyncio.sleep(5.0)
 
     async def process_messages(self, ws: WebSocketClientProtocol):
@@ -91,6 +98,7 @@ class RacetimeObs():
                 last_pong = self.process_ws_message(data, last_pong)
             except asyncio.TimeoutError:
                 await self.ping_ws(ws, last_pong)
+                continue
             except websockets.ConnectionClosed:
                 self.logger.error("websocket connection closed")
                 self.race = None
