@@ -151,6 +151,33 @@ def test_cutoff_and_entrant_finished_in_first(random_users):
     race = get_test_race(entrants=entrants)
     qualifier = get_test_qualifier()
     qualifier.update_qualifier_text(race, entrant.user.full_name)
-    # par is 95 minutes, entrant's time is 90 minutes. 2-(90/95) ""= 1.05
+    # par is 95 minutes, entrant's time is 90 minutes. 2-(90/95) ~= 1.05
     assert qualifier.entrant_score == "1.05"
     assert qualifier.par_text == "1:35:00.0"
+
+
+def test_cutoff_and_entrant_finished_waay_ahead(random_users):
+    entrant = get_test_entrant(
+        next(random_users), status_value="finished",
+        finished_at=time_ago(minutes=20),
+        finish_time=timedelta(hours=1, microseconds=1), place=2
+    )
+    second_place = get_test_entrant(
+        next(random_users), status_value="finished",
+        finished_at=time_ago(minutes=15),
+        finish_time=timedelta(hours=1, minutes=35, microseconds=1), place=1
+    )
+    third_place = get_test_entrant(
+        next(random_users), status_value="finished",
+        finished_at=time_ago(minutes=10),
+        finish_time=timedelta(hours=1, minutes=40, microseconds=1), place=3
+    )
+    entrants = get_test_entrants(
+        random_users, entrant, second_place, third_place)
+    race = get_test_race(entrants=entrants)
+    qualifier = get_test_qualifier()
+    qualifier.update_qualifier_text(race, entrant.user.full_name)
+    # par is 95 minutes, entrant's time is 60 minutes. 2-(60/85) ~= 1.29
+    # but max score is 1.05
+    assert qualifier.entrant_score == "1.05"
+    assert qualifier.par_text == "1:25:00.0"

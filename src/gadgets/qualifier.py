@@ -28,7 +28,7 @@ class Qualifier:
             self.par_text = timer_to_str(par_time)
 
             if entrant and entrant.finish_time is not None:
-                entrant_score = max(2 - (entrant.finish_time / par_time), 1.05)
+                entrant_score = min(2 - (entrant.finish_time / par_time), 1.05)
                 self.entrant_score = "{:04.2f}".format(
                     entrant_score)
             self.logger.debug(self.entrant_score)
