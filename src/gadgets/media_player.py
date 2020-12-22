@@ -1,5 +1,4 @@
 import asyncio
-from asyncio.events import AbstractEventLoop
 from asyncio.locks import Lock
 from datetime import datetime, timedelta
 import logging
@@ -72,14 +71,10 @@ class MediaPlayer:
     triggers_lock: Lock = Lock()
     race_update_event: Event()
     play_media_callback = None
-    event_loop: AbstractEventLoop = None
     started_at: datetime = None
     ping_chat_messages: bool = False
     chat_media_file: str = None
     last_session_race: str = ""
-
-    def __init__(self, event_loop: AbstractEventLoop):
-        self.event_loop = event_loop
 
     def race_updated(self, race: Race, entrant_name: str):
         # so the sound doesn't play when the user starts obs next time

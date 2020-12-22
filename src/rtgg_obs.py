@@ -43,7 +43,7 @@ class RacetimeObs():
         self.timer.logger = self.logger
         self.coop.logger = self.logger
         self.qualifier.logger = self.logger
-        self.media_player = MediaPlayer(self.event_loop)
+        self.media_player = MediaPlayer()
         self.media_player.logger = self.logger
 
     def race_update_thread(self):

@@ -21,7 +21,7 @@ def get_test_race(
         ) -> Race:
     entrant_count_finished = list.count(
             (list((x.status.value == "finished" for x in entrants))), True)
-    test_race = Race(name="",
+    test_race = Race(name="tested-raceroom-0420",
                      status=Status(value=status_value,
                                    verbose_value="", help_text=""),
                      category=get_test_race_category(),
