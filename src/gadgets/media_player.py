@@ -9,7 +9,7 @@ from helpers import timer_to_str
 from models.race import Entrant, Race
 
 
-class MediaConditionTrigger:
+class MediaTrigger:
     place: Optional[int] = None
     entrant_count_trigger: Optional[int] = None
     media_file_path: str = ""
@@ -66,7 +66,7 @@ class MediaConditionTrigger:
 class MediaPlayer:
     logger: logging.Logger = logging.Logger("racetime-obs")
     enabled: bool = False
-    triggers: List[MediaConditionTrigger] = []
+    triggers: List[MediaTrigger] = []
     timers: List[Timer] = []
     triggers_lock: Lock = Lock()
     race_update_event: Event()
@@ -98,7 +98,7 @@ class MediaPlayer:
             entrant_count_trigger: int = None
         ):
             async with self.triggers_lock:
-                self.triggers.append(MediaConditionTrigger(
+                self.triggers.append(MediaTrigger(
                     media_file_path, place_trigger=place_trigger,
                     entrant_count_trigger=entrant_count_trigger
                 ))

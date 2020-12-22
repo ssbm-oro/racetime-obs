@@ -47,13 +47,13 @@ def script_media_player_settings(
         "Chat media file", obs.OBS_PATH_FILE,
         "Audio Files (*.mp3 *.aac *.wav *.wma)", None
     )
-    obs.obs_property_set_long_description(
-        p, "Sound file to play when you finish first.")
     obs.obs_properties_add_path(
         media_player_group, "first_place_sound",
         "First Place Sound", obs.OBS_PATH_FILE,
         "Audio Files (*.mp3 *.aac *.wav *.wma)", None
     )
+    obs.obs_property_set_long_description(
+        p, "Sound file to play when you finish first.")
 
 
 def play_sound(media_path: str, use_monitoring: bool = True):
