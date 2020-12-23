@@ -30,6 +30,8 @@ def script_load(settings):
     rtgg_obs.media_player.last_session_race = obs.obs_data_get_string(
         settings, "last_session_race")
 
+    obs.obs_data_set_string(settings, "race", "None")
+
     race_update_t = Thread(target=rtgg_obs.race_update_thread)
     race_update_t.daemon = True
     race_update_t.start()
@@ -63,7 +65,7 @@ def script_update(settings):
 
 def script_defaults(settings):
     obs.obs_data_set_default_string(settings, "race_info", "Race info")
-    obs.obs_data_set_default_string(settings, "race", "")
+    obs.obs_data_set_default_string(settings, "race", "None")
     obs.obs_data_set_default_int(settings, "qualifier_cutoff", 3)
 
 
