@@ -32,6 +32,12 @@ The general goal for this is to enable you to do fun things on your stream with 
 
 ![Screenshot of Settings](/img/Screenshot1.png)
 
+![Screenshot of Coop Settings](/img/Screenshot_coop.png)
+
+![Screenshot of Qualifier Settings](/img/Screenshot_qualifier.png)
+
+![Screenshot of Media Player Settings](/img/Screenshot_mediaplayer.png)
+
 ![Video demo of Coop Mode](/img/coop_demo.gif)
 
 In this demo, you can see two of the features. The timer has turned gold, indicating that I finished first. Then, once both of our opponents have finished, it shows what time my partner Amarith would have needed to finish at for us to win
