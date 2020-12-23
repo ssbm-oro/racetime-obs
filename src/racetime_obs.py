@@ -90,8 +90,8 @@ def script_properties():
 
 def refresh_pressed(props, prop, *args, **kwargs):
     fill_source_list(obs.obs_properties_get(props, "source"))
-    fill_source_list(obs.obs_properties_get(props, "coop_label"))
-    fill_source_list(obs.obs_properties_get(props, "coop_text"))
+    fill_source_list(obs.obs_properties_get(props, "coop_our_source"))
+    fill_source_list(obs.obs_properties_get(props, "coop_opponent_source"))
     fill_source_list(obs.obs_properties_get(props, "qualifier_par_source"))
     fill_source_list(obs.obs_properties_get(props, "qualifier_score_source"))
     fill_race_list(rtgg_obs, obs.obs_properties_get(props, "race"),
