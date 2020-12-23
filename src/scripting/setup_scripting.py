@@ -39,6 +39,8 @@ def script_setup(props, new_race_selected, new_category_selected):
         "trying to find a specific problem."
     )
     obs.obs_properties_add_bool(setup_group, "log_to_file", "Log to file?")
+    obs.obs_properties_add_path(
+        setup_group, "log_file", "Log File", obs.OBS_PATH_FILE_SAVE, "*", None)
     category_list = obs.obs_properties_add_list(
         props, "category_filter", "Filter by Category",
         obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING

@@ -2,7 +2,6 @@ import asyncio
 import json
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Any
 
 import dateutil
 import websockets
@@ -157,8 +156,9 @@ class RacetimeObs():
         if log_to_file:
             try:
                 handler = logging.FileHandler(log_file)
-            except Any:
-                self.logger.error(f"Unable to open {log_file}")
+            except IOError as e:
+                self.logger.error(f"IOError while opening open {log_file}:")
+                self.logger.error(f"{e.errno} {e.strerror}")
         elif level == "Debug":
             handler.setLevel(logging.DEBUG)
         elif level == "Info":
