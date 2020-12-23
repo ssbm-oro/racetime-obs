@@ -64,21 +64,14 @@ def source_list_ar():
 
 
 @contextmanager
-def media_source_ar(media_path: str, use_monitoring: bool):
+def media_source_ar(media_path: str, monitoring_type: int):
     media_source = obs.obs_source_create_private(
         "ffmpeg_source", "Global Media Source", None
         )
     with data_ar() as settings:
         obs.obs_data_set_string(settings, "local_file", media_path)
         obs.obs_source_update(media_source, settings)
-        if use_monitoring:
-            obs.obs_source_set_monitoring_type(
-                media_source, obs.OBS_MONITORING_TYPE_MONITOR_AND_OUTPUT
-            )
-        else:
-            obs.obs_source_set_monitoring_type(
-                media_source, obs.OBS_MONITORING_TYPE_NONE
-            )
+        obs.obs_source_set_monitoring_type(media_source, monitoring_type)
         try:
             yield media_source
         finally:

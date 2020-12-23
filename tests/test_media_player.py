@@ -19,6 +19,7 @@ async def test_entrant_finished_first(random_users):
     media_file_path = "fake/path/test.mp3"
     media_player.play_media_callback = play_media
     media_player.add_trigger(media_file_path, 1)
+    media_player.monitoring_type = 0
     await asyncio.sleep(0.1)
     assert len(media_player.triggers) == 1
     play_media.assert_not_called()
@@ -30,10 +31,11 @@ async def test_entrant_finished_first(random_users):
     await asyncio.sleep(0.1)
     play_media.assert_not_called()
     entrant = race.get_entrant_by_name(entrant.user.full_name)
-    await asyncio.sleep(0.5)
+    await asyncio.sleep(0.1)
     entrant.place = 1
     entrant.status.value = "finished"
     entrant.finish_time = datetime.now(timezone.utc)
     media_player.race_updated(race, entrant.user.full_name)
     await asyncio.sleep(0.1)
-    play_media.assert_called_once_with(media_file_path, True)
+    play_media.assert_called_once_with(
+        media_file_path, 0)

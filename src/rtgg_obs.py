@@ -132,7 +132,7 @@ class RacetimeObs():
             self.event_loop.call_soon_threadsafe(
                     self.media_player.play_media_callback,
                     self.media_player.chat_media_file,
-                    True
+                    self.media_player.monitoring_type
                 )
 
     def update_race(self, data: dict):

@@ -75,6 +75,7 @@ class MediaPlayer:
     ping_chat_messages: bool = False
     chat_media_file: str = None
     last_session_race: str = ""
+    monitoring_type: int = 0
 
     def race_updated(self, race: Race, entrant_name: str):
         # so the sound doesn't play when the user starts obs next time
@@ -86,7 +87,8 @@ class MediaPlayer:
             if trigger.check_trigger(
                 race, race.get_entrant_by_name(entrant_name)
             ):
-                self.play_media_callback(trigger.media_file_path, True)
+                self.play_media_callback(
+                    trigger.media_file_path, self.monitoring_type)
                 self.logger.debug("trigger fired")
 
     def add_trigger(
@@ -127,7 +129,9 @@ class MediaPlayer:
             f"attempting to play {media_file_path} at "
             f"{timer_to_str(race_time)}"
         )
-        asyncio.ensure_future(self.play_media_callback(media_file_path, True))
+        asyncio.ensure_future(
+            self.play_media_callback(
+                media_file_path, self.monitoring_type))
 
     def remove_trigger(self, index: int):
         async def remove(index: int):
