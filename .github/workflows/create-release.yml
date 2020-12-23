@@ -13,11 +13,11 @@ jobs:
     name: Draft and Upload Release Asset
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Get tag annotation
         uses: ericcornelissen/git-tag-annotation-action@v1
         id: tag_data
-      - name: Checkout code
-        uses: actions/checkout@v2
       - name: Build project # This would actually build your project, using zip for an example artifact
         run: |
           cp requirements.txt src/
