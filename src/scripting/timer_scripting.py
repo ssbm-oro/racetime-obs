@@ -29,9 +29,9 @@ def script_update_timer_settings(
 
 
 def script_timer_settings(props, rtgg_obs: RacetimeObs):
-    obs.obs_properties_add_bool(
+    p = obs.obs_properties_add_bool(
         props, "use_podium", "Use custom color for podium finishes?")
-
+    obs.obs_property_set_modified_callback(p, podium_toggled)
     podium_group = obs.obs_properties_create()
     obs.obs_properties_add_group(
         props, "podium_group", "Podium Colors",
