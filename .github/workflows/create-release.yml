@@ -21,10 +21,12 @@ jobs:
         uses: ericcornelissen/git-tag-annotation-action@v1
         id: tag_data
       - name: Build project # This would actually build your project, using zip for an example artifact
+        id: build
         run: |
           cp requirements.txt src/
           mv src racetime-obs
           zip -rl release.zip racetime-obs/ -x racetime-obs/pyproject.toml -x racetime-obs/poetry.lock -x racetime-obs/obspython.py
+          echo ::set-output name=version::${GITHUB_REF/refs\/tags\//}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -44,5 +46,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path: ./release.zip
-          asset_name: release_${{ github.ref }}.zip
+          asset_name: release_${{ steps.build.outputs.version }}.zip
           asset_content_type: application/zip
