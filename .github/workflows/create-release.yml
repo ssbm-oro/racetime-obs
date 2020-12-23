@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Get git tags
+        run: git fetch --tags --force
       - name: Get tag annotation
         uses: ericcornelissen/git-tag-annotation-action@v1
         id: tag_data
