@@ -28,7 +28,7 @@ def script_description():
 class RacetimeObs():
     logger = logging.Logger("racetime-obs")
     race: Race = None
-    selected_race = ""
+    selected_race = "None"
     check_race_updates = False
     race_changed = False
     full_name = ""
@@ -61,7 +61,7 @@ class RacetimeObs():
             if not self.timer.is_enabled():
                 await asyncio.sleep(5.0)
             else:
-                if self.race is None and self.selected_race != "":
+                if self.race is None and self.selected_race != "None":
                     self.race = (
                         racetime_client.get_race_by_name(self.selected_race)
                     )

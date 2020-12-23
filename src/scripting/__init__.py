@@ -27,7 +27,7 @@ def fill_race_list(rtgg_obs: RacetimeObs, race_list, category_list):
     obs.obs_property_list_clear(category_list)
     obs.obs_property_list_add_string(category_list, "All", "All")
 
-    obs.obs_property_list_add_string(race_list, "", "")
+    obs.obs_property_list_add_string(race_list, "None", "None")
     races = racetime_client.get_races()
     if races is not None:
         fill_category_list(category_list, races)

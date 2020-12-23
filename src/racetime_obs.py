@@ -105,7 +105,13 @@ def refresh_pressed(props, prop, *args, **kwargs):
 
 
 def new_race_selected(props, prop, settings):
+    rtgg_obs.race_changed = True
+    obs.timer_remove(update_sources)
+
     rtgg_obs.selected_race = obs.obs_data_get_string(settings, "race")
+    if rtgg_obs.selected_race == "None":
+        rtgg_obs.race = None
+        return True
     r = racetime_client.get_race_by_name(rtgg_obs.selected_race)
     if r is not None:
         rtgg_obs.race = r
@@ -117,11 +123,11 @@ def new_race_selected(props, prop, settings):
         rtgg_obs.logger.info(f"new race selected: {rtgg_obs.race}")
         obs.obs_data_set_default_string(settings, "race_info", r.info)
         coop_scripting.fill_coop_entrant_lists(props, rtgg_obs)
+        rtgg_obs.timer.enabled = True
+        obs.timer_add(update_sources, 100)
     else:
         obs.obs_data_set_default_string(
             settings, "race_info", "Race not found")
-
-    rtgg_obs.race_changed = True
     return True
 
 
