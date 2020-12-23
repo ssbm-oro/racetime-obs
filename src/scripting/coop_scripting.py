@@ -35,7 +35,7 @@ def script_coop_settings(props, rtgg_obs: RacetimeObs):
     ))
     fill_source_list(p)
     p = obs.obs_properties_add_list(
-        coop_group, "coop_opponent_source", "Coop Label Text Source",
+        coop_group, "coop_opponent_source", "Rival Team's Timer",
         obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING
     )
     obs.obs_property_set_long_description(p, (

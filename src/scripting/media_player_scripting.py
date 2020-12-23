@@ -36,12 +36,10 @@ def script_media_player_settings(
         rtgg_obs.media_player.enabled
     )
     p = obs.obs_properties_add_bool(
-        media_player_group, "use_chat_pings",
-        ("Enable this and set choose a sound file to play when a bot posts or "
-            "when someone @s you in racetime.gg chat")
-    )
+        media_player_group, "use_chat_pings", "Chat Pings")
     obs.obs_property_set_long_description(
-        p, "Play a sound when a chat message arrives?")
+        p, ("Enable this and set choose a sound file to play when a bot posts "
+            "or when someone @s you in racetime.gg chat"))
     p = obs.obs_properties_add_path(
         media_player_group, "chat_ping_sound",
         "Chat media file", obs.OBS_PATH_FILE,
