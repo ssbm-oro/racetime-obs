@@ -4,8 +4,6 @@
 
 ## Introduction
 
-> :warning: **This is a relatively new project** :warning: I am testing it as much as I can, but I can't test every possible configuration. Please try it in a casual pickup race a few times before you consider using it in a race that you couldn't afford to lose your stream and local recording (e.g. league or tournament races). Please do let me know if you use it and whether you have issues or not. I think that this should be fairly stable, but I would like confirmation with more data points. :smile: If you do decide to use this in an important race, thank you for your bravery and *any issues you encounter are between you and the tournament admins*.
-
 This is the main code repository for racetime-obs, a plugin to add realtime information from [racetime.gg](https://racetime.gg) to your stream in OBS.
 
 ### Features
@@ -15,13 +13,12 @@ This is the main code repository for racetime-obs, a plugin to add realtime info
 
 #### Experimental Features
 
-* Media player: Automatically play a sound (either on stream, to your speakers, or both) based on race events, such as when the race updates, a chat message is posted, when the race starts counting down, or when you finish. The first version of this release will probably just have options for playing a sound when you finish and when the race starts until a better interface can be developed.
+* Media player: Automatically play a sound (either on stream, to your speakers, or both) based on race events, such as when the race updates, a chat message is posted, when the race starts counting down, or when you finish. Right now, this just has options for playing a sound when you finish or when a bot posts in the channel.
 
 ### Ideas for future development
 
 The general goal for this is to enable you to do fun things on your stream with the information from racetime.gg. Informational features that are boring will probably be prioritized behind features that are fun :grin:
 
-* Playing media: Play a sound or video file automatically, like an announcer saying "Ready... GO!" when the race starts or a victory fanfare when you come in first place.
 * Friends: Announce or list specified friends' finish times if they're in the same race as you.
 * Automatically select a layout or scene depending on what game or mode you are racing.
 * Restreamers: Make setup for restreaming easier by pulling the racers' information from the race room.
@@ -65,6 +62,8 @@ Example output when using tournament qualifier mode.
 8) (optional) Check the "Use custom color for podium finishes" box to have your timer change color depending on what phase the race is in and what place you finished in.
 
 9) Join a racetime.gg race, and select your race room from the drop down. You can select a category to only show races in that category as well.
+
+10) (optional) Choose settings for coop mode or qualifier mode if relevant by setting up 2 text sources for each.
 
 ## Contact
 
