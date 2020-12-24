@@ -24,7 +24,7 @@ jobs:
         id: build
         run: |
           cp requirements.txt src/
-          sed -i s/xxVERSIONxx/${{ steps.build.outputs.version }}/ src/racetime-obs.py
+          sed -i s/xxVERSIONxx/${{ steps.build.outputs.version }}/ src/racetime_obs.py
           mv src racetime-obs
           zip -rl release.zip racetime-obs/ -x racetime-obs/pyproject.toml -x racetime-obs/poetry.lock -x racetime-obs/obspython.py
           echo ::set-output name=version::${GITHUB_REF/refs\/tags\//}
