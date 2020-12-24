@@ -8,12 +8,14 @@
 
 This is the main code repository for racetime-obs, a plugin to add realtime information from [racetime.gg](https://racetime.gg) to your stream in OBS.
 
-What's the point of this? Why not just capture Livesplit or the racetime.gg website? Well, right now there isn't much point and this is really just a proof of concept. The only feature this currently has over those other methods is that you can set your timer's color to change based on what place you come in and a couple of experimental features. But I think there are some other neat and entertaining ideas that this could be used to implement. These are just ideas right now, not plans or features yet. Please let me know if you have any suggestions!
+### Features
 
-### Experimental features
+* Co-op mode: Co-op races will automatically calculate the average finish time of your team when you finish. You can also specify another pair of players as your opponent/rivals. Their average time will automatically calculated and displayed. If one team has finished, the other team's timer will count down how much time they have to still win. If it's too late to still win, it'll count up the average time if the last player finished now.
+* Qualifier mode: Calculate the par time and your score when the top 3 have finished using the formula score = 2 - (par time / your time)
 
-* Co-op mode: Co-op races will automatically calculate the finish time of your team and your opponents once 2 or 3 of you have finished and either who won or when the last player needs to finish by to win. This will not work outside of head to head co-op races.
-* Qualifier mode: Calculate the par time and your score when the top 3 have finished using the formula score = 2 - (par time - your time)
+#### Experimental Features
+
+* Media player: Automatically play a sound (either on stream, to your speakers, or both) based on race events, such as when the race updates, a chat message is posted, when the race starts counting down, or when you finish. The first version of this release will probably just have options for playing a sound when you finish and when the race starts until a better interface can be developed.
 
 ### Ideas for future development
 
@@ -29,6 +31,12 @@ The general goal for this is to enable you to do fun things on your stream with 
 ### Screenshot
 
 ![Screenshot of Settings](/img/Screenshot1.png)
+
+![Screenshot of Coop Settings](/img/Screenshot_coop.png)
+
+![Screenshot of Qualifier Settings](/img/Screenshot_qualifier.png)
+
+![Screenshot of Media Player Settings](/img/Screenshot_mediaplayer.png)
 
 ![Video demo of Coop Mode](/img/coop_demo.gif)
 

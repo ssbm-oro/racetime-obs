@@ -17,7 +17,7 @@ def script_description():
     )
 
 
-base_url = "http://racetime.gg/"
+base_url = "https://racetime.gg/"
 
 
 def racetime_get(uri: str, payload={}):
@@ -94,6 +94,7 @@ def get_race(category: str, race: str):
 def get_race_by_name(name: str):
     if name is None or name == "":
         return None
+    name = name.replace(base_url, "", 1)
     return race_from_dict(racetime_get(f'{base_url}{name}/data'))
 
 # Get Past User Races

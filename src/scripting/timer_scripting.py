@@ -5,7 +5,6 @@ from rtgg_obs import RacetimeObs
 def script_update_timer_settings(
     settings, rtgg_obs: RacetimeObs, update_sources
 ):
-    obs.timer_remove(update_sources)
     rtgg_obs.timer.use_podium_colors = obs.obs_data_get_bool(
         settings, "use_podium")
     rtgg_obs.timer.pre_color = obs.obs_data_get_int(settings, "pre_color")
@@ -17,12 +16,6 @@ def script_update_timer_settings(
         settings, "racing_color")
     rtgg_obs.timer.finished_color = obs.obs_data_get_int(
         settings, "finished_color")
-
-    if rtgg_obs.selected_race != "":
-        rtgg_obs.timer.enabled = True
-        obs.timer_add(update_sources, 100)
-    else:
-        rtgg_obs.timer.enabled = False
     rtgg_obs.logger.debug(f"timer.enabled is {rtgg_obs.timer.enabled}")
     rtgg_obs.logger.debug(f"timer.source_name is {rtgg_obs.timer.source_name}")
     rtgg_obs.logger.debug(f"selected_race is {rtgg_obs.selected_race}")
