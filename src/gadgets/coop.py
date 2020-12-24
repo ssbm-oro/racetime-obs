@@ -119,15 +119,9 @@ class Coop:
         return coop_label_text, coop_text
 
     def get_coop_times(self, player1: Entrant, player2: Entrant):
-        self.logger.debug(f"player1: {player1}")
-        self.logger.debug(f"player2: {player2}")
         team_total = None
         if player1 and player1.finish_time and player2 and player2.finish_time:
             team_total = player1.finish_time + player2.finish_time
-            self.logger.debug(
-                f"calculated {player1.user.name} and {player2.user.name} "
-                f"average is {team_total / 2}"
-            )
         return team_total
 
     def is_enabled(self) -> bool:
