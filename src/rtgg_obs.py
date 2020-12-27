@@ -15,6 +15,7 @@ from gadgets.timer import Timer
 from gadgets.media_player import MediaPlayer
 from helpers.LogFormatter import LogFormatter
 from models.race import Race, race_from_dict
+from models.chat_message import chat_message_from_dict
 
 
 def script_description():
@@ -103,7 +104,7 @@ class RacetimeObs():
                 self.race = None
                 break
 
-    async def ping_ws(self, ws, last_pong):
+    async def ping_ws(self, ws: WebSocketClientProtocol, last_pong: datetime):
         if datetime.now(timezone.utc) - last_pong > timedelta(seconds=20):
             await ws.send(json.dumps({"action": "ping"}))
 
@@ -118,13 +119,14 @@ class RacetimeObs():
         return last_pong
 
     def process_chat_message(self, data: dict):
+        message = chat_message_from_dict(data)
         self.logger.debug(
                 f"received chat message. chat sounds enabled is "
                 f"{self.media_player.ping_chat_messages}"
             )
         if (
                 self.media_player.ping_chat_messages and
-                data.get("is_bot") or data.get("highlight")
+                message.is_bot or message.highlight
         ):
             self.logger.debug(
                     f"trying to play {self.media_player.chat_media_file}")
