@@ -1,7 +1,7 @@
 from threading import Thread
 
 import obspython as obs
-import racetime_client
+import clients.racetime_client as racetime_client
 import scripting.coop_scripting as coop_scripting
 import scripting.media_player_scripting as media_player_scripting
 import scripting.qualifier_scripting as qualifier_scripting

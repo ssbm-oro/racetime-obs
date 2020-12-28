@@ -4,7 +4,7 @@ from models.category import Category
 import obspython as obs
 from helpers.obs_context_manager import data_ar, source_ar, source_list_ar
 from rtgg_obs import RacetimeObs
-import racetime_client
+import clients.racetime_client as racetime_client
 
 
 def fill_source_list(p):

@@ -8,7 +8,7 @@ import websockets
 from websockets.client import WebSocketClientProtocol
 from websockets.exceptions import ConnectionClosedError
 
-import racetime_client
+import clients.racetime_client as racetime_client
 from gadgets.coop import Coop
 from gadgets.qualifier import Qualifier
 from gadgets.timer import Timer
