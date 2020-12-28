@@ -68,7 +68,7 @@ class Season:
         return Season(season_id=season_id, SeasonName=SeasonName)
 
 
-def seasons_from_dict(s: Any) -> List[Racer]:
+def seasons_from_dict(s: Any) -> List[Season]:
     assert isinstance(s, dict)
     if not s:
         return []
@@ -143,7 +143,7 @@ class RacerResult:
         )
 
 
-def racer_results_from_dict(s: Any) -> List[Racer]:
+def racer_results_from_dict(s: Any) -> List[RacerResult]:
     assert isinstance(s, dict)
     if not s:
         return []
@@ -177,7 +177,7 @@ class ScheduleItem:
         )
 
 
-def schedule_from_dict(s: Any) -> List[Racer]:
+def schedule_from_dict(s: Any) -> List[ScheduleItem]:
     assert isinstance(s, dict)
     if not s:
         return []
