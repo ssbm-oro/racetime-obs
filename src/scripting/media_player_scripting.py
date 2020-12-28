@@ -17,7 +17,7 @@ def script_update_media_player_settings(settings, rtgg_obs: RacetimeObs):
                                                 "first_place_sound")
     if first_place_sound is not None and first_place_sound != "":
         rtgg_obs.media_player.remove_trigger(0)
-        rtgg_obs.media_player.add_trigger(first_place_sound, place_trigger=1)
+        rtgg_obs.media_player.add_trigger(first_place_sound, place=1)
         rtgg_obs.media_player.play_media_callback = play_sound
 
 
