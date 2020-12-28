@@ -69,7 +69,7 @@ Example output when using tournament qualifier mode.
 
 You can find me on Discord, oro#7777.
 
-Also, follow me on [Twitch](https://www.twitch.com/ssbmoro)!
+Also, follow me on [Twitch](https://www.twitch.com/ssbmoro)! Generally, if I'm racing ALTTPR, then I'm probably using or testing out this plugin and new features in some way.
 
  ![Twitch Status](https://img.shields.io/twitch/status/ssbmoro)
 
