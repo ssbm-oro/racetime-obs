@@ -21,8 +21,7 @@ async def test_entrant_finished_first(random_users):
     media_player = MediaPlayer()
     media_file_path = "fake/path/test.mp3"
     media_player.play_media_callback = play_media
-    media_player.add_trigger(
-        media_file_path, 0)
+    media_player.add_trigger(media_file_path, place=1)
     media_player.monitoring_type = 0
     await asyncio.sleep(0.1)
 

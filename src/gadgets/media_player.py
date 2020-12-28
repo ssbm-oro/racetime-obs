@@ -138,8 +138,8 @@ class MediaPlayer:
                     trigger.media_file_path, self.monitoring_type)
 
     def add_trigger(
-        self, media_file_path: str, place_trigger: int = None,
-        entrant_count_trigger: int = None
+        self, media_file_path: str, place: int = None,
+        entrant_count: int = None
     ):
         async def add(
             media_file_path: str, place_trigger: int = None,
@@ -151,10 +151,7 @@ class MediaPlayer:
                     entrant_count_trigger=entrant_count_trigger
                 ))
 
-        asyncio.ensure_future(add(
-                media_file_path, place_trigger,
-                entrant_count_trigger
-        ))
+        asyncio.ensure_future(add(media_file_path, place, entrant_count))
 
     def add_chat_trigger(
             self, media_file_path: str, highlight: bool = False,
