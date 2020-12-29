@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-12-28 21:58-0500\n"
+"POT-Creation-Date: 2020-12-29 07:01-0500\n"
 "PO-Revision-Date: 2020-12-28 15:51-0500\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -23,150 +23,160 @@ msgid ""
 "<p>You've loaded the incorrect script.<br><br>Please remove this fileand "
 "add 'racetime_obs.py' instead</p>"
 msgstr ""
+"<p> Sie haben das falsche Skript geladen. <br> <br> Bitte entfernen Sie "
+"diese Datei und fügen Sie stattdessen 'racetime_obs.py' hinzu </ p>"
 
-#: src/racetime_obs.py:26
+#: src/racetime_obs.py:29
 msgid ""
 "Select a text source to use as your timer and enter your full username on"
 " racetime.gg  (including discriminator). This only needs to be done once."
-"\n"
-"\n"
-"Then select the race room each race you join and stop worrying about "
+" Then select the race room each race you join and stop worrying about "
 "whether you started your timer or not."
 msgstr ""
+"Wählen Sie eine Textquelle als Timer und geben Sie Ihren vollständigen "
+"Benutzernamen unter racetime.gg (einschließlich Diskriminator). Dies muss "
+"nur einmal durchgeführt werden. Wählen Sie dann bei jedem Rennen, an dem "
+"Sie teilnehmen, den Rennraum aus und machen Sie sich keine Sorgen mehr. ob "
+"Sie Ihren Timer gestartet haben oder nicht."
 
-#: src/racetime_obs.py:81
+#: src/racetime_obs.py:85
 msgid "Race info"
-msgstr ""
+msgstr "Renninfo"
 
-#: src/racetime_obs.py:103
+#: src/racetime_obs.py:107
 msgid "Refresh"
-msgstr ""
+msgstr "Aktualisierung"
 
-#: src/racetime_obs.py:157
+#: src/racetime_obs.py:161
 msgid "Race not found"
-msgstr ""
+msgstr "Rennen nicht gefunden"
 
 #: src/scripting/__init__.py:33
 msgid "All"
-msgstr ""
+msgstr "Alle"
 
 #: src/scripting/__init__.py:35
-msgid "None"
+msgid "Keiner"
 msgstr ""
 
 #: src/scripting/coop_scripting.py:15
 msgid "Display coop information?"
-msgstr ""
+msgstr "Koop-Informationen anzeigen?"
 
 #: src/scripting/coop_scripting.py:19
 msgid "Co-op Mode"
-msgstr ""
+msgstr "Koop-Modus"
 
 #: src/scripting/coop_scripting.py:24
 msgid "Co-op Partner"
-msgstr ""
+msgstr "Koop-Partner"
 
 #: src/scripting/coop_scripting.py:28
 msgid "Co-op Rival 1"
-msgstr ""
+msgstr "Koop-Rivale 1"
 
 #: src/scripting/coop_scripting.py:32
 msgid "Co-op Rival 2"
-msgstr ""
+msgstr "Koop-Rivale 2"
 
 #: src/scripting/coop_scripting.py:37
 msgid "Our Team's Timer"
-msgstr ""
+msgstr "Der Timer unseres Teams"
 
 #: src/scripting/coop_scripting.py:41
 msgid "This text source will display your team's timer when you finish."
-msgstr ""
+msgstr "Diese Textquelle zeigt den Timer Ihres Teams an, wenn Sie fertig sind."
 
 #: src/scripting/coop_scripting.py:48
 msgid ""
 "This text source will be use to display your rival's timer when they "
 "finish"
 msgstr ""
+"Diese Textquelle wird verwendet, um den Timer Ihres Rivalen anzuzeigen, "
+"wenn er fertig ist"
 
 #: src/scripting/coop_scripting.py:53
 msgid "Winner Color:"
-msgstr ""
+msgstr "Gewinner Farbe:"
 
 #: src/scripting/coop_scripting.py:55
 msgid "Loser Color:"
-msgstr ""
+msgstr "Verlierer Farbe:"
 
 #: src/scripting/coop_scripting.py:57
 msgid "Winner Undetermined Color"
-msgstr ""
+msgstr "Gewinner Unbestimmte Farbe"
 
 #: src/scripting/media_player_scripting.py:37
 msgid "Enable sounds?"
-msgstr ""
+msgstr "Töne anschalten?"
 
 #: src/scripting/media_player_scripting.py:42
 msgid "Media Player Mode"
-msgstr ""
+msgstr "Media Player-Modus"
 
 #: src/scripting/media_player_scripting.py:50
 #: src/scripting/media_trigger_scripting.py:37
 msgid "Monitoring Type"
-msgstr ""
+msgstr "Überwachungstyp"
 
 #: src/scripting/media_player_scripting.py:53
 msgid "Listen Only"
-msgstr ""
+msgstr "Nur zuhören"
 
 #: src/scripting/media_player_scripting.py:57
 msgid "Stream Only"
-msgstr ""
+msgstr "Nur Stream"
 
 #: src/scripting/media_player_scripting.py:59
 #: src/scripting/media_trigger_scripting.py:44
 msgid "Listen and Stream"
-msgstr ""
+msgstr "Hören und streamen"
 
 #: src/scripting/media_player_scripting.py:62
 msgid "Chat Pings"
-msgstr ""
+msgstr "Chat-Pings"
 
 #: src/scripting/media_player_scripting.py:64
 msgid ""
 "Enable this and set choose a sound file to play when a bot posts or when "
 "someone @s you in racetime.gg chat"
 msgstr ""
+"Aktivieren Sie diese Option und wählen Sie eine Audiodatei aus, die "
+"abgespielt werden soll, wenn ein Bot Beiträge veröffentlicht oder wenn "
+"jemand Sie im racetime.gg-Chat @s"
 
 #: src/scripting/media_player_scripting.py:69
 msgid "Chat media file"
-msgstr ""
+msgstr "Chat-Mediendatei"
 
 #: src/scripting/media_player_scripting.py:74
 msgid "First Place Sound"
-msgstr ""
+msgstr "Erster Platz Sound"
 
 #: src/scripting/media_player_scripting.py:78
 msgid "Sound file to play when you finish first."
-msgstr ""
+msgstr "Sounddatei, die abgespielt werden soll, wenn Sie fertig sind."
 
 #: src/scripting/media_trigger_scripting.py:16
 msgid "Media Trigger #"
-msgstr ""
+msgstr "Medientrigger #"
 
 #: src/scripting/media_trigger_scripting.py:25
 msgid "Sound File"
-msgstr ""
+msgstr "Audiodatei"
 
 #: src/scripting/media_trigger_scripting.py:29
 msgid "Type of Trigger"
-msgstr ""
+msgstr "Art des Auslösers"
 
 #: src/scripting/media_trigger_scripting.py:32
 msgid "Chat"
-msgstr ""
+msgstr "Chat"
 
 #: src/scripting/media_trigger_scripting.py:33
 msgid "Finish Place"
-msgstr ""
+msgstr "Platz beenden"
 
 #: src/scripting/media_trigger_scripting.py:34
 msgid "Timer"
@@ -174,11 +184,11 @@ msgstr ""
 
 #: src/scripting/media_trigger_scripting.py:40
 msgid "Only Listen"
-msgstr ""
+msgstr "Nur zuhören"
 
 #: src/scripting/media_trigger_scripting.py:42
 msgid "Only Stream"
-msgstr ""
+msgstr "Nur Stream"
 
 #: src/scripting/media_trigger_scripting.py:56
 msgid "Bot?"
@@ -186,7 +196,7 @@ msgstr ""
 
 #: src/scripting/media_trigger_scripting.py:58
 msgid "Highlighted?"
-msgstr ""
+msgstr "Hervorgehoben"
 
 #: src/scripting/media_trigger_scripting.py:60
 msgid "System?"
@@ -194,55 +204,55 @@ msgstr ""
 
 #: src/scripting/media_trigger_scripting.py:72
 msgid "Finish Place <="
-msgstr ""
+msgstr "Platz beenden <="
 
 #: src/scripting/media_trigger_scripting.py:75
 msgid "Num. Entrants >="
-msgstr ""
+msgstr "Num. Teilnehmer> ="
 
 #: src/scripting/media_trigger_scripting.py:85
 msgid "Start playing at "
-msgstr ""
+msgstr "Anfangen bei"
 
 #: src/scripting/qualifier_scripting.py:16
 msgid "Display race results as tournament qualifier?"
-msgstr ""
+msgstr "Rennergebnisse als Turnierqualifikation anzeigen?"
 
 #: src/scripting/qualifier_scripting.py:21
 msgid "Qualifier Mode"
-msgstr ""
+msgstr "Qualifizierungsmodus"
 
 #: src/scripting/qualifier_scripting.py:30
 msgid "Use Top X as par time, where X="
-msgstr ""
+msgstr "Verwenden Sie Top X als Par-Zeit, wobei X ="
 
 #: src/scripting/qualifier_scripting.py:35
 msgid "Qualifier Par Time Source"
-msgstr ""
+msgstr "Nach Zeitquelle qualifizieren"
 
 #: src/scripting/qualifier_scripting.py:43
 msgid "Qualifier Score Source"
-msgstr ""
+msgstr "Qualifier Score Source"
 
 #: src/scripting/setup_scripting.py:25
 msgid "Initial setup - Check to make changes"
-msgstr ""
+msgstr "Ersteinrichtung - Überprüfen Sie, ob Änderungen vorgenommen wurden"
 
 #: src/scripting/setup_scripting.py:29
 msgid "Text Source"
-msgstr ""
+msgstr "Textquelle"
 
 #: src/scripting/setup_scripting.py:34
 msgid "Username"
-msgstr ""
+msgstr "Nutzername"
 
 #: src/scripting/setup_scripting.py:36
 msgid "Enable logging"
-msgstr ""
+msgstr "Aktiviere das Logging"
 
 #: src/scripting/setup_scripting.py:38
 msgid "Log level"
-msgstr ""
+msgstr "Protokollstufe"
 
 #: src/scripting/setup_scripting.py:41
 msgid "Error"
@@ -250,7 +260,7 @@ msgstr ""
 
 #: src/scripting/setup_scripting.py:42
 msgid "Debug"
-msgstr ""
+msgstr "Debuggen"
 
 #: src/scripting/setup_scripting.py:43
 msgid "Info"
@@ -261,58 +271,60 @@ msgid ""
 "Generally, only log errors unless you are developing or are trying to "
 "find a specific problem."
 msgstr ""
+"Im Allgemeinen werden nur Fehler protokolliert, es sei denn, Sie entwickeln "
+"oder versuchen, ein bestimmtes Problem zu finden."
 
 #: src/scripting/setup_scripting.py:49
 msgid "Log to file?"
-msgstr ""
+msgstr "In Datei anmelden?"
 
 #: src/scripting/setup_scripting.py:51
 msgid "Log File"
-msgstr ""
+msgstr "Logdatei"
 
 #: src/scripting/setup_scripting.py:55
 msgid "Filter by Category"
-msgstr ""
+msgstr "Nach Kategorie filtern"
 
 #: src/scripting/setup_scripting.py:59
 msgid "Race"
-msgstr ""
+msgstr "Rennen"
 
 #: src/scripting/setup_scripting.py:69
 msgid "Race Desc"
-msgstr ""
+msgstr "Rennbeschreibung"
 
 #: src/scripting/timer_scripting.py:33
 msgid "Use custom color for podium finishes?"
-msgstr ""
+msgstr "Benutzerdefinierte Farbe für Podestplätze verwenden?"
 
 #: src/scripting/timer_scripting.py:37
 msgid "Podium Colors"
-msgstr ""
+msgstr "Podiumsfarben"
 
 #: src/scripting/timer_scripting.py:42
 msgid "Pre-race:"
-msgstr ""
+msgstr "Vor dem Rennen:"
 
 #: src/scripting/timer_scripting.py:44
 msgid "Still racing:"
-msgstr ""
+msgstr "Noch Rennen:"
 
 #: src/scripting/timer_scripting.py:45
 msgid "1st place:"
-msgstr ""
+msgstr "Platz 1:"
 
 #: src/scripting/timer_scripting.py:46
 msgid "2nd place:"
-msgstr ""
+msgstr "Platz 2:"
 
 #: src/scripting/timer_scripting.py:47
 msgid "3rd place:"
-msgstr ""
+msgstr "Platz 3:"
 
 #: src/scripting/timer_scripting.py:49
 msgid "After podium:"
-msgstr ""
+msgstr "Nach dem Podium:"
 
 #~ msgid ""
 #~ "Select a text source to use as "
@@ -320,6 +332,19 @@ msgstr ""
 #~ " on racetime.gg  (including discriminator). "
 #~ "This only needs to be done once."
 #~ "\n"
+#~ "\n"
+#~ "Then select the race room each "
+#~ "race you join and stop worrying "
+#~ "about whether you started your timer "
+#~ "or not."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Select a text source to use as "
+#~ "your timer and enter your full "
+#~ "username on racetime.gg  (including "
+#~ "discriminator). This only needs to be"
+#~ " done once.\n"
 #~ "\n"
 #~ "Then select the race room each "
 #~ "race you join and stop worrying "

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-12-28 21:58-0500\n"
+"POT-Creation-Date: 2020-12-29 07:01-0500\n"
 "PO-Revision-Date: 2020-12-28 16:01-0500\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -26,32 +26,29 @@ msgstr ""
 "<p>Cargó la secuencia de comandos incorrecta. <br> <br> Elimine este "
 "archivo y agregue 'racetime_obs.py' en su lugar</p>"
 
-#: src/racetime_obs.py:26
+#: src/racetime_obs.py:29
 #, fuzzy
 msgid ""
 "Select a text source to use as your timer and enter your full username on"
 " racetime.gg  (including discriminator). This only needs to be done once."
-"\n"
-"\n"
-"Then select the race room each race you join and stop worrying about "
+" Then select the race room each race you join and stop worrying about "
 "whether you started your timer or not."
 msgstr ""
 "Seleccione una fuente de texto para usar como su temporizador e ingrese "
 "su nombre de usuario completo enracetime.gg (incluido el discriminador). "
-"Esto solo debe hacerse una vez.\n"
-"\n"
+"Esto solo debe hacerse una vez."
 "Luego, selecciona la sala de carreras en cada carrera a la que te unes y "
 "deja de preocuparteya sea que haya iniciado el temporizador o no."
 
-#: src/racetime_obs.py:81
+#: src/racetime_obs.py:85
 msgid "Race info"
 msgstr "Info de carrera"
 
-#: src/racetime_obs.py:103
+#: src/racetime_obs.py:107
 msgid "Refresh"
 msgstr "Actualizar"
 
-#: src/racetime_obs.py:157
+#: src/racetime_obs.py:161
 msgid "Race not found"
 msgstr "Carrera no encontrada"
 
