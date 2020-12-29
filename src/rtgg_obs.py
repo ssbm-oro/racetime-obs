@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 from datetime import datetime, timedelta, timezone
+import gettext
 
 import dateutil
 import websockets
@@ -16,11 +17,13 @@ from gadgets.media_player import MediaPlayer
 from helpers.LogFormatter import LogFormatter
 from models.race import Race, race_from_dict
 
+_ = gettext.gettext
+
 
 def script_description():
-    return (
+    return (_(
         "<p>You've loaded the incorrect script.<br><br>Please remove this file"
-        "and add 'racetime_obs.py' instead</p>"
+        "and add 'racetime_obs.py' instead</p>")
     )
 
 

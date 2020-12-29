@@ -1,4 +1,6 @@
 from threading import Thread
+import gettext
+import os
 
 import obspython as obs
 import racetime_client
@@ -10,17 +12,27 @@ import scripting.timer_scripting as timer_scripting
 from rtgg_obs import RacetimeObs
 from scripting import fill_race_list, fill_source_list, set_source_text
 
+_ = None
 rtgg_obs = RacetimeObs()
 
 
+def script_path():
+    # PLACEHOLDER
+    # this function gets injected by OBS with actual script path
+    pass
+
+
 def script_description():
+    message = _(
+        "Select a text source to use as your timer and enter your"
+        "full username on racetime.gg  (including discriminator). This "
+        "only needs to be done once.\n\nThen select the race room each "
+        "race you join and stop worrying about whether you started your "
+        "timer or not."
+    )
     return (
         "<center>racetime-obs xxVERSIONxx<hr>"
-        "<p>Select a text source to use as your timer and enter your"
-        "full username on racetime.gg  (including discriminator). This only"
-        "needs to be done once.\n\nThen select the race room each race you "
-        "join and stop worrying about whether you started your timer or not."
-        "<hr/></p>"
+        "<p>" + message + "<hr/></p>"
     )
 
 
@@ -65,9 +77,20 @@ def script_update(settings):
 
 
 def script_defaults(settings):
-    obs.obs_data_set_default_string(settings, "race_info", "Race info")
+    set_locale()
+    obs.obs_data_set_default_string(settings, "race_info", _("Race info"))
     obs.obs_data_set_default_string(settings, "race", "None")
     obs.obs_data_set_default_int(settings, "qualifier_cutoff", 3)
+
+
+def set_locale():
+    global _
+    if _ is None:
+        os.environ['LOCALEDIR'] = script_path() + "locales"
+        os.environ['LANGUAGE'] = obs.obs_get_locale()[0:2]
+        lang = gettext.translation(
+            "racetime-obs", localedir=os.environ['LOCALEDIR'])
+        _ = lang.gettext
 
 
 def script_properties():
@@ -77,7 +100,7 @@ def script_properties():
     )
 
     refresh = obs.obs_properties_add_button(
-        props, "button", "Refresh", lambda *props: None)
+        props, "button", _("Refresh"), lambda *props: None)
     obs.obs_property_set_modified_callback(refresh, refresh_pressed)
     timer_scripting.script_timer_settings(props, rtgg_obs,)
     coop_scripting.script_coop_settings(props, rtgg_obs)
@@ -108,6 +131,7 @@ def refresh_pressed(props, prop, *args, **kwargs):
 
 
 def new_race_selected(props, prop, settings):
+    set_locale()
     rtgg_obs.race_changed = True
     obs.timer_remove(update_sources)
 
@@ -130,7 +154,7 @@ def new_race_selected(props, prop, settings):
         obs.timer_add(update_sources, 100)
     else:
         obs.obs_data_set_default_string(
-            settings, "race_info", "Race not found")
+            settings, "race_info", _("Race not found"))
     return True
 
 

@@ -1,0 +1,333 @@
+# Spanish translations for PROJECT.
+# Copyright (C) 2020 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2020-12-28 15:48-0500\n"
+"PO-Revision-Date: 2020-12-28 16:01-0500\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: src/racetime_client.py:17 src/rtgg_obs.py:24
+msgid ""
+"<p>You've loaded the incorrect script.<br><br>Please remove this fileand "
+"add 'racetime_obs.py' instead</p>"
+msgstr ""
+"<p>Cargó la secuencia de comandos incorrecta. <br> <br> Elimine este archivo "
+"y agregue 'racetime_obs.py' en su lugar</p>"
+
+#: src/racetime_obs.py:20
+msgid ""
+"Select a text source to use as your timer and enter yourfull username on "
+"racetime.gg  (including discriminator). This only needs to be done once."
+"\n"
+"\n"
+"Then select the race room each race you join and stop worrying about "
+"whether you started your timer or not."
+msgstr ""
+"Seleccione una fuente de texto para usar como su temporizador e ingrese su nombre de usuario completo en"
+"racetime.gg (incluido el discriminador). Esto solo debe hacerse una vez."
+"\n"
+"\n"
+"Luego, selecciona la sala de carreras en cada carrera a la que te unes y deja de preocuparte"
+"ya sea que haya iniciado el temporizador o no."
+
+#: src/racetime_obs.py:40 src/racetime_obs.py:75 src/racetime_obs.py:121
+#: src/scripting/__init__.py:33
+msgid "None"
+msgstr "Ninguna"
+
+#: src/racetime_obs.py:74
+msgid "Race info"
+msgstr "Info de carrera"
+
+#: src/racetime_obs.py:86
+msgid "Refresh"
+msgstr "Actualizar"
+
+#: src/racetime_obs.py:139
+msgid "Race not found"
+msgstr "Carrera no encontrada"
+
+#: src/scripting/__init__.py:31
+msgid "All"
+msgstr "Todos"
+
+#: src/scripting/coop_scripting.py:12
+msgid "Display coop information?"
+msgstr "¿Mostrar información de la cooperativa?"
+
+#: src/scripting/coop_scripting.py:16
+msgid "Co-op Mode"
+msgstr "Modo cooperativo"
+
+#: src/scripting/coop_scripting.py:21
+msgid "Co-op Partner"
+msgstr "Socio cooperativo"
+
+#: src/scripting/coop_scripting.py:25
+msgid "Co-op Rival 1"
+msgstr ""
+
+#: src/scripting/coop_scripting.py:29
+msgid "Co-op Rival 2"
+msgstr ""
+
+#: src/scripting/coop_scripting.py:34
+msgid "Our Team's Timer"
+msgstr "Temporizador de nuestro equipo"
+
+#: src/scripting/coop_scripting.py:38
+msgid "This text source will display your team's timer when you finish."
+msgstr ""
+"Esta fuente de texto mostrará el cronómetro de tu equipo cuando termines."
+
+#: src/scripting/coop_scripting.py:45
+msgid ""
+"This text source will be use to display your rival's timer when they "
+"finish"
+msgstr ""
+"Esta fuente de texto se utilizará para mostrar el temporizador de tu rival "
+"cuando termine"
+
+#: src/scripting/coop_scripting.py:50
+msgid "Winner Color:"
+msgstr "Color del ganador"
+
+#: src/scripting/coop_scripting.py:52
+msgid "Loser Color:"
+msgstr "Color del perdedor"
+
+#: src/scripting/coop_scripting.py:54
+msgid "Winner Undetermined Color"
+msgstr "Color del ganador indeterminado"
+
+#: src/scripting/media_player_scripting.py:32
+msgid "Enable sounds?"
+msgstr "¿Activar sonidos?"
+
+#: src/scripting/media_player_scripting.py:37
+msgid "Media Player Mode"
+msgstr "Modo de reproductor multimedia"
+
+#: src/scripting/media_player_scripting.py:45
+#: src/scripting/media_trigger_scripting.py:34
+msgid "Monitoring Type"
+msgstr "Tipo de monitorización"
+
+#: src/scripting/media_player_scripting.py:48
+msgid "Listen Only"
+msgstr "Escuchar solo"
+
+#: src/scripting/media_player_scripting.py:52
+msgid "Stream Only"
+msgstr "Solo transmitir"
+
+#: src/scripting/media_player_scripting.py:54
+#: src/scripting/media_trigger_scripting.py:41
+msgid "Listen and Stream"
+msgstr "Escuchar y transmitir"
+
+#: src/scripting/media_player_scripting.py:57
+msgid "Chat Pings"
+msgstr "Pings de chat"
+
+#: src/scripting/media_player_scripting.py:59
+msgid ""
+"Enable this and set choose a sound file to play when a bot posts or when "
+"someone @s you in racetime.gg chat"
+msgstr ""
+"Habilite esto y configure elija un archivo de sonido para reproducir cuando "
+"un bot publique o cuando alguien lo @ en el chat racetime.gg"
+
+#: src/scripting/media_player_scripting.py:64
+msgid "Chat media file"
+msgstr "Archivo multimedia de chat"
+
+#: src/scripting/media_player_scripting.py:69
+msgid "First Place Sound"
+msgstr "Sonido de primer lugar"
+
+#: src/scripting/media_player_scripting.py:73
+msgid "Sound file to play when you finish first."
+msgstr "Archivo de sonido para reproducir cuando termines primero."
+
+#: src/scripting/media_trigger_scripting.py:13
+msgid "Media Trigger #"
+msgstr "Activador de medios #"
+
+#: src/scripting/media_trigger_scripting.py:22
+msgid "Sound File"
+msgstr "Archivo de sonido"
+
+#: src/scripting/media_trigger_scripting.py:26
+msgid "Type of Trigger"
+msgstr "Tipo de disparador"
+
+#: src/scripting/media_trigger_scripting.py:29
+msgid "Chat"
+msgstr ""
+
+#: src/scripting/media_trigger_scripting.py:30
+msgid "Finish Place"
+msgstr "Lugar de finalización"
+
+#: src/scripting/media_trigger_scripting.py:31
+msgid "Timer"
+msgstr "Temporizador"
+
+#: src/scripting/media_trigger_scripting.py:37
+msgid "Only Listen"
+msgstr ""
+
+#: src/scripting/media_trigger_scripting.py:39
+msgid "Only Stream"
+msgstr ""
+
+#: src/scripting/media_trigger_scripting.py:49
+msgid "Bot?"
+msgstr ""
+
+#: src/scripting/media_trigger_scripting.py:51
+msgid "Highlighted?"
+msgstr ""
+
+#: src/scripting/media_trigger_scripting.py:53
+msgid "System?"
+msgstr ""
+
+#: src/scripting/media_trigger_scripting.py:61
+msgid "Finish Place <="
+msgstr "Lugar de finalización <="
+
+#: src/scripting/media_trigger_scripting.py:64
+msgid "Num. Entrants >="
+msgstr "Num. Participantes >="
+
+#: src/scripting/media_trigger_scripting.py:70
+msgid "Start playing at "
+msgstr "Empieza en"
+
+#: src/scripting/qualifier_scripting.py:13
+msgid "Display race results as tournament qualifier?"
+msgstr ""
+"¿Mostrar los resultados de la carrera como clasificatorio para el torneo?"
+
+#: src/scripting/qualifier_scripting.py:18
+msgid "Qualifier Mode"
+msgstr "Modo de calificación"
+
+#: src/scripting/qualifier_scripting.py:27
+msgid "Use Top X as par time, where X="
+msgstr "Utilice Top X como tiempo par, donde X ="
+
+#: src/scripting/qualifier_scripting.py:32
+msgid "Qualifier Par Time Source"
+msgstr "Calificar por fuente de tiempo"
+
+#: src/scripting/qualifier_scripting.py:40
+msgid "Qualifier Score Source"
+msgstr "Fuente de puntuación del calificador"
+
+#: src/scripting/setup_scripting.py:22
+msgid "Initial setup - Check to make changes"
+msgstr "Configuración inicial: marque para realizar cambios"
+
+#: src/scripting/setup_scripting.py:26
+msgid "Text Source"
+msgstr "Fuente de texto"
+
+#: src/scripting/setup_scripting.py:31
+msgid "Username"
+msgstr "Nombre de usuario"
+
+#: src/scripting/setup_scripting.py:33
+msgid "Enable logging"
+msgstr "Habilitar el registro"
+
+#: src/scripting/setup_scripting.py:35
+msgid "Log level"
+msgstr "Nivel de registro"
+
+#: src/scripting/setup_scripting.py:38
+msgid "Error"
+msgstr ""
+
+#: src/scripting/setup_scripting.py:39
+msgid "Debug"
+msgstr "Depurar"
+
+#: src/scripting/setup_scripting.py:40
+msgid "Info"
+msgstr ""
+
+#: src/scripting/setup_scripting.py:42
+msgid ""
+"Generally, only log errors unless you are developing or are trying to "
+"find a specific problem."
+msgstr ""
+"Por lo general, solo registre errores a menos que esté desarrollando o "
+"tratando de encontrar un problema específico."
+
+#: src/scripting/setup_scripting.py:46
+msgid "Log to file?"
+msgstr "¿Unido al expediente?"
+
+#: src/scripting/setup_scripting.py:48
+msgid "Log File"
+msgstr "Archivo de registro"
+
+#: src/scripting/setup_scripting.py:52
+msgid "Filter by Category"
+msgstr "Filtrar por categoría"
+
+#: src/scripting/setup_scripting.py:56
+msgid "Race"
+msgstr "Carrera"
+
+#: src/scripting/setup_scripting.py:66
+msgid "Race Desc"
+msgstr "Descripción de la carrera"
+
+#: src/scripting/timer_scripting.py:30
+msgid "Use custom color for podium finishes?"
+msgstr "¿Usar colores personalizados para los acabados del podio?"
+
+#: src/scripting/timer_scripting.py:34
+msgid "Podium Colors"
+msgstr "Colores del podio"
+
+#: src/scripting/timer_scripting.py:39
+msgid "Pre-race:"
+msgstr "Antes de la carrera:"
+
+#: src/scripting/timer_scripting.py:41
+msgid "Still racing:"
+msgstr "Todavía corriendo:"
+
+#: src/scripting/timer_scripting.py:42
+msgid "1st place:"
+msgstr "1er lugar"
+
+#: src/scripting/timer_scripting.py:43
+msgid "2nd place:"
+msgstr "2er lugar"
+
+#: src/scripting/timer_scripting.py:44
+msgid "3rd place:"
+msgstr "3er lugar"
+
+#: src/scripting/timer_scripting.py:46
+msgid "After podium:"
+msgstr "Después del podio:"
+

@@ -1,4 +1,6 @@
+import os
 from typing import List
+import gettext
 from models.race import Race
 from models.category import Category
 import obspython as obs
@@ -23,11 +25,14 @@ def fill_source_list(p):
 
 
 def fill_race_list(rtgg_obs: RacetimeObs, race_list, category_list):
+    lang = gettext.translation(
+        "racetime-obs", localedir=os.environ['LOCALEDIR'])
+    _ = lang.gettext
     obs.obs_property_list_clear(race_list)
     obs.obs_property_list_clear(category_list)
-    obs.obs_property_list_add_string(category_list, "All", "All")
+    obs.obs_property_list_add_string(category_list, _("All"), "All")
 
-    obs.obs_property_list_add_string(race_list, "None", "None")
+    obs.obs_property_list_add_string(race_list, _("None"), "None")
     races = racetime_client.get_races()
     if races is not None:
         fill_category_list(category_list, races)
