@@ -24,7 +24,7 @@ def script_path():
 
 def script_description():
     message = _(
-        "Select a text source to use as your timer and enter your"
+        "Select a text source to use as your timer and enter your "
         "full username on racetime.gg  (including discriminator). This "
         "only needs to be done once.\n\nThen select the race room each "
         "race you join and stop worrying about whether you started your "
