@@ -20,13 +20,11 @@ jobs:
       - name: Get tag annotation
         uses: ericcornelissen/git-tag-annotation-action@v1
         id: tag_data
-      - name: msgfmt
-        uses: whtsky/msgfmt-action@20190305
-        env:
-          WORKDIR: src/locales
       - name: Build project # This would actually build your project, using zip for an example artifact
         id: build
         run: |
+          pip install Babel
+          pybabel compile -D racetime-obs -d src/locales -f
           cp requirements.txt src/
           sed -i s/xxVERSIONxx/${GITHUB_REF/refs\/tags\//}/ src/racetime_obs.py
           mv src racetime-obs
