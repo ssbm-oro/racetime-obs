@@ -23,10 +23,10 @@ jobs:
       - name: Build project # This would actually build your project, using zip for an example artifact
         id: build
         run: |
-          sudo pip install virtualenv
+          sudo python3 -m pip install virtualenv
           virtualenv venv
           . venv/bin/activate
-          pip install Babel
+          python3 -m pip install Babel
           pybabel compile -D racetime-obs -d src/locales -f
           cp requirements.txt src/
           sed -i s/xxVERSIONxx/${GITHUB_REF/refs\/tags\//}/ src/racetime_obs.py
