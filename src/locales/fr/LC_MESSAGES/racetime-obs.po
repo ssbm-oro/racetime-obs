@@ -24,7 +24,7 @@ msgid ""
 "add 'racetime_obs.py' instead</p>"
 msgstr ""
 "<p> Vous avez chargé le script incorrect. <br> <br> Veuillez supprimer ce "
-"fichier et ajouter "racetime_obs.py" à la place </p>"
+"fichier et ajouter \"racetime_obs.py\" à la place </p>"
 
 #: src/racetime_obs.py:29
 msgid ""
