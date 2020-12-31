@@ -67,8 +67,9 @@ def get_racer_history(racer_id):
         ladder_get(f'{base_url}GetRacerHistory', payload))
 
 
-def get_schedule():
-    return schedule_from_dict(ladder_get(f'{base_url}GetSchedule'))
+def get_schedule(season_id):
+    payload = {"season_id": season_id}
+    return schedule_from_dict(ladder_get(f'{base_url}GetSchedule', payload))
 
 
 def get_current_race_time():

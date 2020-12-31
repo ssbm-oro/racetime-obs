@@ -20,7 +20,7 @@ class Racer:
 
 
 def racers_from_dict(s: Any) -> List[Racer]:
-    assert isinstance(s, dict)
+    assert isinstance(s, List)
     if not s:
         return []
     return from_union(
@@ -46,7 +46,7 @@ class Flag:
 
 
 def flags_from_dict(s: Any) -> List[Flag]:
-    assert isinstance(s, dict)
+    assert isinstance(s, List)
     if not s:
         return []
     return from_union(
@@ -69,7 +69,7 @@ class Season:
 
 
 def seasons_from_dict(s: Any) -> List[Season]:
-    assert isinstance(s, dict)
+    assert isinstance(s, List)
     if not s:
         return []
     return from_union(
@@ -108,7 +108,7 @@ class Standings:
 
 
 def standings_from_dict(s: Any) -> List[Standings]:
-    assert isinstance(s, dict)
+    assert isinstance(s, List)
     if not s:
         return []
     return from_union(
@@ -144,7 +144,7 @@ class RacerResult:
 
 
 def racer_results_from_dict(s: Any) -> List[RacerResult]:
-    assert isinstance(s, dict)
+    assert isinstance(s, List)
     if not s:
         return []
     return from_union(
@@ -178,7 +178,7 @@ class ScheduleItem:
 
 
 def schedule_from_dict(s: Any) -> List[ScheduleItem]:
-    assert isinstance(s, dict)
+    assert isinstance(s, List)
     if not s:
         return []
     return from_union(

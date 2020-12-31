@@ -1,4 +1,5 @@
 import asyncio
+from asyncio.events import AbstractEventLoop
 import json
 import logging
 from datetime import datetime, timedelta, timezone
@@ -10,6 +11,7 @@ from websockets.exceptions import ConnectionClosedError
 
 import clients.racetime_client as racetime_client
 from gadgets.coop import Coop
+from gadgets.ladder_timer import LadderTimer
 from gadgets.qualifier import Qualifier
 from gadgets.timer import Timer
 from gadgets.media_player import MediaPlayer
@@ -37,14 +39,18 @@ class RacetimeObs():
     coop = Coop()
     qualifier = Qualifier()
     media_player: MediaPlayer = None
-    event_loop = asyncio.get_event_loop()
+    ladder_timer: LadderTimer = None
+    event_loop: AbstractEventLoop = None
 
     def __init__(self):
+        self.event_loop = asyncio.get_event_loop()
         self.timer.logger = self.logger
         self.coop.logger = self.logger
         self.qualifier.logger = self.logger
         self.media_player = MediaPlayer()
         self.media_player.logger = self.logger
+        self.ladder_timer = LadderTimer()
+        self.ladder_timer.logger = self.logger
 
     def race_update_thread(self):
         self.logger.debug("starting race update")

@@ -163,6 +163,9 @@ def update_sources():
         if rtgg_obs.media_player.enabled:
             rtgg_obs.media_player.race_updated(
                 rtgg_obs.race, rtgg_obs.full_name)
+    elif rtgg_obs.ladder_timer.enabled:
+        color, time = rtgg_obs.ladder_timer.get_timer_text()
+        set_source_text(rtgg_obs.timer.source_name, time, color)
 
 
 def update_coop_sources():
