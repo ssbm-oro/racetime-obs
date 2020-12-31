@@ -113,8 +113,11 @@ def new_race_selected(props, prop, settings):
 
     rtgg_obs.selected_race = obs.obs_data_get_string(settings, "race")
     if rtgg_obs.selected_race == "None":
-        rtgg_obs.race = None
-        return True
+        if rtgg_obs.ladder_timer.enabled:
+            obs.timer_add(update_sources, 100)
+        else:
+            rtgg_obs.race = None
+            return True
     r = racetime_client.get_race_by_name(rtgg_obs.selected_race)
     if r is not None:
         rtgg_obs.race = r

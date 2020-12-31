@@ -49,8 +49,7 @@ class RacetimeObs():
         self.qualifier.logger = self.logger
         self.media_player = MediaPlayer()
         self.media_player.logger = self.logger
-        self.ladder_timer = LadderTimer()
-        self.ladder_timer.logger = self.logger
+        self.ladder_timer = LadderTimer(self.logger)
 
     def race_update_thread(self):
         self.logger.debug("starting race update")

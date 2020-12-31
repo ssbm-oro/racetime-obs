@@ -31,22 +31,25 @@ class LadderTimer:
     def ladder_timezone():
         return pytz.timezone('US/Eastern')
 
-    def __init__(self, racer_id: int = None):
+    def __init__(self, logger: logging.Logger, racer_id: int = None):
+        self.logger = logger
         if racer_id is not None:
             self.racer_id = racer_id
         print(self.active_racers)
         self.update()
 
     def update(self):
-        self.update_active_racers()
-        self.update_flags()
-        self.update_season()
-        self.update_schedule(self.current_season.season_id)
-        self.update_timer()
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.update_active_racers())
+        loop.run_until_complete(self.update_flags())
+        loop.run_until_complete(self.update_season())
+        loop.run_until_complete(
+            self.update_schedule(self.current_season.season_id))
+        loop.run_until_complete(self.update_timer())
 
     def get_timer_text(self):
         if self.started_at is None:
-            asyncio.wait_for(self.update_timer())
+            asyncio.wait(self.update_timer())
         if self.started_at is None:
             return self.pre_color, "0:00:00"
         current_timer = datetime.now(self.ladder_timezone()) - self.started_at
@@ -61,34 +64,37 @@ class LadderTimer:
             return True
 
     def get_racer_id(self, racer_name: str) -> Racer:
-        self.update_active_racers()
+        asyncio.wait(self.update_active_racers())
         for racer in self.active_racers:
             if racer.RacerName == racer_name:
                 return racer.racer_id
         return 0
 
-    def update_active_racers(self):
+    async def update_active_racers(self):
         if self.active_racers is None or self.active_racers == []:
             self.active_racers = ladder_client.get_active_racers()
 
-    def update_season(self):
+    async def update_season(self):
         if self.current_season is None:
             seasons = ladder_client.get_seasons()
             if seasons is not None:
                 self.current_season = seasons[-1]
+        self.logger.info(f"current_season = {self.current_season}")
 
-    def update_flags(self):
+    async def update_flags(self):
         self.flags = ladder_client.get_flags()
 
-    def update_schedule(self, season_id: int):
+    async def update_schedule(self, season_id: int):
         if self.schedule is None or self.schedule == []:
             self.schedule = ladder_client.get_schedule(season_id)
             self.next_race = (
                 next(x for x in self.schedule if not x.HasCompleted)
             )
+            self.logger.info(f"next_race = {self.next_race}")
 
-    def update_timer(self):
+    async def update_timer(self):
         str_timer = ladder_client.get_current_race_time()
+        self.logger.info(f"str_timer= {str_timer}")
         timer = timedelta(
             hours=float(str_timer[0:1]), minutes=float(str_timer[2:4]),
             seconds=float(str_timer[5:7]))
