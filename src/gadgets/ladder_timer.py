@@ -25,6 +25,7 @@ class LadderTimer:
     active_racers: List[Racer] = None
     current_season: Season = None
     flags: List[Flag] = []
+    all_seasons: List[Season] = []
     schedule: List[ScheduleItem] = []
 
     @staticmethod
@@ -35,7 +36,6 @@ class LadderTimer:
         self.logger = logger
         if racer_id is not None:
             self.racer_id = racer_id
-        print(self.active_racers)
         self.update()
 
     def update(self):
@@ -56,6 +56,8 @@ class LadderTimer:
         return self.racing_color, timer_to_str(current_timer)
 
     def update_settings(self, racer_name: str):
+        if racer_name is None or racer_name == "":
+            return False
         racer_id = self.get_racer_id(racer_name)
         if racer_id == 0:
             return False
@@ -76,9 +78,9 @@ class LadderTimer:
 
     async def update_season(self):
         if self.current_season is None:
-            seasons = ladder_client.get_seasons()
-            if seasons is not None:
-                self.current_season = seasons[-1]
+            self.all_seasons = ladder_client.get_seasons()
+            if self.all_seasons is not None:
+                self.current_season = self.all_seasons[-1]
         self.logger.info(f"current_season = {self.current_season}")
 
     async def update_flags(self):
