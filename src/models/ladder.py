@@ -171,8 +171,9 @@ class ScheduleItem:
             return None
         Season = from_str(obj.get("Season"))
         Mode = from_str(obj.get("Mode"))
-        StartTime = from_datetime(obj.get("StartTime")).replace(
-            tzinfo=pytz.timezone('US/Eastern'))
+        StartTime = (pytz.timezone('US/Eastern').localize(
+                from_datetime(obj.get("StartTime"))
+            ))
         RaceName = from_str(obj.get("RaceName"))
         HasCompleted = from_bool(obj.get("HasCompleted"))
         ParticipantCount = from_int(obj.get("ParticipantCount"))

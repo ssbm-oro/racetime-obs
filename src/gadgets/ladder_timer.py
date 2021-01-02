@@ -51,23 +51,14 @@ class LadderTimer:
     def get_timer_text(self):
         current_timer = timedelta(seconds=0)
         color = self.pre_color
-        if self.started_at is None:
-            loop = asyncio.new_event_loop()
-            loop.run_until_complete(self.update_timer())
-            loop.run_until_complete(asyncio.sleep(3))
-            loop.run_until_complete(asyncio.sleep(3))
-            loop.run_until_complete(asyncio.sleep(4))
-            loop.close()
         now = datetime.now(self.ladder_timezone())
         if self.started_at is None:
-            if self.next_race is None:
-                self.update_schedule(self.current_season)
             current_timer = now - self.next_race.StartTime
-            self.logger.debug(f"now: {now}")
-            self.logger.debug(f"next_race Start: {self.next_race.StartTime}")
-            self.logger.debug(f"current_timer: {current_timer}")
+            if (abs(current_timer.total_seconds()) < 600.0):
+                loop = asyncio.new_event_loop()
+                loop.run_until_complete(self.update_timer())
+                loop.close()
             color = self.pre_color
-            # return self.pre_color, "0:00:00"
         else:
             current_timer = now - self.started_at
             color = self.racing_color
