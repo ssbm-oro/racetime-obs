@@ -61,7 +61,8 @@ class LadderTimer:
             color = self.pre_color
         else:
             current_timer = now - self.started_at
-            color = self.racing_color
+            if current_timer.total_seconds() > 0:
+                color = self.racing_color
         return color, timer_to_str(current_timer)
 
     def update_settings(self, racer_name: str):
