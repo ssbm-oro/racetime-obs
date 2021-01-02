@@ -19,6 +19,11 @@ class LadderProperties(str, Enum):
     current_season = auto()
     all_modes = auto()
     current_mode = auto()
+    pre_color = auto()
+    racing_color = auto()
+    winner_color = auto()
+    loser_color = auto()
+    ff_color = auto()
 
 
 lp = LadderProperties
@@ -43,11 +48,31 @@ def script_ladder_settings(props, rtgg_obs: RacetimeObs):
     )
     obs.obs_property_list_add_string(p, _("All Modes"), lp.all_modes)
     obs.obs_property_list_add_string(p, _("Current Mode"), lp.current_mode)
+    obs.obs_properties_add_color(
+        ladder_group, lp.pre_color, _("Color Pre-Race"))
+    obs.obs_properties_add_color(
+        ladder_group, lp.racing_color, _("Still Racing Color"))
+    obs.obs_properties_add_color(
+        ladder_group, lp.winner_color, _("Winner Color"))
+    obs.obs_properties_add_color(
+        ladder_group, lp.loser_color, _("Loser Color"))
+    obs.obs_properties_add_color(
+        ladder_group, lp.ff_color, _("Forfeit Color"))
 
 
 def script_update_ladder_settings(settings, rtgg_obs: RacetimeObs):
     user_name = obs.obs_data_get_string(settings, lp.ladder_name)
     rtgg_obs.ladder_timer.update_settings(user_name)
+    rtgg_obs.ladder_timer.pre_color = obs.obs_data_get_int(
+        settings, lp.pre_color)
+    rtgg_obs.ladder_timer.racing_color = obs.obs_data_get_int(
+        settings, lp.racing_color)
+    rtgg_obs.ladder_timer.winner_color = obs.obs_data_get_int(
+        settings, lp.winner_color)
+    rtgg_obs.ladder_timer.loser_color = obs.obs_data_get_int(
+        settings, lp.loser_color)
+    rtgg_obs.ladder_timer.ff_color = obs.obs_data_get_int(
+        settings, lp.ff_color)
 
 
 def fill_season_list(season_list, seasons: List[Season]):
