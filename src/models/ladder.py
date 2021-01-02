@@ -1,7 +1,11 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any, List
+
+import pytz
 from models import (
-    from_bool, from_int, from_list, from_none, from_str, from_union
+    from_bool, from_datetime, from_int, from_list, from_none, from_str,
+    from_union
 )
 
 
@@ -156,7 +160,7 @@ def racer_results_from_dict(s: Any) -> List[RacerResult]:
 class ScheduleItem:
     Season: str
     Mode: str
-    StartTime: str
+    StartTime: datetime
     RaceName: str
     HasCompleted: bool
     ParticipantCount: int
@@ -167,7 +171,8 @@ class ScheduleItem:
             return None
         Season = from_str(obj.get("Season"))
         Mode = from_str(obj.get("Mode"))
-        StartTime = from_str(obj.get("StartTime"))
+        StartTime = from_datetime(obj.get("StartTime")).replace(
+            tzinfo=pytz.timezone('US/Eastern'))
         RaceName = from_str(obj.get("RaceName"))
         HasCompleted = from_bool(obj.get("HasCompleted"))
         ParticipantCount = from_int(obj.get("ParticipantCount"))

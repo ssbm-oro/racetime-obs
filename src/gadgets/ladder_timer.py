@@ -11,7 +11,7 @@ from models.ladder import Flag, Racer, ScheduleItem, Season
 
 class LadderTimer:
     logger: logging.Logger = None
-    enabled: bool = True
+    enabled: bool = False
     source_name = ""
     timer_text = ""
     racer_id: int = 0
@@ -27,6 +27,7 @@ class LadderTimer:
     flags: List[Flag] = []
     all_seasons: List[Season] = []
     schedule: List[ScheduleItem] = []
+    last_timer_update: datetime = None
 
     @staticmethod
     def ladder_timezone():
@@ -48,12 +49,29 @@ class LadderTimer:
         loop.run_until_complete(self.update_timer())
 
     def get_timer_text(self):
+        current_timer = timedelta(seconds=0)
+        color = self.pre_color
         if self.started_at is None:
-            asyncio.wait(self.update_timer())
+            loop = asyncio.new_event_loop()
+            loop.run_until_complete(self.update_timer())
+            loop.run_until_complete(asyncio.sleep(3))
+            loop.run_until_complete(asyncio.sleep(3))
+            loop.run_until_complete(asyncio.sleep(4))
+            loop.close()
+        now = datetime.now(self.ladder_timezone())
         if self.started_at is None:
-            return self.pre_color, "0:00:00"
-        current_timer = datetime.now(self.ladder_timezone()) - self.started_at
-        return self.racing_color, timer_to_str(current_timer)
+            if self.next_race is None:
+                self.update_schedule(self.current_season)
+            current_timer = now - self.next_race.StartTime
+            self.logger.debug(f"now: {now}")
+            self.logger.debug(f"next_race Start: {self.next_race.StartTime}")
+            self.logger.debug(f"current_timer: {current_timer}")
+            color = self.pre_color
+            # return self.pre_color, "0:00:00"
+        else:
+            current_timer = now - self.started_at
+            color = self.racing_color
+        return color, timer_to_str(current_timer)
 
     def update_settings(self, racer_name: str):
         if racer_name is None or racer_name == "":
@@ -95,11 +113,23 @@ class LadderTimer:
             self.logger.info(f"next_race = {self.next_race}")
 
     async def update_timer(self):
+        if (
+            self.last_timer_update is not None and
+            (datetime.now() - self.last_timer_update) < timedelta(seconds=20)
+        ):
+            return
+        self.logger.debug("calling get_current_race_time to update timer")
         str_timer = ladder_client.get_current_race_time()
+        self.last_timer_update = datetime.now()
         self.logger.info(f"str_timer= {str_timer}")
+        timer_sign = 1.0
+        if str_timer[0] == '-':
+            timer_sign = -1.0
+            str_timer = str_timer[1:]
         timer = timedelta(
             hours=float(str_timer[0:1]), minutes=float(str_timer[2:4]),
             seconds=float(str_timer[5:7]))
+        timer = timer * timer_sign
         if timer == timedelta(seconds=0):
             self.started_at = None
         else:

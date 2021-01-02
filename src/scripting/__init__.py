@@ -1,10 +1,20 @@
+from enum import Enum, auto
 from typing import List
 from models.race import Race
-from models.category import Category
 import obspython as obs
 from helpers.obs_context_manager import data_ar, source_ar, source_list_ar
 from rtgg_obs import RacetimeObs
 import clients.racetime_client as racetime_client
+
+
+class ScriptProperties(str, Enum):
+    all_category = auto()
+    none_races = auto()
+    alttpr_ladder = "ALTTPR Ladder"
+    alttpr_category = "A Link to the Past Randomizer"
+
+
+sp = ScriptProperties
 
 
 def fill_source_list(p):
@@ -25,15 +35,17 @@ def fill_source_list(p):
 def fill_race_list(rtgg_obs: RacetimeObs, race_list, category_list):
     obs.obs_property_list_clear(race_list)
     obs.obs_property_list_clear(category_list)
-    obs.obs_property_list_add_string(category_list, "All", "All")
+    obs.obs_property_list_add_string(category_list, "All", sp.all_category)
 
     obs.obs_property_list_add_string(race_list, "None", "None")
     races = racetime_client.get_races()
     if races is not None:
         fill_category_list(category_list, races)
-        for race in filter_races_by_category(
-            rtgg_obs, races, rtgg_obs.category
-        ):
+        if (rtgg_obs.category == sp.alttpr_category or
+                rtgg_obs.category == sp.all_category):
+            obs.obs_property_list_add_string(
+                race_list, sp.alttpr_ladder, sp.alttpr_ladder)
+        for race in filter_races_by_category(rtgg_obs, races):
             obs.obs_property_list_add_string(race_list, race.name, race.name)
 
 
@@ -47,11 +59,11 @@ def fill_category_list(category_list, races: List[Race]):
 
 
 def filter_races_by_category(
-    rtgg_obs: RacetimeObs, races: List[Race], category: Category
-) -> Race:
+    rtgg_obs: RacetimeObs, races: List[Race]
+) -> List[Race]:
     for race in races:
         if (
-            rtgg_obs.category == "" or rtgg_obs.category == "All" or
+            rtgg_obs.category == "" or rtgg_obs.category == sp.all_category or
             race.category.name == rtgg_obs.category
         ):
             yield race

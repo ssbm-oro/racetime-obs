@@ -15,6 +15,10 @@ class LadderProperties(str, Enum):
     ladder_name = auto()
     ladder_season = auto()
     ladder_mode = auto()
+    all_seasons = auto()
+    current_season = auto()
+    all_modes = auto()
+    current_mode = auto()
 
 
 lp = LadderProperties
@@ -28,15 +32,17 @@ def script_ladder_settings(props, rtgg_obs: RacetimeObs):
     obs.obs_properties_add_text(
         ladder_group, lp.ladder_name, _("Ladder Name"), obs.OBS_TEXT_DEFAULT)
     p = obs.obs_properties_add_list(
-        ladder_group, lp.ladder_season, _("Season"), obs.OBS_COMBO_TYPE_LIST,
-        obs.OBS_COMBO_FORMAT_STRING
+        ladder_group, lp.ladder_season, _("Season for Stats"),
+        obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING
     )
-    fill_season_list(p, rtgg_obs.ladder_timer.all_seasons)
+    obs.obs_property_list_add_string(p, _("All Seasons"), lp.all_seasons)
+    obs.obs_property_list_add_string(p, _("Current Season"), lp.current_season)
     p = obs.obs_properties_add_list(
-        ladder_group, lp.ladder_mode, _("Mode"), obs.OBS_COMBO_TYPE_LIST,
-        obs.OBS_COMBO_FORMAT_STRING
+        ladder_group, lp.ladder_mode, _("Mode for Stats"),
+        obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING
     )
-    fill_mode_list(p, rtgg_obs.ladder_timer.flags)
+    obs.obs_property_list_add_string(p, _("All Modes"), lp.all_modes)
+    obs.obs_property_list_add_string(p, _("Current Mode"), lp.current_mode)
 
 
 def script_update_ladder_settings(settings, rtgg_obs: RacetimeObs):
