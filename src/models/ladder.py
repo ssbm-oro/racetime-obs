@@ -104,7 +104,7 @@ class Standings:
         Rank = from_int(obj.get("Rank"))
         Change = from_int(obj.get("Change"))
         Wins = from_int(obj.get("Wins"))
-        Losses = from_int(obj.get("Losess"))
+        Losses = from_int(obj.get("Losses"))
         Ties = from_int(obj.get("Ties"))
         return Standings(
             RacerName=RacerName, Season=Season, Mode=Mode, Rating=Rating,

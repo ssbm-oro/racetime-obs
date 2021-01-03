@@ -6,7 +6,7 @@ from typing import List
 
 from helpers import timer_to_str
 import clients.ladder_client as ladder_client
-from models.ladder import Flag, Racer, ScheduleItem, Season
+from models.ladder import Flag, Racer, ScheduleItem, Season, Standings
 
 
 class LadderTimer:
@@ -15,6 +15,17 @@ class LadderTimer:
     source_name = ""
     timer_text = ""
     racer_id: int = 0
+    racer_name: str = ""
+    stats_source: str = ""
+    stats: Standings = None
+    season_for_stats: int = 0
+    mode_for_stats: int = 0
+    show_season_name: bool = False
+    show_mode_name: bool = False
+    show_rating: bool = False
+    show_rank: bool = False
+    show_change: bool = False
+    show_win_loss_tie: bool = False
     pre_color: int = 0xFFFFFF
     racing_color: int = 0xFFFFFF
     winner_color: int = 0xFF0000
@@ -47,6 +58,7 @@ class LadderTimer:
         loop.run_until_complete(
             self.update_schedule(self.current_season.season_id))
         loop.run_until_complete(self.update_timer())
+        loop.run_until_complete(self.update_stats())
 
     def get_timer_text(self):
         current_timer = timedelta(seconds=0)
@@ -65,6 +77,27 @@ class LadderTimer:
                 color = self.racing_color
         return color, timer_to_str(current_timer)
 
+    def get_stats(self):
+        stats = ""
+        if self.enabled:
+            self.logger.debug(self.stats)
+            if self.show_season_name:
+                stats = stats + self.stats.Season + " "
+            if self.show_mode_name:
+                stats = stats + self.stats.Mode + " "
+            if self.show_rank:
+                stats = stats + str(self.stats.Rank) + " "
+            if self.show_rating:
+                stats = stats + str(self.stats.Rating) + " "
+            if self.show_change:
+                stats = stats + str(self.stats.Change) + " "
+            if self.show_win_loss_tie:
+                stats = (
+                    stats + str(self.stats.Wins) + "/" +
+                    str(self.stats.Losses) + "/" + str(self.stats.Ties)
+                )
+        return stats
+
     def update_settings(self, racer_name: str):
         if racer_name is None or racer_name == "":
             return False
@@ -73,12 +106,18 @@ class LadderTimer:
             return False
         else:
             self.racer_id = racer_id
+            self.racer_name = racer_name
+            loop = asyncio.new_event_loop()
+            loop.run_until_complete(self.update_stats())
+            loop.close()
             return True
 
     def get_racer_id(self, racer_name: str) -> Racer:
-        asyncio.wait(self.update_active_racers())
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(self.update_active_racers())
+        loop.close()
         for racer in self.active_racers:
-            if racer.RacerName == racer_name:
+            if racer.RacerName.lower() == racer_name.lower():
                 return racer.racer_id
         return 0
 
@@ -126,3 +165,21 @@ class LadderTimer:
             self.started_at = None
         else:
             self.started_at = datetime.now(self.ladder_timezone()) - timer
+
+    async def update_stats(self):
+        if self.season_for_stats == -1:
+            self.season_for_stats = self.all_seasons[-1].season_id
+        if self.mode_for_stats == -1:
+            self.mode_for_stats = self.get_mode_id_from_name(
+                self.next_race.Mode)
+        standings = ladder_client.get_standings(
+            self.season_for_stats, self.mode_for_stats)
+        for stats in standings:
+            if stats.RacerName.lower() == self.racer_name.lower():
+                self.stats = stats
+                return
+
+    def get_mode_id_from_name(self, mode_name: str):
+        for flag in self.flags:
+            if flag.Mode == mode_name:
+                return flag.flag_id
