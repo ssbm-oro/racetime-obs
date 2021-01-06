@@ -125,6 +125,7 @@ class RacerResult:
     RacerName: str
     OpponentRacerName: str
     Mode: str
+    race_id: int
     Season: str
     Result: str
     FinishTime: str
@@ -136,14 +137,15 @@ class RacerResult:
         RacerName = from_str(obj.get("RacerName"))
         OpponentRacerName = from_str(obj.get("OpponentRacerName"))
         Mode = from_str(obj.get("Mode"))
+        race_id = from_int(obj.get("race_id"))
         Season = from_str(obj.get("Season"))
         Result = from_str(obj.get("Result"))
         FinishTime = from_str(obj.get("FinishTime"))
         OpponentFinishTime = from_str(obj.get("OpponentFinishTime"))
         return RacerResult(
             RacerName=RacerName, OpponentRacerName=OpponentRacerName,
-            Mode=Mode, Season=Season, Result=Result, FinishTime=FinishTime,
-            OpponentFinishTime=OpponentFinishTime
+            Mode=Mode, race_id=race_id, Season=Season, Result=Result,
+            FinishTime=FinishTime, OpponentFinishTime=OpponentFinishTime
         )
 
 
@@ -158,6 +160,7 @@ def racer_results_from_dict(s: Any) -> List[RacerResult]:
 
 @dataclass
 class ScheduleItem:
+    race_id: int
     Season: str
     Mode: str
     StartTime: datetime
@@ -169,6 +172,7 @@ class ScheduleItem:
     def from_dict(obj: Any) -> 'Standings':
         if not isinstance(obj, dict):
             return None
+        race_id = from_int(obj.get("race_id"))
         Season = from_str(obj.get("Season"))
         Mode = from_str(obj.get("Mode"))
         StartTime = (pytz.timezone('US/Eastern').localize(
@@ -178,8 +182,9 @@ class ScheduleItem:
         HasCompleted = from_bool(obj.get("HasCompleted"))
         ParticipantCount = from_int(obj.get("ParticipantCount"))
         return ScheduleItem(
-            Season=Season, Mode=Mode, StartTime=StartTime, RaceName=RaceName,
-            HasCompleted=HasCompleted, ParticipantCount=ParticipantCount
+            race_id=race_id, Season=Season, Mode=Mode, StartTime=StartTime,
+            RaceName=RaceName, HasCompleted=HasCompleted,
+            ParticipantCount=ParticipantCount
         )
 
 

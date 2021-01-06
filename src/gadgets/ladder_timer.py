@@ -3,10 +3,17 @@ import logging
 from datetime import datetime, timedelta
 import pytz
 from typing import List
+from threading import Thread
 
 from helpers import timer_to_str
 import clients.ladder_client as ladder_client
 from models.ladder import Flag, Racer, ScheduleItem, Season, Standings
+
+
+def str_to_timer(str_timer):
+    return timedelta(
+        hours=float(str_timer[0:1]), minutes=float(str_timer[2:4]),
+        seconds=float(str_timer[5:7]))
 
 
 class LadderTimer:
@@ -32,6 +39,8 @@ class LadderTimer:
     loser_color: int = 0x00FF00
     ff_color: int = 0x00FF00
     started_at: datetime = None
+    finish_time: timedelta = None
+    result: str = ""
     next_race: ScheduleItem = None
     active_racers: List[Racer] = None
     current_season: Season = None
@@ -48,19 +57,53 @@ class LadderTimer:
         self.logger = logger
         if racer_id is not None:
             self.racer_id = racer_id
-        self.update()
 
-    def update(self):
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.update_active_racers())
-        loop.run_until_complete(self.update_flags())
-        loop.run_until_complete(self.update_season())
-        loop.run_until_complete(
-            self.update_schedule(self.current_season.season_id))
-        loop.run_until_complete(self.update_timer())
-        loop.run_until_complete(self.update_stats())
+        ladder_update_t = Thread(target=self.ladder_update_thread)
+        ladder_update_t.daemon = True
+        ladder_update_t.start()
+
+    def ladder_update_thread(self):
+        self.logger.debug("starting ladder race update")
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(self.race_updater())
+        loop.run_forever()
+
+    async def race_updater(self):
+        await self.update_active_racers()
+        await self.update_flags()
+        await self.update_season()
+        await self.update_schedule(self.current_season.season_id)
+        await self.update_timer()
+        await self.update_stats()
+        while True:
+            if not self.enabled or self.finish_time is not None:
+                await asyncio.sleep(5.0)
+            else:
+                now = datetime.now(self.ladder_timezone())
+                if self.started_at is not None and now > self.started_at:
+                    self.logger.debug("checking if racer finished")
+                    await self.check_racer_finish()
+                await asyncio.sleep(5.0)
+
+    async def check_racer_finish(self):
+        racer_history = ladder_client.get_racer_history(self.racer_id)
+        if racer_history[-1].race_id == self.next_race.race_id:
+            if racer_history[-1].FinishTime == "FF":
+                self.result = "FF"
+                self.finish_time = timedelta(seconds=0)
+                self.logger.debug("racer forfeited")
+            else:
+                self.finish_time = str_to_timer(racer_history[-1].FinishTime)
+                self.result = racer_history[-1].Result
 
     def get_timer_text(self):
+        if self.finish_time:
+            if self.result == "W":
+                return self.winner_color, timer_to_str(self.finish_time)
+            elif self.result == "L":
+                return self.loser_color, timer_to_str(self.finish_time)
+            elif self.result == "FF":
+                return self.ff_color, "-:--:--.-"
         current_timer = timedelta(seconds=0)
         color = self.pre_color
         now = datetime.now(self.ladder_timezone())
@@ -80,7 +123,6 @@ class LadderTimer:
     def get_stats(self):
         stats = ""
         if self.enabled:
-            self.logger.debug(self.stats)
             if self.show_season_name:
                 stats = stats + self.stats.Season + " "
             if self.show_mode_name:
@@ -149,7 +191,7 @@ class LadderTimer:
             (datetime.now() - self.last_timer_update) < timedelta(seconds=20)
         ):
             return
-        self.logger.debug("calling get_current_race_time to update timer")
+        self.logger.debug("calling get_current_race_time")
         str_timer = ladder_client.get_current_race_time()
         self.last_timer_update = datetime.now()
         self.logger.info(f"str_timer= {str_timer}")
@@ -157,9 +199,7 @@ class LadderTimer:
         if str_timer[0] == '-':
             timer_sign = -1.0
             str_timer = str_timer[1:]
-        timer = timedelta(
-            hours=float(str_timer[0:1]), minutes=float(str_timer[2:4]),
-            seconds=float(str_timer[5:7]))
+        timer = str_to_timer(str_timer)
         timer = timer * timer_sign
         if timer == timedelta(seconds=0):
             self.started_at = None
