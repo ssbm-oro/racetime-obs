@@ -208,7 +208,7 @@ class LadderTimer:
 
     async def update_stats(self):
         if self.season_for_stats == -1:
-            self.season_for_stats = self.all_seasons[-1].season_id
+            self.season_for_stats = self.current_season.season_id
         if self.mode_for_stats == -1:
             self.mode_for_stats = self.get_mode_id_from_name(
                 self.next_race.Mode)
