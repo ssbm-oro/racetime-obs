@@ -171,7 +171,11 @@ class LadderTimer:
         if self.current_season is None:
             self.all_seasons = ladder_client.get_seasons()
             if self.all_seasons is not None:
-                self.current_season = self.all_seasons[-1]
+                self.current_season = (
+                    next(filter(
+                        lambda x: x.IsCurrentSeason, self.all_seasons
+                    ), None)
+                )
         self.logger.info(f"current_season = {self.current_season}")
 
     async def update_flags(self):

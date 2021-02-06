@@ -62,6 +62,7 @@ def flags_from_dict(s: Any) -> List[Flag]:
 class Season:
     season_id: int
     SeasonName: str
+    IsCurrentSeason: bool
 
     @staticmethod
     def from_dict(obj: Any) -> 'Season':
@@ -69,7 +70,11 @@ class Season:
             return None
         season_id = from_int(obj.get("season_id"))
         SeasonName = from_str(obj.get("SeasonName"))
-        return Season(season_id=season_id, SeasonName=SeasonName)
+        IsCurrentSeason = from_bool(obj.get("IsCurrentSeason"))
+        return Season(
+            season_id=season_id, SeasonName=SeasonName,
+            IsCurrentSeason=IsCurrentSeason
+        )
 
 
 def seasons_from_dict(s: Any) -> List[Season]:
