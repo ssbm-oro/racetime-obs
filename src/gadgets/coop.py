@@ -134,6 +134,6 @@ class Coop:
 
     def update_coop_text_preview(self):
         self.our_time_color = self.winner_color
-        self.our_time_text = "1:23:45.6"
+        self.our_time_text = "1:09:42.0"
         self.opponent_time_color = self.loser_color
         self.opponent_time_text = "4:21:09.0"
