@@ -141,6 +141,8 @@ def new_race_selected(props, prop, settings):
         obs.timer_add(update_sources, 100)
     elif ladder_timer.enabled:
         obs.timer_add(update_sources, 100)
+    elif rtgg_obs.preview_mode:
+        obs.timer_add(update_sources, 100)
     else:
         obs.obs_data_set_default_string(
             settings, "race_info", "Race not found")
@@ -162,6 +164,9 @@ def media_player_toggled(props, prop, settings):
 
 
 def update_sources():
+    if rtgg_obs.preview_mode:
+        update_sources_preview()
+
     if rtgg_obs.race is not None:
         if rtgg_obs.timer.is_enabled():
             color, time = rtgg_obs.timer.get_timer_text(
@@ -181,6 +186,29 @@ def update_sources():
         set_source_text(rtgg_obs.timer.source_name, time, color)
         stats = ladder_timer.get_stats()
         set_source_text(ladder_timer.stats_source, stats, None)
+
+
+def update_sources_preview():
+    color, time = rtgg_obs.timer.get_timer_text_preview()
+    set_source_text(rtgg_obs.timer.source_name, time, color)
+    if (rtgg_obs.coop.is_enabled()):
+        rtgg_obs.coop.update_coop_text_preview()
+        set_source_text(
+                rtgg_obs.coop.our_time_source,
+                rtgg_obs.coop.our_time_text,
+                rtgg_obs.coop.our_time_color
+            )
+        set_source_text(
+                rtgg_obs.coop.opponent_time_source,
+                rtgg_obs.coop.opponent_time_text,
+                rtgg_obs.coop.opponent_time_color
+            )
+    if (rtgg_obs.qualifier.is_enabled):
+        rtgg_obs.qualifier.update_qualifier_text_preview()
+        set_source_text(rtgg_obs.qualifier.par_source,
+                        rtgg_obs.qualifier.par_text, None)
+        set_source_text(rtgg_obs.qualifier.score_source,
+                        rtgg_obs.qualifier.entrant_score, None)
 
 
 def update_coop_sources():

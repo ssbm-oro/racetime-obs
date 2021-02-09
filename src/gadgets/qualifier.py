@@ -51,3 +51,7 @@ class Qualifier:
         return (
             self.enabled and self.par_source != "" and self.score_source != ""
         )
+
+    def update_qualifier_text_preview(self):
+        self.par_text = "1:23:45.6"
+        self.entrant_score = "0.69"
