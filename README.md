@@ -36,9 +36,9 @@ The general goal for this is to enable you to do fun things on your stream with 
 
 ![Screenshot of Media Player Settings](/img/Screenshot_mediaplayer.png)
 
-![Video demo of Coop Mode](/img/coop_demo.gif)
+![Video demo of Coop Mode](/img/coop_demo2.gif)
 
-In this demo, you can see two of the features. The timer has turned gold, indicating that I finished first. Then, once both of our opponents have finished, it shows what time my partner Amarith would have needed to finish at for us to win
+In this demo, you can see two of the features. The timer has turned bronze, indicating that I finished third, and also that the average time of [Julloninja](https://twitch.tv/julloninja) and myself is lower than [GanonsGoneWild](http://twitch.tv/ganonsgonewild) (who finished second) and [ZekeHighwind's](https://twitch.tv/zekehighwind) average time if they finished immediately. Therefore, our winning time is colored green while GGW and Zeke's time is red and counts up to show what average time they would have now.
 
 ![Example of Tournament Qualifier Mode](/img/Screenshot2.png)
 
@@ -70,7 +70,7 @@ Example output when using tournament qualifier mode.
 
 You can find me on Discord, oro#7777.
 
-Also, follow me on [Twitch](https://www.twitch.com/ssbmoro)!
+Also, follow me on [Twitch](https://www.twitch.com/ssbmoro)! Generally, if I'm racing ALTTPR, then I'm probably using or testing out this plugin and new features in some way.
 
  ![Twitch Status](https://img.shields.io/twitch/status/ssbmoro)
 
