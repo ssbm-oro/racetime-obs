@@ -25,6 +25,8 @@ def script_description():
 
 
 def script_load(settings):
+    obs.obs_frontend_add_event_callback(on_load)
+
     rtgg_obs.timer.use_podium_colors = obs.obs_data_get_bool(
         settings, "use_podium")
 
@@ -33,9 +35,12 @@ def script_load(settings):
 
     obs.obs_data_set_string(settings, "race", "None")
 
-    race_update_t = Thread(target=rtgg_obs.race_update_thread)
-    race_update_t.daemon = True
-    race_update_t.start()
+
+def on_load(event):
+    if event == obs.OBS_FRONTEND_EVENT_FINISHED_LOADING:
+        race_update_t = Thread(target=rtgg_obs.race_update_thread)
+        race_update_t.daemon = True
+        race_update_t.start()
 
 
 def script_save(settings):
