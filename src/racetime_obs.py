@@ -97,6 +97,7 @@ def refresh_pressed(props, prop, *args, **kwargs):
     fill_source_list(obs.obs_properties_get(props, "qualifier_score_source"))
     fill_race_list(rtgg_obs, obs.obs_properties_get(props, "race"),
                    obs.obs_properties_get(props, "category_filter"))
+    coop_scripting.fill_coop_entrant_lists(props, rtgg_obs)
     if rtgg_obs.race is not None:
         rtgg_obs.coop.update_coop_text(rtgg_obs.race, rtgg_obs.full_name)
         update_coop_sources()
