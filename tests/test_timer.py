@@ -16,7 +16,7 @@ def test_timer_prerace(random_users):
     timer = get_test_timer()
     race = get_test_race(
         status_value="open", version=12,
-        started_at=None, start_delay=timedelta(seconds=15),
+        started_at=None, start_delay=timedelta(seconds=15, microseconds=1),
         entrants=get_test_entrants(random_users)
     )
     color, text = timer.get_timer_text(race, "")
@@ -32,7 +32,7 @@ def test_timer_prerace(random_users):
 def test_timer_counting_down(random_users):
     timer = get_test_timer()
     race = get_test_race(
-        status_value="pending", version=13, started_at=time_ago(seconds=-5),
+        status_value="pending", version=13, started_at=time_ago(seconds=-5.01),
         start_delay=timedelta(seconds=15.0),
         entrants=get_test_entrants(random_users)
     )

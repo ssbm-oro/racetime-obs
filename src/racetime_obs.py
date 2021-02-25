@@ -1,16 +1,21 @@
 from threading import Thread
+from gadgets.ladder_timer import LadderTimer
 
 import obspython as obs
-import racetime_client
+import clients.racetime_client as racetime_client
 import scripting.coop_scripting as coop_scripting
 import scripting.media_player_scripting as media_player_scripting
 import scripting.qualifier_scripting as qualifier_scripting
 import scripting.setup_scripting as setup_scripting
 import scripting.timer_scripting as timer_scripting
+import scripting.ladder_scripting as ladder_scripting
 from rtgg_obs import RacetimeObs
 from scripting import fill_race_list, fill_source_list, set_source_text
+from scripting import ScriptProperties as sp
 
 rtgg_obs = RacetimeObs()
+ladder_timer = LadderTimer(rtgg_obs.logger)
+ladder_scripting.ladder_timer = ladder_timer
 
 
 def script_description():
@@ -31,7 +36,7 @@ def script_load(settings):
     rtgg_obs.media_player.last_session_race = obs.obs_data_get_string(
         settings, "last_session_race")
 
-    obs.obs_data_set_string(settings, "race", "None")
+    obs.obs_data_set_string(settings, "race", sp.none_races)
 
     race_update_t = Thread(target=rtgg_obs.race_update_thread)
     race_update_t.daemon = True
@@ -55,6 +60,7 @@ def script_update(settings):
     media_player_scripting.script_update_media_player_settings(
         settings, rtgg_obs
     )
+    ladder_scripting.script_update_ladder_settings(settings)
 
     rtgg_obs.full_name = obs.obs_data_get_string(settings, "username")
 
@@ -85,6 +91,7 @@ def script_properties():
     media_player_scripting.script_media_player_settings(
         props, rtgg_obs, media_player_toggled
     )
+    ladder_scripting.script_ladder_settings(props)
 
     return props
 
@@ -113,9 +120,13 @@ def new_race_selected(props, prop, settings):
     obs.timer_remove(update_sources)
 
     rtgg_obs.selected_race = obs.obs_data_get_string(settings, "race")
-    if rtgg_obs.selected_race == "None":
+    if rtgg_obs.selected_race == sp.none_races:
         rtgg_obs.race = None
-        return True
+    if rtgg_obs.selected_race == sp.alttpr_ladder:
+        rtgg_obs.race = None
+        ladder_timer.enabled = True
+    else:
+        ladder_timer.enabled = False
     r = racetime_client.get_race_by_name(rtgg_obs.selected_race)
     if r is not None:
         rtgg_obs.race = r
@@ -128,6 +139,8 @@ def new_race_selected(props, prop, settings):
         obs.obs_data_set_default_string(settings, "race_info", r.info)
         coop_scripting.fill_coop_entrant_lists(props, rtgg_obs)
         rtgg_obs.timer.enabled = True
+        obs.timer_add(update_sources, 100)
+    elif ladder_timer.enabled:
         obs.timer_add(update_sources, 100)
     else:
         obs.obs_data_set_default_string(
@@ -164,6 +177,11 @@ def update_sources():
         if rtgg_obs.media_player.enabled:
             rtgg_obs.media_player.race_updated(
                 rtgg_obs.race, rtgg_obs.full_name)
+    elif ladder_timer.enabled:
+        color, time = ladder_timer.get_timer_text()
+        set_source_text(rtgg_obs.timer.source_name, time, color)
+        stats = ladder_timer.get_stats()
+        set_source_text(ladder_timer.stats_source, stats, None)
 
 
 def update_coop_sources():
