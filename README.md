@@ -14,6 +14,7 @@ This is the main code repository for racetime-obs, a plugin to add realtime info
 #### Experimental Features
 
 * Media player: Automatically play a sound (either on stream, to your speakers, or both) based on race events, such as when the race updates, a chat message is posted, when the race starts counting down, or when you finish. Right now, this just has options for playing a sound when you finish or when a bot posts in the channel.
+* ALTTPR Ladder mode: Support for timer started by ALTTPR
 
 ### Ideas for future development
 

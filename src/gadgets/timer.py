@@ -103,3 +103,6 @@ class Timer:
 
     def is_enabled(self) -> bool:
         return self.enabled and self.source_name != ""
+
+    def get_timer_text_preview(self):
+        return self.racing_color, "1:23:45.6"

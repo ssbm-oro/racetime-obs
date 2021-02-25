@@ -85,7 +85,6 @@ def script_update_coop_settings(settings, rtgg_obs: RacetimeObs):
         settings, "coop_opponent2")
     rtgg_obs.coop.our_time_source = (
         obs.obs_data_get_string(settings, "coop_our_source"))
-    rtgg_obs.logger.info(f"our_time_sourc is {rtgg_obs.coop.our_time_source}")
     rtgg_obs.coop.opponent_time_source = obs.obs_data_get_string(
         settings, "coop_opponent_source")
     rtgg_obs.coop.winner_color = obs.obs_data_get_int(

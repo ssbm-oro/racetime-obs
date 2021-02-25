@@ -7,6 +7,7 @@ from typing import List, Optional
 from asyncio import Event
 from helpers import timer_to_str
 from models.race import Entrant, Race
+from models.chat_message import ChatMessage
 
 
 class MediaTrigger:
@@ -63,10 +64,48 @@ class MediaTrigger:
             )
 
 
+class ChatTrigger:
+    media_file_path: str = ""
+    highlight_trigger: bool = False
+    bot_trigger: bool = False
+    system_trigger: bool = False
+    message_plain_trigger: str = ""
+    trigger_once: bool = False
+    triggered: bool = False
+
+    def __init__(self, media_file_path, highlight, bot, system, message_plain):
+        self.media_file_path = media_file_path
+        self.highlight_trigger = highlight
+        self.bot_trigger = bot
+        self.system_trigger = system
+        self.message_plain_trigger = message_plain
+
+    def check_trigger(self, chat_message: ChatMessage):
+        def trigger_on_bot(bot_trigger: bool, chat_message: ChatMessage):
+            return bot_trigger and chat_message.is_bot
+
+        def trigger_on_highlight(
+                highlight_trigger: bool, chat_message: ChatMessage):
+            return highlight_trigger and chat_message.highlight
+
+        def trigger_on_system(system_trigger: bool, chat_message: ChatMessage):
+            return system_trigger and chat_message.is_system
+
+        if self.trigger_once and self.triggered:
+            return False
+        self.triggered = (
+            trigger_on_bot(self.bot_trigger, chat_message) or
+            trigger_on_highlight(self.highlight_trigger, chat_message) or
+            trigger_on_system(self.system_trigger, chat_message)
+        )
+        return self.triggered
+
+
 class MediaPlayer:
     logger: logging.Logger = logging.Logger("racetime-obs")
     enabled: bool = False
     triggers: List[MediaTrigger] = []
+    chat_triggers: List[ChatTrigger] = []
     timers: List[Timer] = []
     triggers_lock: Lock = Lock()
     race_update_event: Event()
@@ -91,6 +130,13 @@ class MediaPlayer:
                     trigger.media_file_path, self.monitoring_type)
                 self.logger.debug("trigger fired")
 
+    def chat_updated(self, message: ChatMessage):
+        for trigger in self.chat_triggers:
+            self.logger.debug(trigger)
+            if trigger.check_trigger(message):
+                self.play_media_callback(
+                    trigger.media_file_path, self.monitoring_type)
+
     def add_trigger(
         self, media_file_path: str, place_trigger: int = None,
         entrant_count_trigger: int = None
@@ -109,6 +155,22 @@ class MediaPlayer:
                 media_file_path, place_trigger,
                 entrant_count_trigger
         ))
+
+    def add_chat_trigger(
+            self, media_file_path: str, highlight: bool = False,
+            is_bot: bool = False, is_system: bool = False,
+            message_plain_text: str = None
+            ):
+        async def add(
+            media_file_path, highlight, is_bot, is_system, message_plain_text
+        ):
+            async with self.triggers_lock:
+                self.chat_triggers.append(
+                    ChatTrigger(media_file_path, highlight, is_bot, is_system,
+                                message_plain_text))
+            pass
+        asyncio.ensure_future(add(
+            media_file_path, highlight, is_bot, is_system, message_plain_text))
 
     def add_timer(self, media_file_path: str, race_time: timedelta):
         # try to wake up a little early and get ready
@@ -136,5 +198,6 @@ class MediaPlayer:
     def remove_trigger(self, index: int):
         async def remove(index: int):
             async with self.triggers_lock:
-                self.triggers.clear()
+                if len(self.triggers) > index:
+                    self.triggers.remove(self.triggers[index])
         asyncio.ensure_future(remove(index))

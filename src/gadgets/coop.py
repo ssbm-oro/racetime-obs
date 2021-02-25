@@ -131,3 +131,9 @@ class Coop:
             # self.partner is not None and self.opponent1 is not None and
             # self.opponent2 is not None
         )
+
+    def update_coop_text_preview(self):
+        self.our_time_color = self.winner_color
+        self.our_time_text = "1:09:42.0"
+        self.opponent_time_color = self.loser_color
+        self.opponent_time_text = "4:21:09.0"
