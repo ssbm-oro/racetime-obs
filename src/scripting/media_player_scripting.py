@@ -1,6 +1,11 @@
+import gettext
+import os
+
 from helpers.obs_context_manager import media_source_ar
 import obspython as obs
 from rtgg_obs import RacetimeObs
+
+_ = gettext.gettext
 
 
 def script_update_media_player_settings(settings, rtgg_obs: RacetimeObs):
@@ -24,13 +29,17 @@ def script_update_media_player_settings(settings, rtgg_obs: RacetimeObs):
 def script_media_player_settings(
     props, rtgg_obs: RacetimeObs, media_player_toggled
 ):
+    lang = gettext.translation(
+        "racetime-obs", localedir=os.environ['LOCALEDIR'])
+    _ = lang.gettext
+
     p = obs.obs_properties_add_bool(
-        props, "use_media_player", "Enable sounds?"
+        props, "use_media_player", _("Enable sounds?")
     )
     obs.obs_property_set_modified_callback(p, media_player_toggled)
     media_player_group = obs.obs_properties_create()
     obs.obs_properties_add_group(
-            props, "media_player_group", "Media Player Mode",
+            props, "media_player_group", _("Media Player Mode"),
             obs.OBS_GROUP_NORMAL, media_player_group
         )
     obs.obs_property_set_visible(
@@ -38,32 +47,35 @@ def script_media_player_settings(
         rtgg_obs.media_player.enabled
     )
     monitoring_list = obs.obs_properties_add_list(
-        media_player_group, "monitoring_type", "Monitoring Type",
+        media_player_group, "monitoring_type", _("Monitoring Type"),
         obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_INT)
     obs.obs_property_list_add_int(
-        monitoring_list, "Listen Only", obs.OBS_MONITORING_TYPE_MONITOR_ONLY)
+        monitoring_list, _("Listen Only"),
+        obs.OBS_MONITORING_TYPE_MONITOR_ONLY
+    )
     obs.obs_property_list_add_int(
-        monitoring_list, "Stream Only", obs.OBS_MONITORING_TYPE_NONE)
+        monitoring_list, _("Stream Only"), obs.OBS_MONITORING_TYPE_NONE)
     obs.obs_property_list_add_int(
-        monitoring_list, "Listen and Stream",
+        monitoring_list, _("Listen and Stream"),
         obs.OBS_MONITORING_TYPE_MONITOR_AND_OUTPUT)
     p = obs.obs_properties_add_bool(
-        media_player_group, "use_chat_pings", "Chat Pings")
+        media_player_group, "use_chat_pings", _("Chat Pings"))
     obs.obs_property_set_long_description(
-        p, ("Enable this and set choose a sound file to play when a bot posts "
-            "or when someone @s you in racetime.gg chat"))
+        p, _("Enable this and set choose a sound file to play when a bot posts"
+             " or when someone @s you in racetime.gg chat")
+    )
     p = obs.obs_properties_add_path(
         media_player_group, "chat_ping_sound",
-        "Chat media file", obs.OBS_PATH_FILE,
+        _("Chat media file"), obs.OBS_PATH_FILE,
         "Audio Files (*.mp3 *.aac *.wav *.wma)", None
     )
     obs.obs_properties_add_path(
         media_player_group, "first_place_sound",
-        "First Place Sound", obs.OBS_PATH_FILE,
+        _("First Place Sound"), obs.OBS_PATH_FILE,
         "Audio Files (*.mp3 *.aac *.wav *.wma)", None
     )
     obs.obs_property_set_long_description(
-        p, "Sound file to play when you finish first.")
+        p, _("Sound file to play when you finish first."))
 
 
 def play_sound(media_path: str,

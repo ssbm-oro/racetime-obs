@@ -1,3 +1,6 @@
+import gettext
+import os
+
 import obspython as obs
 from rtgg_obs import RacetimeObs
 
@@ -22,23 +25,28 @@ def script_update_timer_settings(
 
 
 def script_timer_settings(props, rtgg_obs: RacetimeObs):
+    lang = gettext.translation(
+        "racetime-obs", localedir=os.environ['LOCALEDIR'])
+    _ = lang.gettext
+
     p = obs.obs_properties_add_bool(
-        props, "use_podium", "Use custom color for podium finishes?")
+        props, "use_podium", _("Use custom color for podium finishes?"))
     obs.obs_property_set_modified_callback(p, podium_toggled)
     podium_group = obs.obs_properties_create()
     obs.obs_properties_add_group(
-        props, "podium_group", "Podium Colors",
+        props, "podium_group", _("Podium Colors"),
         obs.OBS_GROUP_NORMAL, podium_group
     )
     obs.obs_property_set_visible(obs.obs_properties_get(
         props, "podium_group"), rtgg_obs.timer.use_podium_colors)
-    obs.obs_properties_add_color(podium_group, "pre_color", "Pre-race:")
-    obs.obs_properties_add_color(podium_group, "racing_color", "Still racing:")
-    obs.obs_properties_add_color(podium_group, "first_color", "1st place:")
-    obs.obs_properties_add_color(podium_group, "second_color", "2nd place:")
-    obs.obs_properties_add_color(podium_group, "third_color", "3rd place:")
+    obs.obs_properties_add_color(podium_group, "pre_color", _("Pre-race:"))
     obs.obs_properties_add_color(
-        podium_group, "finished_color", "After podium:")
+        podium_group, "racing_color", _("Still racing:"))
+    obs.obs_properties_add_color(podium_group, "first_color", _("1st place:"))
+    obs.obs_properties_add_color(podium_group, "second_color", _("2nd place:"))
+    obs.obs_properties_add_color(podium_group, "third_color", _("3rd place:"))
+    obs.obs_properties_add_color(
+        podium_group, "finished_color", _("After podium:"))
 
 
 def podium_toggled(props, prop, settings):

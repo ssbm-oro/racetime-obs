@@ -1,17 +1,24 @@
+import gettext
+import os
+
 import obspython as obs
 from rtgg_obs import RacetimeObs
 from . import fill_source_list
 
 
 def script_qualifier_settings(props, rtgg_obs: RacetimeObs):
+    lang = gettext.translation(
+        "racetime-obs", localedir=os.environ['LOCALEDIR'])
+    _ = lang.gettext
+
     p = obs.obs_properties_add_bool(
             props, "use_qualifier",
-            "Display race results as tournament qualifier?"
+            _("Display race results as tournament qualifier?")
         )
     obs.obs_property_set_modified_callback(p, qualifier_toggled)
     qualifier_group = obs.obs_properties_create()
     obs.obs_properties_add_group(
-            props, "qualifier_group", "Qualifier Mode",
+            props, "qualifier_group", _("Qualifier Mode"),
             obs.OBS_GROUP_NORMAL, qualifier_group
         )
     obs.obs_property_set_visible(
@@ -20,12 +27,12 @@ def script_qualifier_settings(props, rtgg_obs: RacetimeObs):
     )
     p = obs.obs_properties_add_int_slider(
             qualifier_group, "qualifier_cutoff",
-            "Use Top X as par time, where X=", 3, 10, 1
+            _("Use Top X as par time, where X="), 3, 10, 1
         )
     p = obs.obs_properties_add_list(
             qualifier_group,
             "qualifier_par_source",
-            "Qualifier Par Time Source",
+            _("Qualifier Par Time Source"),
             obs.OBS_COMBO_TYPE_EDITABLE,
             obs.OBS_COMBO_FORMAT_STRING
         )
@@ -33,7 +40,7 @@ def script_qualifier_settings(props, rtgg_obs: RacetimeObs):
     p = obs.obs_properties_add_list(
             qualifier_group,
             "qualifier_score_source",
-            "Qualifier Score Source",
+            _("Qualifier Score Source"),
             obs.OBS_COMBO_TYPE_EDITABLE,
             obs.OBS_COMBO_FORMAT_STRING
         )

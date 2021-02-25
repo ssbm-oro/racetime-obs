@@ -1,5 +1,7 @@
 from enum import Enum, auto
+import os
 from typing import List
+import gettext
 from models.race import Race
 import obspython as obs
 from helpers.obs_context_manager import data_ar, source_ar, source_list_ar
@@ -33,11 +35,14 @@ def fill_source_list(p):
 
 
 def fill_race_list(rtgg_obs: RacetimeObs, race_list, category_list):
+    lang = gettext.translation(
+        "racetime-obs", localedir=os.environ['LOCALEDIR'])
+    _ = lang.gettext
     obs.obs_property_list_clear(race_list)
     obs.obs_property_list_clear(category_list)
-    obs.obs_property_list_add_string(category_list, "All", sp.all_category)
+    obs.obs_property_list_add_string(category_list, _("All"), sp.all_category)
 
-    obs.obs_property_list_add_string(race_list, "None", "None")
+    obs.obs_property_list_add_string(race_list, _("None"), "None")
     races = racetime_client.get_races()
     if races is not None:
         fill_category_list(category_list, races)

@@ -1,53 +1,60 @@
+import gettext
+import os
+
 import obspython as obs
 from rtgg_obs import RacetimeObs
 from . import fill_source_list
 
 
 def script_coop_settings(props, rtgg_obs: RacetimeObs):
+    lang = gettext.translation(
+        "racetime-obs", localedir=os.environ['LOCALEDIR'])
+    _ = lang.gettext
+
     p = obs.obs_properties_add_bool(
-        props, "use_coop", "Display coop information?")
+        props, "use_coop", _("Display coop information?"))
     obs.obs_property_set_modified_callback(p, coop_toggled)
     coop_group = obs.obs_properties_create()
     obs.obs_properties_add_group(
-        props, "coop_group", "Co-op Mode", obs.OBS_GROUP_NORMAL, coop_group
+        props, "coop_group", _("Co-op Mode"), obs.OBS_GROUP_NORMAL, coop_group
     )
     obs.obs_property_set_visible(
         obs.obs_properties_get(props, "coop_group"), rtgg_obs.coop.enabled)
     p = obs.obs_properties_add_list(
-        coop_group, "coop_partner", "Co-op Partner",
+        coop_group, "coop_partner", _("Co-op Partner"),
         obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING
     )
     p = obs.obs_properties_add_list(
-        coop_group, "coop_opponent1", "Co-op Rival 1",
+        coop_group, "coop_opponent1", _("Co-op Rival 1"),
         obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING
     )
     p = obs.obs_properties_add_list(
-        coop_group, "coop_opponent2", "Co-op Rival 2",
+        coop_group, "coop_opponent2", _("Co-op Rival 2"),
         obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING
     )
     fill_coop_entrant_lists(props, rtgg_obs)
     p = obs.obs_properties_add_list(
-        coop_group, "coop_our_source", "Our Team's Timer",
+        coop_group, "coop_our_source", _("Our Team's Timer"),
         obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING
     )
     obs.obs_property_set_long_description(p, (
-        "This text source will display your team's timer when you finish."
+        _("This text source will display your team's timer when you finish.")
     ))
     fill_source_list(p)
     p = obs.obs_properties_add_list(
         coop_group, "coop_opponent_source", "Rival Team's Timer",
         obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING
     )
-    obs.obs_property_set_long_description(p, (
-        "This text source will be use to display your rival's timer when they"
-        " finish"
+    obs.obs_property_set_long_description(p, (_(
+        "This text source will be use to display your rival's timer when "
+        "they finish")
     ))
     obs.obs_properties_add_color(
-        coop_group, "coop_winner_color", "Winner Color:")
+        coop_group, "coop_winner_color", _("Winner Color:"))
     obs.obs_properties_add_color(
-        coop_group, "coop_loser_color", "Loser Color:")
+        coop_group, "coop_loser_color", _("Loser Color:"))
     obs.obs_properties_add_color(
-        coop_group, "coop_undetermined_color", "Winner Undetermined Color")
+        coop_group, "coop_undetermined_color", _("Winner Undetermined Color"))
     fill_source_list(p)
 
 

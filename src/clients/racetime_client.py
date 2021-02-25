@@ -1,5 +1,6 @@
 from typing import Any
 import requests
+import gettext
 
 from models.category import category_from_dict
 from models.category_past_races import category_past_races_from_dict
@@ -10,11 +11,18 @@ from models.user_past_races import user_past_races_from_dict
 from models.user_search import user_search_from_dict
 
 
+def script_path():
+    pass
+
+
 def script_description():
-    return (
+    localedir = script_path() + "locales"
+    lang = gettext.translation("racetime-obs", localedir=localedir)
+    _ = lang.gettext
+    return (_(
         "<p>You've loaded the incorrect script.<br><br>Please remove this file"
         "and add 'racetime_obs.py' instead</p>"
-    )
+    ))
 
 
 base_url = "https://racetime.gg/"

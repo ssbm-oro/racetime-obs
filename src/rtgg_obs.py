@@ -3,6 +3,7 @@ from asyncio.events import AbstractEventLoop
 import json
 import logging
 from datetime import datetime, timedelta, timezone
+import gettext
 
 import dateutil
 import websockets
@@ -18,11 +19,13 @@ from helpers.LogFormatter import LogFormatter
 from models.race import Race, race_from_dict
 from models.chat_message import chat_message_from_dict
 
+_ = gettext.gettext
+
 
 def script_description():
-    return (
+    return (_(
         "<p>You've loaded the incorrect script.<br><br>Please remove this file"
-        "and add 'racetime_obs.py' instead</p>"
+        "and add 'racetime_obs.py' instead</p>")
     )
 
 
