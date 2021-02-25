@@ -39,6 +39,7 @@ class RacetimeObs():
     qualifier = Qualifier()
     media_player: MediaPlayer = None
     event_loop: AbstractEventLoop = None
+    preview_mode = False
 
     def __init__(self):
         self.event_loop = asyncio.get_event_loop()
