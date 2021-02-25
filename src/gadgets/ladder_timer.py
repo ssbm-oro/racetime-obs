@@ -128,7 +128,7 @@ class LadderTimer:
             if self.show_mode_name:
                 stats = stats + self.stats.Mode + " "
             if self.show_rank:
-                stats = stats + str(self.stats.Rank) + " "
+                stats = stats + "#" + str(self.stats.Rank) + " "
             if self.show_rating:
                 stats = stats + str(self.stats.Rating) + " "
             if self.show_change:
@@ -216,12 +216,18 @@ class LadderTimer:
         if self.mode_for_stats == -1:
             self.mode_for_stats = self.get_mode_id_from_name(
                 self.next_race.Mode)
+        self.logger.info(f"season_for_stats: {self.season_for_stats}")
+        self.logger.info(f"mode_for_stats: {self.mode_for_stats}")
         standings = ladder_client.get_standings(
             self.season_for_stats, self.mode_for_stats)
         for stats in standings:
             if stats.RacerName.lower() == self.racer_name.lower():
                 self.stats = stats
                 return
+        # default standings
+        self.stats = Standings(
+            self.racer_name, self.current_season.SeasonName,
+            self.next_race.Mode, 1600, 0, 0, 0, 0, 0)
 
     def get_mode_id_from_name(self, mode_name: str):
         for flag in self.flags:
