@@ -93,6 +93,7 @@ def script_defaults(settings):
     obs.obs_data_set_default_string(settings, "race_info", _("Race info"))
     obs.obs_data_set_default_string(settings, "race", "None")
     obs.obs_data_set_default_int(settings, "qualifier_cutoff", 3)
+    obs.obs_data_set_default_bool(settings, "timer_decimals", True)
 
 
 def set_locale():

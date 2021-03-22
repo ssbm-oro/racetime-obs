@@ -13,6 +13,7 @@ class Qualifier:
     score_source = ""
     par_text = " "
     entrant_score = " "
+    decimals: bool = True
 
     def update_qualifier_text(self, race: Race, full_name: str):
         if not self.is_enabled():
@@ -25,7 +26,7 @@ class Qualifier:
         if race.entrants_count_finished >= self.qualifier_cutoff:
             par_time = self.calculate_par_time(race)
             self.logger.debug(par_time)
-            self.par_text = timer_to_str(par_time)
+            self.par_text = timer_to_str(par_time, self.decimals)
 
             if entrant and entrant.finish_time is not None:
                 entrant_score = min(2 - (entrant.finish_time / par_time), 1.05)

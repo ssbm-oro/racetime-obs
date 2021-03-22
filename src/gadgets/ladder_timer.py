@@ -48,6 +48,7 @@ class LadderTimer:
     all_seasons: List[Season] = []
     schedule: List[ScheduleItem] = []
     last_timer_update: datetime = None
+    decimals: bool = True
 
     @staticmethod
     def ladder_timezone():
@@ -99,9 +100,15 @@ class LadderTimer:
     def get_timer_text(self):
         if self.finish_time:
             if self.result == "W":
-                return self.winner_color, timer_to_str(self.finish_time)
+                return (
+                    self.winner_color,
+                    timer_to_str(self.finish_time, self.decimals)
+                )
             elif self.result == "L":
-                return self.loser_color, timer_to_str(self.finish_time)
+                return (
+                    self.loser_color,
+                    timer_to_str(self.finish_time, self.decimals)
+                )
             elif self.result == "FF":
                 return self.ff_color, "-:--:--.-"
         current_timer = timedelta(seconds=0)
@@ -118,7 +125,7 @@ class LadderTimer:
             current_timer = now - self.started_at
             if current_timer.total_seconds() > 0:
                 color = self.racing_color
-        return color, timer_to_str(current_timer)
+        return color, timer_to_str(current_timer, self.decimals)
 
     def get_stats(self):
         stats = ""

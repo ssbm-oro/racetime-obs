@@ -20,6 +20,7 @@ class Timer:
     third_color = 0x0000FF
     finished_color = 0xFFFFFF
     cancel_dq_color = 0xFF0000
+    decimals: bool = True
 
     def get_timer_text(self, race: Race, full_name: str):
         entrant = race.get_entrant_by_name(full_name)
@@ -47,7 +48,7 @@ class Timer:
         fallback_color: int = None, fallback_text: str = None
     ):
         if status_value == "open" or status_value == "invitational":
-            time = timer_to_str(start_delay * -1.0)
+            time = timer_to_str(start_delay * -1.0, self.decimals)
             color = self.pre_color
         elif status_value == "cancelled":
             color = self.cancel_dq_color
@@ -63,11 +64,11 @@ class Timer:
     ):
         if status_value == "finished":
             # race is finished and assume user is not an entrant
-            time = timer_to_str(ended_at - started_at)
+            time = timer_to_str(ended_at - started_at, self.decimals)
             color = self.finished_color
         elif started_at is not None:
             timer = datetime.now(timezone.utc) - started_at
-            time = timer_to_str(timer)
+            time = timer_to_str(timer, self.decimals)
             color = self.racing_color
         else:
             return fallback_color, fallback_text
@@ -81,14 +82,14 @@ class Timer:
         color = fallback_color
         if entrant is not None:
             if entrant.finish_time is not None:
-                time = timer_to_str(entrant.finish_time)
+                time = timer_to_str(entrant.finish_time, self.decimals)
                 color = self.get_color_by_place(entrant.place)
             elif entrant.status.value == "dnf" or entrant.status.value == "dq":
                 time = "--:--:--.-"
                 color = self.cancel_dq_color
             elif started_at is not None:
                 timer = datetime.now(timezone.utc) - started_at
-                time = timer_to_str(timer)
+                time = timer_to_str(timer, self.decimals)
         return color, time
 
     def get_color_by_place(self, place: int) -> int:
@@ -105,4 +106,9 @@ class Timer:
         return self.enabled and self.source_name != ""
 
     def get_timer_text_preview(self):
-        return self.racing_color, "1:23:45.6"
+        return (
+            self.racing_color,
+            timer_to_str(
+                timedelta(hours=1, minutes=23, seconds=45.6),
+                self.decimals)
+        )

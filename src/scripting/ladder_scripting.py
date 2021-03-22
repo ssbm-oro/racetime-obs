@@ -115,6 +115,7 @@ def script_update_ladder_settings(settings):
         obs.obs_data_get_string(settings, lp.ladder_season))
     lt.mode_for_stats = int(
         obs.obs_data_get_string(settings, lp.ladder_mode))
+    lt.decimals = obs.obs_data_get_bool(settings, "timer_decimals")
 
 
 def name_modified(props, prop, *args, **kwargs):

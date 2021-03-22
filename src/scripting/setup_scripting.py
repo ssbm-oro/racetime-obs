@@ -15,6 +15,9 @@ def script_update_setup_settings(settings, rtgg_obs: RacetimeObs):
         obs.obs_data_get_string(settings, "log_level")
     )
     rtgg_obs.preview_mode = obs.obs_data_get_bool(settings, "preview_mode")
+    rtgg_obs.timer_decimals = obs.obs_data_get_bool(settings, "timer_decimals")
+    rtgg_obs.timer.decimals = rtgg_obs.timer_decimals
+    rtgg_obs.qualifier.decimals = rtgg_obs.timer_decimals
 
 
 def script_setup(props, new_race_selected, new_category_selected):
@@ -59,6 +62,10 @@ def script_setup(props, new_race_selected, new_category_selected):
     obs.obs_property_set_long_description(
         preview, "Puts preview values in "
         "each component's text source to help arrange up your layout.")
+
+    obs.obs_properties_add_bool(
+        setup_group, "timer_decimals",
+        _("Show tenths of seconds?"))
 
     category_list = obs.obs_properties_add_list(
         props, "category_filter", _("Filter by Category"),
