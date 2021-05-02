@@ -4,7 +4,7 @@ import requests
 
 from models.ladder import (Standings, flags_from_dict, racer_results_from_dict,
                            racers_from_dict, schedule_from_dict,
-                           seasons_from_dict, standings_from_dict)
+                           seasons_from_dict, standings_from_dict, from_bool)
 
 
 def script_description():
@@ -74,3 +74,10 @@ def get_schedule(season_id):
 
 def get_current_race_time():
     return ladder_get(f'{base_url}GetCurrentRaceTime')
+
+
+def is_currently_racing(racer_id):
+    payload = {
+        "racer_id": racer_id
+    }
+    return from_bool(ladder_get(f'{base_url}IsCurrentlyRacing', payload))

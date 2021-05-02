@@ -87,6 +87,8 @@ class LadderTimer:
                 await asyncio.sleep(5.0)
 
     async def check_racer_finish(self):
+        if ladder_client.is_currently_racing(self.racer_id):
+            return
         racer_history = ladder_client.get_racer_history(self.racer_id)
         if racer_history[-1].race_id == self.next_race.race_id:
             if racer_history[-1].FinishTime == "FF":
