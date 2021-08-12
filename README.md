@@ -46,7 +46,7 @@ Example output when using tournament qualifier mode.
 
 ## Setup
 
-1) Install the correct version of Python for your system. On Windows, this is Python 3.6. Note on Windows whether you are using the [64-bit](https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe) or [32-bit version](https://www.python.org/ftp/python/3.6.8/python-3.6.8.exe) of OBS, as you'll need to use the same version of Python which you can find at those links. On macOS, this is [Python 3.7](https://www.python.org/ftp/python/3.7.9/python-3.7.9-macosx10.9.pkg). Note on macOS, you also need to use OBS version 25.0.8. Version 26 broke python scripts for macOS.
+1) Install the correct version of Python for your system. On Windows, this is Python 3.6. Note on Windows whether you are using the [64-bit](https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe) or [32-bit version](https://www.python.org/ftp/python/3.6.8/python-3.6.8.exe) of OBS, as you'll need to use the same version of Python which you can find at those links. On macOS, this is [Python 3.7](https://www.python.org/ftp/python/3.7.9/python-3.7.9-macosx10.9.pkg). Note on macOS, you also need to run [this script](https://cdn.discordapp.com/attachments/670224198991347722/875398835151720448/macos-finder-applications-python3.png) in the Python Applications Directory.
 
 2) Download and unzip the [latest release archive](https://github.com/ssbm-oro/racetime-obs/releases/latest/) to any folder
 
