@@ -1,3 +1,4 @@
+import asyncio
 from threading import Thread
 from gadgets.ladder_timer import LadderTimer
 import gettext
@@ -156,6 +157,9 @@ def new_race_selected(props, prop, settings):
     if rtgg_obs.selected_race == sp.alttpr_ladder:
         rtgg_obs.race = None
         ladder_timer.enabled = True
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(ladder_timer.update_ladder_status())
+        loop.close()
     else:
         ladder_timer.enabled = False
     r = racetime_client.get_race_by_name(rtgg_obs.selected_race)

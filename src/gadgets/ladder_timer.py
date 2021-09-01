@@ -70,12 +70,7 @@ class LadderTimer:
         loop.run_forever()
 
     async def race_updater(self):
-        await self.update_active_racers()
-        await self.update_flags()
-        await self.update_season()
-        await self.update_schedule(self.current_season.season_id)
-        await self.update_timer()
-        await self.update_stats()
+        await self.update_ladder_status()
         while True:
             if not self.enabled or self.finish_time is not None:
                 await asyncio.sleep(5.0)
@@ -85,6 +80,17 @@ class LadderTimer:
                     self.logger.debug("checking if racer finished")
                     await self.check_racer_finish()
                 await asyncio.sleep(5.0)
+
+    async def update_ladder_status(self):
+        self.started_at = None
+        self.finish_time = None
+        self.last_timer_update = None
+        await self.update_active_racers()
+        await self.update_flags()
+        await self.update_season()
+        await self.update_schedule(self.current_season.season_id)
+        await self.update_timer()
+        await self.update_stats()
 
     async def check_racer_finish(self):
         if ladder_client.is_currently_racing(self.racer_id):
