@@ -85,6 +85,8 @@ class LadderTimer:
         self.started_at = None
         self.finish_time = None
         self.last_timer_update = None
+        self.next_race = None
+        self.schedule = None
         await self.update_active_racers()
         await self.update_flags()
         await self.update_season()
