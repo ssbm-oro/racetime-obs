@@ -58,7 +58,7 @@ class Coop:
             self.opponent_time_color = self.winner_color
             self.our_time_color = self.loser_color
         else:
-            our_current_total = opponent_total - our_current_total
+            our_current_total = (opponent_total - our_current_total) * 2
             self.opponent_time_color = self.still_racing_color
             self.our_time_color = self.still_racing_color
         self.our_time_text = timer_to_str(our_current_total/2)
@@ -75,7 +75,7 @@ class Coop:
             self.opponent_time_color = self.loser_color
             self.our_time_color = self.winner_color
         else:
-            opponent_current_total = our_total - opponent_current_total
+            opponent_current_total = (our_total - opponent_current_total) * 2
             self.opponent_time_color = self.still_racing_color
             self.our_time_color = self.still_racing_color
         self.our_time_text = timer_to_str(our_total/2)
